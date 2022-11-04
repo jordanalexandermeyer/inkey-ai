@@ -1,18 +1,23 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import Router from 'next/router'
+import { useRouter } from 'next/router'
+import classnames from 'classnames'
 import React, { useState } from 'react'
 import axios from 'axios'
-import classnames from 'classnames'
 import Navbar from '../components/navbar'
 
-const Home: NextPage = () => {
-  const [prompt, setPrompt] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+const Editor: NextPage = () => {
+  const router = useRouter()
+  const query = router.query
 
-  const handlePromptChange = (event: React.SyntheticEvent) => {
+  const [isLoading, setIsLoading] = useState(false)
+  const [prompt, setPrompt] = useState(query.prompt)
+  const [thesis, setThesis] = useState(query.thesis)
+  const [essay, setEssay] = useState([])
+
+  const handleThesisChange = (event: React.SyntheticEvent) => {
     const target = event.target as HTMLInputElement
-    setPrompt(target.value)
+    setThesis(target.value)
   }
 
   const handleSubmit = async (event: React.SyntheticEvent) => {
@@ -25,50 +30,59 @@ const Home: NextPage = () => {
     // send text to OpenAI to get essay outline
     const { data } = await axios({
       method: 'get',
-      url: '/api/thesis',
+      url: '/api/essay',
       params: {
-        prompt: prompt,
+        thesis,
+        prompt,
       },
     })
-    const thesis = data.text
+    const essayString = data.text
+
+    console.log(essayString)
+
+    const essay = essayString.split('\n')
+
+    console.log(essay)
 
     // after receiving outline from OpenAI, exit loading state
     setIsLoading(false)
 
-    // redirect to new page putting outline in query (https://stackoverflow.com/questions/72221255/how-to-pass-data-from-one-page-to-another-page-in-next-js)
-    Router.push({ pathname: '/editor', query: { thesis, prompt } })
+    // set essay
+    setEssay(essay)
   }
 
   return (
     <div className="min-h-screen">
       <Navbar />
-      <div className="flex flex-col items-center justify-center mt-44">
+      <div className="flex flex-col items-center justify-center mt-8">
         <Head>
           <title>Essay generator</title>
           <link rel="icon" href="/favicon.ico" />
         </Head>
 
         <main className="flex w-full flex-col items-center justify-center px-20 text-center">
-          <h1 className="text-3xl font-regular">
-            Enter an essay prompt to generate a 5 paragraph essay
+          <h1 className="text-3xl font-bold">
+            <span>Prompt: </span>
+            <span className="text-3xl font-normal">
+              {prompt || 'undefined'}
+            </span>
           </h1>
-
-          <form
-            className="mt-6 flex w-full flex-1 flex-col items-center justify-center"
-            onSubmit={handleSubmit}
-          >
+          <p className="text-xl mt-5">
+            Confirm the following thesis looks good. If not, change as needed
+            and then click "Write my essay".
+          </p>
+          <form className="min-w-full" onSubmit={handleSubmit}>
             <input
-              className={classnames(
-                'border border-gray-400 rounded w-full max-w-2xl pt-2 p-2 text-2xl',
-                { 'text-gray-400': isLoading },
-              )}
+              defaultValue={thesis}
+              className={classnames('text-xl mt-5 min-w-full border-2 p-2', {
+                'text-gray-400': isLoading,
+              })}
               type="text"
-              placeholder="Would you rather live in the city or the country?"
-              minLength={15}
-              onChange={handlePromptChange}
+              minLength={20}
+              onChange={handleThesisChange}
               disabled={isLoading}
               required
-            />
+            ></input>
             <button
               className={classnames(
                 'mt-6 text-white font-medium py-4 px-8 rounded text-xl',
@@ -83,7 +97,7 @@ const Home: NextPage = () => {
               <svg
                 className={classnames(
                   'mt-6 inline mr-2 w-10 h-10 text-gray-200 animate-spin fill-blue-700',
-                  { invisible: !isLoading },
+                  { hidden: !isLoading },
                 )}
                 viewBox="0 0 100 101"
                 fill="none"
@@ -100,10 +114,17 @@ const Home: NextPage = () => {
               </svg>
             </div>
           </form>
+          {essay.map((paragraph: string, index) => {
+            return (
+              <p key={index} className="text-xl mt-5 text-left">
+                {paragraph.replace(/[0-9]. /gm, '')}
+              </p>
+            )
+          })}
         </main>
       </div>
     </div>
   )
 }
 
-export default Home
+export default Editor
