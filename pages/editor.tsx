@@ -117,7 +117,7 @@ const Editor: NextPage = () => {
           {essay.map((paragraph: string, index) => {
             return (
               <p key={index} className="text-xl mt-5 text-left">
-                {paragraph.replace(/[0-9]. /gm, '')}
+                {paragraph}
               </p>
             )
           })}
