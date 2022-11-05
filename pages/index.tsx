@@ -44,7 +44,7 @@ const Home: NextPage = () => {
       <Navbar />
       <div className="flex flex-col items-center justify-center mt-44">
         <Head>
-          <title>Essay generator</title>
+          <title>Ghostwritten</title>
           <link rel="icon" href="/favicon.ico" />
         </Head>
 

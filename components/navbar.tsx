@@ -1,6 +1,3 @@
-import Router from 'next/router'
-import Image from 'next/image'
-import logo from '../public/logo.png'
 import Link from 'next/link'
 
 const Navbar = () => {
@@ -8,9 +5,9 @@ const Navbar = () => {
     <nav className="bg-white border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-gray-900">
       <div className="container flex flex-wrap justify-between items-center mx-auto">
         <Link href="/" className="flex items-center">
-          <Image src={logo} className="mr-2" alt="Essay generator logo" />
+          <span className="mr-2 text-3xl">👻✍️</span>
           <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-            Essay generator
+            Ghostwritten
           </span>
         </Link>
         <button
