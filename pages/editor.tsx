@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import classnames from 'classnames'
 import React, { useState } from 'react'
 import axios from 'axios'
-import Navbar from '../components/navbar'
+import Navbar from '../components/Navbar'
 
 const Editor: NextPage = () => {
   const router = useRouter()

@@ -1,23 +1,21 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import DashboardBody from '../components/DashboardBody'
-import Footer from '../components/Footer'
+import DocumentsBody from '../components/DocumentsBody'
 import Navigation from '../components/Navigation'
 
-const Home: NextPage = () => {
+const Documents: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Overview - Ghostwritten</title>
+        <title>Documents - Ghostwritten</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       <div>
         <Navigation />
-        <DashboardBody />
-        <Footer />
+        <DocumentsBody />
       </div>
     </>
   )
 }
 
-export default Home
+export default Documents
