@@ -1,12 +1,13 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import Footer from '../components/Footer'
-import Navigation from '../components/Navigation'
-import TemplatesBody from '../components/TemplatesBody'
+import Footer from '../../components/Footer'
+import Navigation from '../../components/Navigation'
+import ProtectedPage from '../../components/ProtectedPage'
+import TemplatesBody from './TemplatesBody'
 
 const Templates: NextPage = () => {
   return (
-    <>
+    <ProtectedPage>
       <Head>
         <title>Templates - Ghostwritten</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
@@ -16,7 +17,7 @@ const Templates: NextPage = () => {
         <TemplatesBody />
         <Footer />
       </div>
-    </>
+    </ProtectedPage>
   )
 }
 

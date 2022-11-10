@@ -1,3 +1,6 @@
+import { signOut } from 'next-auth/react'
+import ProtectedPage from '../../components/ProtectedPage'
+
 const SettingsBody = () => {
   return (
     <div className="lg:ml-72 mt-1 py-6">
@@ -14,51 +17,6 @@ const SettingsBody = () => {
             </h1>
           </div>
           <form>
-            <div className="mt-6 w-full max-w-xl flex flex-col md:flex-row mb-6 md:flex md:space-x-3 md:items-center">
-              <div className="flex flex-col flex-1">
-                <div className="flex justify-end items-center">
-                  <div className="flex-grow mb-1 flex items-center">
-                    <label
-                      htmlFor="firstName"
-                      className="text-sm font-medium dark:text-gray-300 text-gray-700"
-                    >
-                      First name
-                    </label>
-                  </div>
-                </div>
-                <div className="relative flex items-center">
-                  <input
-                    id="firstName"
-                    className="border focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 block w-full py-2 pr-3 text-gray-700 placeholder-gray-400 transition-shadow duration-150 ease-in-out bg-white border-gray-200 rounded-md shadow-sm outline-none resize-none focus:outline-none focus:ring-blue-700 focus:border-blue-700 text-sm"
-                    placeholder="Jane"
-                    type="text"
-                    value="Jordan"
-                  />
-                </div>
-              </div>
-              <br className="md:hidden" />
-              <div className="flex flex-col flex-1">
-                <div className="flex justify-end items-center">
-                  <div className="flex-grow mb-1 flex items-center">
-                    <label
-                      htmlFor="lastName"
-                      className="text-sm font-medium dark:text-gray-300 text-gray-700"
-                    >
-                      Last name
-                    </label>
-                  </div>
-                </div>
-                <div className="relative flex items-center">
-                  <input
-                    id="lastName"
-                    className="border focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 block w-full py-2 pr-3 text-gray-700 placeholder-gray-400 transition-shadow duration-150 ease-in-out bg-white border-gray-200 rounded-md shadow-sm outline-none resize-none focus:outline-none focus:ring-blue-700 focus:border-blue-700 text-sm"
-                    placeholder="Smith"
-                    type="text"
-                    value="Meyer"
-                  />
-                </div>
-              </div>
-            </div>
             <div className="mt-6 w-full max-w-xl flex flex-col md:flex-row mb-6 md:flex md:space-x-3 md:items-center">
               <div className="flex flex-col flex-1">
                 <div className="flex justify-end items-center">
@@ -244,20 +202,20 @@ const SettingsBody = () => {
             </div>
           </div>
           <div className="max-w-xl mt-12">
-            <h1 className="text-xl font-semibold text-gray-900">
-              Cancel account
-            </h1>
+            <h1 className="text-xl font-semibold text-gray-900">Sign out</h1>
             <p className="text-gray-500 text-sm mt-2">
               <span className="block mb-2">
-                Please be aware that cancelling your account will cause you to
-                lose all of your saved content and earned credits on your
-                account.
+                Please be aware that signing out of your account will cause you
+                to lose all of your generated content. Please save anything you
+                want to keep to Microsoft Word, Google Docs, or an equivalent
+                platform.
               </span>
               <button
                 className="inline-flex items-center overflow-hidden ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2inline-flex justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-gray-700 bg-white border border-black-300 shadow-sm hover:text-gray-500 selectionRing active:bg-gray-50 active:text-gray-800 px-3 py-2 text-sm leading-3"
                 type="button"
+                onClick={() => signOut()}
               >
-                Cancel
+                Sign out
               </button>
             </p>
           </div>

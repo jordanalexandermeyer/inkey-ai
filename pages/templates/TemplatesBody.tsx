@@ -1,3 +1,54 @@
+import TemplateCard from './TemplateCard'
+import TemplateFilter from './TemplateFilter'
+
+const templates = {
+  '0': {
+    icon: '✏️',
+    title: 'Thesis',
+    description:
+      'Offer up a prompt to recieve a thesis containing three supporting arguments. Pairs well with "5 Paragraph Essay"',
+  },
+  '1': {
+    icon: '📝',
+    title: '5 Paragraph Essay',
+    description: 'Use a thesis to create a compelling 5 paragraph essay.',
+  },
+  '2': {
+    icon: '✏️',
+    title: 'Introduction',
+    description: 'Write a topic and a thesis to get an introductory paragraph',
+  },
+  '3': {
+    icon: '✏️',
+    title: 'Body Paragraph',
+    description: 'Write a topic and a thesis to get a body paragraph',
+  },
+  '4': {
+    icon: '✏️',
+    title: 'Conclusion',
+    description: 'Write a topic and a thesis to get a conclusion paragraph',
+  },
+}
+
+const filters = [
+  {
+    name: 'All',
+    selected: true,
+  },
+  {
+    name: 'Essay Parts',
+    selected: false,
+  },
+  {
+    name: 'Whole Essays',
+    selected: false,
+  },
+  {
+    name: 'Common App Essays',
+    selected: false,
+  },
+]
+
 const TemplatesBody = () => {
   return (
     <div className="lg:ml-72 mt-1 min-h-screen">
@@ -99,6 +150,32 @@ const TemplatesBody = () => {
                         </kbd>
                       </div>
                     </div>
+                  </div>
+                </div>
+                <div className="space-y-8 pt-8">
+                  <div id="headlessui-radiogroup-5" role="radiogroup">
+                    {filters.map((filter) => {
+                      return (
+                        <TemplateFilter
+                          name={filter.name}
+                          selected={filter.selected}
+                        />
+                      )
+                    })}
+                  </div>
+                  <div className="my-2 grid gap-5 mb-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {Object.keys(templates).map((key) => {
+                      const typedKey = key as keyof typeof templates
+
+                      return (
+                        <TemplateCard
+                          icon={templates[typedKey].icon}
+                          title={templates[typedKey].title}
+                          description={templates[typedKey].description}
+                          href={`/templates/${templates[typedKey]}`}
+                        />
+                      )
+                    })}
                   </div>
                 </div>
               </div>

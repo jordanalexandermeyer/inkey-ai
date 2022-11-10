@@ -8,20 +8,21 @@ const Body = () => {
               <div className="relative">
                 <div className="grid">
                   <div className="relative left-0 row-span-full col-span-full transition-all duration-150 transform visible opacity-100">
-                    <div className="flex flex-col items-start transition-all py-6 pl-6 pr-32 h-full md:pr-40 bg-gradient-to-r from-blue-500 to-green-400">
+                    <div className="flex flex-col items-start transition-all py-6 pl-6 pr-32 h-full md:pr-40 bg-gradient-to-r from-purple-700 to-blue-400">
                       <div className="mb-2 md:mb-4">
                         <div className="inline-flex px-2 py-1 text-xs font-bold text-white uppercase bg-green-500 rounded-full md:px-3 md-text-sm">
                           Education
                         </div>
                       </div>
                       <h3 className="text-lg font-semibold tracking-tight text-white md:text-2xl">
-                        Jasper 101: Learn the Jasper Basics
+                        Ghostwritten 101: Learn the Ghostwritten Basics
                       </h3>
                       <p className="mt-1 mb-4 text-sm text-white text-opacity-70 md:text-lg md:mb-7">
-                        The purpose of Jasper 101 is to build a solid foundation
-                        and understanding of how Jasper works so you can start
-                        using Jasper in the best way possible for your writing
-                        needs. Earn 50K credits for attendance.
+                        The purpose of Ghostwritten 101 is to build a solid
+                        foundation and understanding of how Ghostwritten works
+                        so you can start using Ghostwritten in the best way
+                        possible for your writing needs. Earn 50K credits for
+                        attendance.
                       </p>
                       <button
                         className="inline-flex items-center overflow-hidden ease-in-out focus:outline-none focus:ring-offset-2inline-flex justify-center transition-all duration-150 relative rounded-lg focusRing space-x-2 font-bold text-white bg-white shadow-sm outline-none hover:bg-opacity-30 bg-opacity-20 ring-opacity-20 border-none focus:ring-0 px-4 py-2 text-sm"
