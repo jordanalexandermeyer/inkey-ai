@@ -6,14 +6,15 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 
 const Login: NextPage = () => {
-  const { status, data: session } = useSession()
+  const { status } = useSession()
   const router = useRouter()
 
   useEffect(() => {
-    if (status != 'loading' && session?.user) {
+    if (status == 'authenticated') {
       router.push('/')
     }
-  }, [session?.user, status])
+  }, [status])
+
   return (
     <>
       <Head>
@@ -48,7 +49,13 @@ const Login: NextPage = () => {
             <div className="mt-8">
               <button
                 type="submit"
-                onClick={() => signIn('google')}
+                onClick={() =>
+                  signIn('google', {
+                    callbackUrl:
+                      String(router.query.callbackUrl) ||
+                      'http://localhost:3000',
+                  })
+                }
                 className="relative inline-flex items-center justify-center overflow-hidden font-semibold transition duration-100 ease-in-out rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 sm:px-6 px-4 h-14 text-lg sm:text-lg leading-5 tracking-tight text-white bg-blue-600 shadow-sm hover:bg-blue-400 selectionRing active:bg-blue-700 w-full"
               >
                 <span className="flex items-center space-x-4">
@@ -121,7 +128,7 @@ const Login: NextPage = () => {
                   <p className="mt-6 text-sm text-center text-gray-400">
                     {' '}
                     Don't have an account yet?{' '}
-                    <Link href="/auth/signup" className="text-blue-400">
+                    <Link href="/signup" className="text-blue-400">
                       Get started here
                     </Link>
                   </p>

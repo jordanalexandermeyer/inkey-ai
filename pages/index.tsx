@@ -15,7 +15,7 @@ const Home: NextPage = () => {
       <div>
         <Navigation />
         <DashboardBody />
-        <Footer />
+        {/* <Footer /> */}
       </div>
     </ProtectedPage>
   )

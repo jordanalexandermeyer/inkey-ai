@@ -1,18 +1,10 @@
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/router'
-import { ReactNode, useEffect } from 'react'
+import { ReactNode } from 'react'
 
 const ProtectedPage = ({ children }: { children: ReactNode }) => {
-  const { data: session, status } = useSession()
-  const router = useRouter()
+  const { status } = useSession({ required: true })
 
-  useEffect(() => {
-    if (status != 'loading' && !session?.user) {
-      router.push('/auth/login')
-    }
-  })
-
-  return <>{children}</>
+  return <>{status == 'authenticated' && children}</>
 }
 
 export default ProtectedPage

@@ -1,4 +1,23 @@
+import { doc, getDoc } from 'firebase/firestore'
+import { useSession } from 'next-auth/react'
+import { useEffect } from 'react'
+import { useFirebase } from './FirebaseProvider'
+import { useUser } from './UserProvider'
+
 const Body = () => {
+  const db = useFirebase()
+  const session = useSession()
+  const user = useUser()
+  useEffect(() => {
+    const sam = async () => {
+      const docRef = doc(db, 'users', 'NCggbo4iVFboyFm1NHxB')
+      const docSnap = await getDoc(docRef)
+      console.log(docSnap.data())
+      console.log(session.data?.user)
+      console.log(user)
+    }
+    sam()
+  })
   return (
     <div className="lg:ml-72 mt-1 py-12 mb-36">
       <article>
@@ -50,11 +69,7 @@ const Body = () => {
                         aria-hidden="true"
                         className="w-6 h-6 opacity-60"
                       >
-                        <path
-                          fill-rule="evenodd"
-                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                          clip-rule="evenodd"
-                        ></path>
+                        <path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"></path>
                       </svg>
                     </button>
                   </div>
@@ -111,92 +126,16 @@ const Body = () => {
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke-width="2"
+                  strokeWidth="2"
                   stroke="currentColor"
                   aria-hidden="true"
                   className="w-4 h-4 opacity-60"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                  ></path>
+                  <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                 </svg>
                 <div>Copy share link</div>
               </div>
             </button>
-          </div>
-          <div className=" p-6 mb-6 text-sm text-gray-400 border border-gray-200 rounded-md">
-            <div className="mb-3 text-2xl font-bold tracking-tight text-gray-800">
-              Recent documents
-            </div>
-            <table
-              role="table"
-              className="min-w-full text-left divide-y divide-gray-200 table-fixed w-full mb-6"
-            >
-              <thead>
-                <tr role="row">
-                  <th
-                    colSpan={1}
-                    role="columnheader"
-                    className="px-6 py-2 text-sm font-normal text-left text-gray-600 last:text-right"
-                    style={{ width: '60%' }}
-                  >
-                    <span>Name</span>
-                  </th>
-                  <th
-                    colSpan={1}
-                    role="columnheader"
-                    className="px-6 py-2 text-sm font-normal text-left text-gray-600 last:text-right"
-                    style={{ width: 'auto' }}
-                  >
-                    <span>Created by</span>
-                  </th>
-                  <th
-                    colSpan={1}
-                    role="columnheader"
-                    className="px-6 py-2 text-sm font-normal text-left text-gray-600 last:text-right"
-                    style={{ width: 'auto' }}
-                  >
-                    <span>Modified</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody
-                role="rowgroup"
-                className="bg-white divide-y divide-gray-200"
-              >
-                <tr role="row" className="cursor-pointer hover:bg-gray-50">
-                  <td
-                    role="cell"
-                    className="px-6 py-2 whitespace-nowrap font-medium text-sm text-gray-800 truncate max-w-xl last:text-right"
-                  >
-                    Untitled
-                  </td>
-                  <td
-                    role="cell"
-                    className="px-6 py-2 whitespace-nowrap text-gray-600 text-xs truncate max-w-xl last:text-right"
-                  >
-                    me
-                  </td>
-                  <td
-                    role="cell"
-                    className="px-6 py-2 whitespace-nowrap text-gray-600 text-xs truncate max-w-xl last:text-right"
-                  >
-                    Nov 06, 2022
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <div className="mb-32 lg:mb-16"></div>
-            <div className="text-center">
-              <button
-                className="inline-flex items-center overflow-hidden ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2inline-flex justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-gray-700 bg-white border border-black-300 shadow-sm hover:text-gray-500 selectionRing active:bg-gray-50 active:text-gray-800 px-3 py-2 text-sm leading-3"
-                type="button"
-              >
-                See all documents
-              </button>
-            </div>
           </div>
         </div>
       </article>

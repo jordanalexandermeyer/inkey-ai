@@ -4,7 +4,7 @@ import { FirestoreAdapter } from '@next-auth/firebase-adapter'
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
-export default NextAuth({
+export const authOptions = {
   // https://next-auth.js.org/providers
   providers: [
     GoogleProvider({
@@ -24,6 +24,8 @@ export default NextAuth({
   }),
 
   pages: {
-    signIn: '/auth/login',
+    signIn: '/login',
   },
-})
+}
+
+export default NextAuth(authOptions)

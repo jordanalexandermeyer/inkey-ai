@@ -3,7 +3,7 @@ import Head from 'next/head'
 import Footer from '../../components/Footer'
 import Navigation from '../../components/Navigation'
 import ProtectedPage from '../../components/ProtectedPage'
-import TemplatesBody from './TemplatesBody'
+import TemplatesBody from './components/TemplatesBody'
 
 const Templates: NextPage = () => {
   return (
@@ -15,7 +15,7 @@ const Templates: NextPage = () => {
       <div>
         <Navigation />
         <TemplatesBody />
-        <Footer />
+        {/* <Footer /> */}
       </div>
     </ProtectedPage>
   )

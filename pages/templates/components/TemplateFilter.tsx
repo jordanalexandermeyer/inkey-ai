@@ -1,11 +1,14 @@
 import classNames from 'classnames'
+import { MouseEventHandler } from 'react'
 
 const TemplateFilter = ({
   name,
   selected,
+  onClick,
 }: {
   name: string
   selected: boolean
+  onClick: MouseEventHandler<HTMLDivElement>
 }) => {
   return (
     <div
@@ -16,6 +19,7 @@ const TemplateFilter = ({
       id="headlessui-radiogroup-option-8"
       role="radio"
       aria-checked="false"
+      onClick={onClick}
     >
       {name}
     </div>
