@@ -1,8 +1,12 @@
 import classNames from 'classnames'
 import { NextRouter } from 'next/router'
 import Link from 'next/link'
+import { getAuth, signOut } from 'firebase/auth'
+import { useAuthState } from 'react-firebase-hooks/auth'
 
 const Navbar = ({ router }: { router: NextRouter }) => {
+  const auth = getAuth()
+  const [user, loading, error] = useAuthState(auth)
   return (
     <div className="flex flex-col flex-grow bg-white border-r border-gray-200 overflow-y-auto w-full sm:w-72 pt-7">
       <div className="flex-shrink-0 flex flex-col items-start justify-center px-5 space-y-6">
@@ -183,6 +187,34 @@ const Navbar = ({ router }: { router: NextRouter }) => {
           </li>
         </ul>
       </nav>
+      <div className="my-2 flex-2 flex flex-col relative space-y-1 pt-3">
+        <ul className="pb-1 px-3">
+          <li>
+            <button
+              onClick={() => signOut(auth)}
+              className="w-full hover:bg-gray-50 rounded-md group flex items-center justify-between p-2 font-medium text-gray-600 hover:text-gray-800"
+            >
+              <span className="flex items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 48 48"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  className="mr-2 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-600"
+                >
+                  <path
+                    xmlns="http://www.w3.org/2000/svg"
+                    d="M9 42q-1.2 0-2.1-.9Q6 40.2 6 39V9q0-1.2.9-2.1Q7.8 6 9 6h14.55v3H9v30h14.55v3Zm24.3-9.25-2.15-2.15 5.1-5.1h-17.5v-3h17.4l-5.1-5.1 2.15-2.15 8.8 8.8Z"
+                  />
+                </svg>
+                Sign out
+              </span>
+            </button>
+          </li>
+        </ul>
+      </div>
     </div>
   )
 }

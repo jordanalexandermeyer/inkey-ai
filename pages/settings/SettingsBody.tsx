@@ -1,7 +1,23 @@
-import { signOut } from 'next-auth/react'
-import ProtectedPage from '../../components/ProtectedPage'
+import { getAuth, signOut } from 'firebase/auth'
+import { getFunctions, httpsCallable } from 'firebase/functions'
+import { useAuthState } from 'react-firebase-hooks/auth'
 
 const SettingsBody = () => {
+  const auth = getAuth()
+  const [user, loading, error] = useAuthState(auth)
+  const functions = getFunctions(undefined, 'us-west2')
+
+  const callBillingPortalFunction = async () => {
+    const functionRef = httpsCallable(
+      functions,
+      'ext-firestore-stripe-payments-createPortalLink',
+    )
+    const { data }: { data: any } = await functionRef({
+      returnUrl: window.location.origin,
+    })
+    if (data) window.location.assign(data.url)
+  }
+
   return (
     <div className="lg:ml-72 mt-1 py-6">
       <article>
@@ -32,15 +48,15 @@ const SettingsBody = () => {
                 <div className="relative flex items-center">
                   <input
                     id="email"
-                    className="border focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 block w-full py-2 pr-3 text-gray-700 placeholder-gray-400 transition-shadow duration-150 ease-in-out bg-white border-gray-200 rounded-md shadow-sm outline-none resize-none focus:outline-none focus:ring-blue-700 focus:border-blue-700 text-sm"
+                    className="border focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 block w-full py-2 pr-3 text-gray-700 placeholder-gray-400 transition-shadow duration-150 ease-in-out bg-gray-100 border-gray-200 rounded-md shadow-sm outline-none resize-none focus:outline-none focus:ring-blue-700 focus:border-blue-700 text-sm"
                     type="text"
-                    disabled={false}
-                    value="jordanalexandermeyer@gmail.com"
+                    disabled={true}
+                    value={user?.email!}
                   />
                 </div>
               </div>
             </div>
-            <div className="max-w-xl pb-6 my-6 mb-12 border-b-2">
+            {/* <div className="max-w-xl pb-6 my-6 mb-12 border-b-2">
               <button
                 id="settingsUpdateButton"
                 aria-label="settingsUpdateButton"
@@ -49,7 +65,7 @@ const SettingsBody = () => {
               >
                 Save
               </button>
-            </div>
+            </div> */}
           </form>
           <div className="mt-12 pb-2">
             <h1 className="text-xl font-semibold text-gray-900">
@@ -122,11 +138,11 @@ const SettingsBody = () => {
                 <div className="flex-grow">
                   <div className="flex items-center justify-start space-x-2">
                     <div className="font-medium text-gray-500">
-                      50000<span> word credits</span>
+                      20,000<span> word credits</span>
                     </div>
                     <div className="text-gray-500">on </div>
                     <div className="text-xl font-bold text-gray-700">
-                      Boss Mode
+                      Early Access
                     </div>
                     <div className="inline-block px-2 py-1 text-xs font-semibold text-green-500 uppercase border border-green-400 rounded bg-green-50">
                       trialing
@@ -141,6 +157,7 @@ const SettingsBody = () => {
                 <div className="font-medium text-gray-700 md:flex md:justify-end">
                   <div className="mt-4 md:flex md:items-center md:space-x-2">
                     <button
+                      onClick={() => callBillingPortalFunction()}
                       className="inline-flex items-center overflow-hidden ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2inline-flex justify-center transition-all duration-150 relative font-medium rounded-lg shadow-sm focusRing text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-gray-700 selectionRing active:bg-gray-100 active:text-gray-700 px-3 py-2 text-sm leading-3 w-full md:w-auto"
                       type="button"
                     >
@@ -156,7 +173,7 @@ const SettingsBody = () => {
                 </div>
               </div>
             </div>
-            <div className="p-6 text-center border-t border-gray-300">
+            {/* <div className="p-6 text-center border-t border-gray-300">
               <div>
                 <label
                   htmlFor="overagePolicy"
@@ -181,7 +198,7 @@ const SettingsBody = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
           <div className="mt-4 max-w-xl">
             <div className="flex items-center p-6 transition-all duration-150 bg-white rounded-md ring-gray-300 ring-1">
@@ -194,30 +211,13 @@ const SettingsBody = () => {
                 </p>
               </div>
               <button
+                onClick={() => callBillingPortalFunction()}
                 className="inline-flex items-center overflow-hidden ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2inline-flex justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-gray-700 bg-white border border-black-300 shadow-sm hover:text-gray-500 selectionRing active:bg-gray-50 active:text-gray-800 px-3 py-2 text-sm leading-3"
                 type="button"
               >
                 View billing history
               </button>
             </div>
-          </div>
-          <div className="max-w-xl mt-12">
-            <h1 className="text-xl font-semibold text-gray-900">Sign out</h1>
-            <p className="text-gray-500 text-sm mt-2">
-              <span className="block mb-2">
-                Please be aware that signing out of your account will cause you
-                to lose all of your generated content. Please save anything you
-                want to keep to Microsoft Word, Google Docs, or an equivalent
-                platform.
-              </span>
-              <button
-                className="inline-flex items-center overflow-hidden ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2inline-flex justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-gray-700 bg-white border border-black-300 shadow-sm hover:text-gray-500 selectionRing active:bg-gray-50 active:text-gray-800 px-3 py-2 text-sm leading-3"
-                type="button"
-                onClick={() => signOut()}
-              >
-                Sign out
-              </button>
-            </p>
           </div>
           <div className="mb-32 lg:mb-16"></div>
         </div>

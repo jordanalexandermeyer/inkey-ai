@@ -1,23 +1,4 @@
-import { doc, getDoc } from 'firebase/firestore'
-import { useSession } from 'next-auth/react'
-import { useEffect } from 'react'
-import { useFirebase } from './FirebaseProvider'
-import { useUser } from './UserProvider'
-
 const Body = () => {
-  const db = useFirebase()
-  const session = useSession()
-  const user = useUser()
-  useEffect(() => {
-    const sam = async () => {
-      const docRef = doc(db, 'users', 'NCggbo4iVFboyFm1NHxB')
-      const docSnap = await getDoc(docRef)
-      console.log(docSnap.data())
-      console.log(session.data?.user)
-      console.log(user)
-    }
-    sam()
-  })
   return (
     <div className="lg:ml-72 mt-1 py-12 mb-36">
       <article>

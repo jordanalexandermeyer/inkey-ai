@@ -1,10 +1,22 @@
-import { useSession } from 'next-auth/react'
-import { ReactNode } from 'react'
+import { getAuth } from 'firebase/auth'
+import { useRouter } from 'next/router'
+import { ReactNode, useEffect } from 'react'
+import { useAuthState } from 'react-firebase-hooks/auth'
+import { useRole } from './RoleProvider'
 
 const ProtectedPage = ({ children }: { children: ReactNode }) => {
-  const { status } = useSession({ required: true })
+  const router = useRouter()
+  const auth = getAuth()
+  const isUserPaid = useRole()
+  const [user, loading, error] = useAuthState(auth)
 
-  return <>{status == 'authenticated' && children}</>
+  useEffect(() => {
+    if ((!user && !loading) || (!loading && !isUserPaid)) {
+      router.push('/login')
+    }
+  }, [user, loading, isUserPaid])
+
+  return <>{user && children}</>
 }
 
 export default ProtectedPage
