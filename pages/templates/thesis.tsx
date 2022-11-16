@@ -100,6 +100,17 @@ const ThesisTemplate: NextPage = () => {
                     value={prompt}
                     onChange={(e: any) => setPrompt(e.target.value)}
                   />
+                  <button
+                    className="inline-flex items-center overflow-hidden ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2inline-flex justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-gray-700 bg-white border border-black-300 shadow-sm hover:text-gray-500 selectionRing active:bg-gray-50 active:text-gray-800 px-3 py-2 text-sm leading-3"
+                    type="button"
+                    onClick={() =>
+                      setPrompt(
+                        'What is the importance of investing money in space exploration?',
+                      )
+                    }
+                  >
+                    Try the example prompt
+                  </button>
                 </div>
                 <div className="pointer-events-none xl:bottom-0 xl:sticky xl:w-full xl:left-0 xl:z-20">
                   <div className="flex items-center justify-between px-3 pb-3 border-b border-gray-200 pointer-events-auto xl:py-3 bg-gray-50 xl:bg-white xl:border-t xl:border-0 xl:border-gray-200 xl:px-6">

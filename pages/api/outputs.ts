@@ -1,25 +1,16 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { unstable_getServerSession } from 'next-auth'
 import { Configuration, OpenAIApi } from 'openai'
 import {
   COMMON_APP_ESSAY_ID,
   FIVE_PARAGRAPH_ESSAY_ID,
   THESIS_ID,
 } from '../../lib/constants'
-import { authOptions } from './auth/[...nextauth]'
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const session = await unstable_getServerSession(req, res, authOptions)
-  if (!session) {
-    res.status(401).json('Unauthorized')
-    res.end()
-    return
-  }
-
   const {
     id,
     inputs: { prompt, thesis },

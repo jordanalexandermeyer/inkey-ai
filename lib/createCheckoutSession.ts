@@ -5,15 +5,18 @@ import {
   onSnapshot,
 } from 'firebase/firestore'
 
-export async function createCheckoutSession(uid: string) {
+export async function createCheckoutSession(
+  uid: string,
+  setLoading: CallableFunction | undefined,
+) {
   const db = getFirestore()
 
   const checkoutSessionRef = await addDoc(
     collection(db, 'customers', uid, 'checkout_sessions'),
     {
       price: 'price_1M4CSiE3pNRhdKBq0SDg5xkZ',
-      success_url: window.location.origin,
-      cancel_url: window.location.origin,
+      success_url: window.location.href,
+      cancel_url: window.location.href,
     },
   )
 
@@ -22,6 +25,9 @@ export async function createCheckoutSession(uid: string) {
 
     if (checkoutSession && checkoutSession.url) {
       window.location.assign(checkoutSession.url)
+      if (setLoading) {
+        setLoading(false)
+      }
     }
   })
 }

@@ -7,14 +7,21 @@ import { useRole } from './RoleProvider'
 const ProtectedPage = ({ children }: { children: ReactNode }) => {
   const router = useRouter()
   const auth = getAuth()
-  const isUserPaid = useRole()
+  const { isUserEarlyAccess, isRoleLoading } = useRole()
   const [user, loading, error] = useAuthState(auth)
 
   useEffect(() => {
-    if ((!user && !loading) || (!loading && !isUserPaid)) {
+    if (!user && !loading) {
       router.push('/login')
+    } else if (
+      user &&
+      !isRoleLoading &&
+      !isUserEarlyAccess &&
+      window.location.pathname != '/subscriptions'
+    ) {
+      router.push('/subscriptions')
     }
-  }, [user, loading, isUserPaid])
+  }, [user, loading, isUserEarlyAccess, isRoleLoading])
 
   return <>{user && children}</>
 }

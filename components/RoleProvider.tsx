@@ -1,5 +1,13 @@
 import { getAuth } from 'firebase/auth'
 import {
+  collection,
+  getFirestore,
+  onSnapshot,
+  query,
+  Timestamp,
+  where,
+} from 'firebase/firestore'
+import {
   createContext,
   ReactNode,
   useContext,
@@ -7,28 +15,62 @@ import {
   useState,
 } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import getIsUserEarlyAccess from '../lib/isUserEarlyAccess'
 
-const RoleContext = createContext<undefined | boolean>(undefined)
+const RoleContext = createContext<
+  | undefined
+  | {
+      subscriptions: Subscription[]
+      isUserEarlyAccess: boolean
+      isRoleLoading: boolean
+    }
+>(undefined)
+
+interface Subscription {
+  role: string
+  status: string
+  trial_end: Timestamp
+  trial_start: Timestamp
+}
 
 function RoleProvider({ children }: { children: ReactNode }) {
-  const [isUserEarlyAccess, setIsUserEarlyAccess] = useState<boolean>(true)
+  const [isUserEarlyAccess, setIsUserEarlyAccess] = useState<boolean>(false)
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
+  const [isRoleLoading, setIsRoleLoading] = useState(true)
 
   const auth = getAuth()
   const [user, loading, error] = useAuthState(auth)
+  const db = getFirestore()
 
   useEffect(() => {
     if (user) {
-      const checkEarlyAccess = async function () {
-        setIsUserEarlyAccess(await getIsUserEarlyAccess(user))
-      }
+      const collectionRef = collection(
+        db,
+        'customers',
+        user.uid,
+        'subscriptions',
+      )
 
-      checkEarlyAccess()
+      const q = query(
+        collectionRef,
+        where('status', 'in', ['trialing', 'active']),
+      )
+
+      onSnapshot(q, (querySnapshot) => {
+        const subscriptionsFromDB: any = []
+        querySnapshot.forEach((doc) => {
+          subscriptionsFromDB.push(doc.data())
+        })
+        setSubscriptions(subscriptionsFromDB)
+        setIsUserEarlyAccess(subscriptionsFromDB.length > 0)
+        setIsRoleLoading(false)
+      })
     }
-  }, [user, loading])
+  }, [user])
 
   return (
-    <RoleContext.Provider value={isUserEarlyAccess}>
+    <RoleContext.Provider
+      value={{ subscriptions, isUserEarlyAccess, isRoleLoading }}
+    >
       {children}
     </RoleContext.Provider>
   )
