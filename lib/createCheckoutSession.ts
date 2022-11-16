@@ -7,14 +7,17 @@ import {
 
 export async function createCheckoutSession(
   uid: string,
-  setLoading: CallableFunction | undefined,
+  setIsLoading: CallableFunction | undefined,
 ) {
+  if (setIsLoading) {
+    setIsLoading(true)
+  }
   const db = getFirestore()
 
   const checkoutSessionRef = await addDoc(
     collection(db, 'customers', uid, 'checkout_sessions'),
     {
-      price: 'price_1M4CSiE3pNRhdKBq0SDg5xkZ',
+      price: process.env.NEXT_PUBLIC_STRIPE_EARLY_ACCESS_PRODUCT,
       success_url: window.location.href,
       cancel_url: window.location.href,
     },
@@ -25,8 +28,8 @@ export async function createCheckoutSession(
 
     if (checkoutSession && checkoutSession.url) {
       window.location.assign(checkoutSession.url)
-      if (setLoading) {
-        setLoading(false)
+      if (setIsLoading) {
+        setIsLoading(false)
       }
     }
   })

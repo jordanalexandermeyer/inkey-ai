@@ -11,8 +11,8 @@ import classNames from 'classnames'
 const Subscriptions: NextPage = () => {
   const auth = getAuth()
   const router = useRouter()
-  const [user, loading, error] = useAuthState(auth)
-  const { isUserEarlyAccess, subscriptions } = useRole()
+  const [user] = useAuthState(auth)
+  const { isUserEarlyAccess } = useRole()
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
@@ -23,7 +23,6 @@ const Subscriptions: NextPage = () => {
 
   const handleClick = async () => {
     if (user) {
-      setIsLoading(true)
       await createCheckoutSession(user.uid, setIsLoading)
     }
   }
