@@ -30,7 +30,7 @@ const Login: NextPage = () => {
       </Head>
       <div className="flex min-h-screen bg-white">
         <div className="relative z-10 flex flex-col justify-center flex-1 px-4 py-8 bg-white ring-1 ring-black ring-opacity-5 sm:px-6">
-          <div className="max-w-sm mx-auto w-96">
+          <div className="w-full max-w-sm mx-auto lg:w-96">
             <div>
               <div className="flex items-center justify-center flex-shrink-0 select-none">
                 <div>

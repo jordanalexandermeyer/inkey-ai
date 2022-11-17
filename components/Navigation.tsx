@@ -1,4 +1,5 @@
 import Navbar from './Navbar'
+import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
 import classnames from 'classnames'
@@ -38,7 +39,7 @@ const Navigation = () => {
               ></path>
             </svg>
           </button>
-          <a
+          <Link
             className={classnames(
               'grow h-full flex items-center justify-center',
               {
@@ -63,8 +64,8 @@ const Navigation = () => {
                 fill="currentColor"
               ></path>
             </svg>
-          </a>
-          <a
+          </Link>
+          <Link
             className={classnames(
               'grow h-full flex items-center justify-center',
               {
@@ -88,7 +89,7 @@ const Navigation = () => {
                 d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
               ></path>
             </svg>
-          </a>
+          </Link>
         </div>
       </div>
       <div className="relative z-30 lg:hidden" role="dialog" aria-modal="true">
