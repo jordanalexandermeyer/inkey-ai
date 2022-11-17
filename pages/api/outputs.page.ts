@@ -7,7 +7,10 @@ import {
   THESIS_ID,
 } from '../../lib/constants'
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   const {
     id,
     inputs: { prompt, thesis },
@@ -67,9 +70,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     res.end()
   } catch (error) {
     res.status(500).json('Server Error')
-    console.log(error)
     res.end()
   }
 }
-
-export default handler
