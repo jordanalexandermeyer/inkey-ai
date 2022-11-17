@@ -9,7 +9,10 @@ const SettingsBody = () => {
   const auth = getAuth()
   const [user, loading, error] = useAuthState(auth)
   const { subscriptions } = useRole()
-  const functions = getFunctions(undefined, 'us-west2')
+  const functions = getFunctions(
+    undefined,
+    process.env.NEXT_PUBLIC_FIREBASE_FUNCTION_LOCATION,
+  )
   const [isTrial, setIsTrial] = useState(false)
   const [subscriptionEnd, setSubscriptionEnd] = useState(0)
 
