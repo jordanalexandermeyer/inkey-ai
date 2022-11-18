@@ -29,10 +29,7 @@ const Login: NextPage = () => {
   const handleEmailSignIn = async () => {
     setIsDisabled(true)
     const actionCodeSettings = {
-      // URL you want to redirect back to. The domain (www.example.com) for this
-      // URL must be in the authorized domains list in the Firebase Console.
       url: `${window.location.href}?email=${email}`,
-      // This must be true.
       handleCodeInApp: true,
     }
 
@@ -42,7 +39,10 @@ const Login: NextPage = () => {
         loading: 'Sending email',
         success:
           "Email sent! Please check your inbox. If you can't find the email, check your spam folder.",
-        error: (error) => error.message,
+        error: (error) => {
+          setIsDisabled(false)
+          return error.message
+        },
       },
       {
         success: {
@@ -50,6 +50,7 @@ const Login: NextPage = () => {
         },
       },
     )
+    setEmail('')
     setIsDisabled(false)
   }
 
@@ -61,30 +62,23 @@ const Login: NextPage = () => {
 
   useEffect(() => {
     if (isSignInWithEmailLink(auth, window.location.href)) {
-      // Additional state parameters can also be passed via URL.
-      // This can be used to continue the user's intended action before triggering
-      // the sign-in operation.
-      // Get the email if available. This should be available if the user completes
-      // the flow on the same device where they started it.
-      // let email = window.localStorage.getItem('emailForSignIn') || ''
       const urlParams = new URLSearchParams(window.location.search)
       const urlEmail = urlParams.get('email') || ''
       setEmail(urlEmail)
 
-      // The client SDK will parse the code from the link for you.
-      signInWithEmailLink(auth, urlEmail, window.location.href)
-        .then((result) => {
-          // Clear email from storage.
-          window.localStorage.removeItem('emailForSignIn')
-          // You can access the new user via result.user
-          // Additional user info profile not available via:
-          // result.additionalUserInfo.profile == null
-          // You can check if the user is new or existing:
-          // result.additionalUserInfo.isNewUser
-        })
-        .catch((error) => {
-          toast.error('Email link is expired')
-        })
+      toast.promise(
+        signInWithEmailLink(auth, urlEmail, window.location.href),
+        {
+          loading: 'Logging in',
+          success: 'Done!',
+          error: 'Email link is expired',
+        },
+        {
+          success: {
+            duration: 100,
+          },
+        },
+      )
     }
   }, [])
 
