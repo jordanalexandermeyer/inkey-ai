@@ -2,18 +2,55 @@ import { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
-import { getAuth, GoogleAuthProvider, signInWithRedirect } from 'firebase/auth'
+import { useEffect, useState } from 'react'
+import {
+  getAuth,
+  GoogleAuthProvider,
+  isSignInWithEmailLink,
+  sendSignInLinkToEmail,
+  signInWithEmailLink,
+  signInWithRedirect,
+} from 'firebase/auth'
 import classNames from 'classnames'
 import { useAuthState } from 'react-firebase-hooks/auth'
+import toast, { Toaster } from 'react-hot-toast'
 
 const Login: NextPage = () => {
   const router = useRouter()
   const auth = getAuth()
   const [user, loading, error] = useAuthState(auth)
+  const [email, setEmail] = useState('')
+  const [isDisabled, setIsDisabled] = useState(false)
 
   const signInWithGoogle = () => {
     signInWithRedirect(auth, new GoogleAuthProvider())
+  }
+
+  const handleEmailSignIn = async () => {
+    setIsDisabled(true)
+    const actionCodeSettings = {
+      // URL you want to redirect back to. The domain (www.example.com) for this
+      // URL must be in the authorized domains list in the Firebase Console.
+      url: `${window.location.href}?email=${email}`,
+      // This must be true.
+      handleCodeInApp: true,
+    }
+
+    await toast.promise(
+      sendSignInLinkToEmail(auth, email, actionCodeSettings),
+      {
+        loading: 'Sending email',
+        success:
+          "Email sent! Please check your inbox. If you can't find the email, check your spam folder.",
+        error: (error) => error.message,
+      },
+      {
+        success: {
+          duration: 5000,
+        },
+      },
+    )
+    setIsDisabled(false)
   }
 
   useEffect(() => {
@@ -22,12 +59,42 @@ const Login: NextPage = () => {
     }
   }, [user])
 
+  useEffect(() => {
+    if (isSignInWithEmailLink(auth, window.location.href)) {
+      // Additional state parameters can also be passed via URL.
+      // This can be used to continue the user's intended action before triggering
+      // the sign-in operation.
+      // Get the email if available. This should be available if the user completes
+      // the flow on the same device where they started it.
+      // let email = window.localStorage.getItem('emailForSignIn') || ''
+      const urlParams = new URLSearchParams(window.location.search)
+      const urlEmail = urlParams.get('email') || ''
+      setEmail(urlEmail)
+
+      // The client SDK will parse the code from the link for you.
+      signInWithEmailLink(auth, urlEmail, window.location.href)
+        .then((result) => {
+          // Clear email from storage.
+          window.localStorage.removeItem('emailForSignIn')
+          // You can access the new user via result.user
+          // Additional user info profile not available via:
+          // result.additionalUserInfo.profile == null
+          // You can check if the user is new or existing:
+          // result.additionalUserInfo.isNewUser
+        })
+        .catch((error) => {
+          toast.error('Email link is expired')
+        })
+    }
+  }, [])
+
   return (
     <>
       <Head>
         <title>Login - Ghostwritten</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
+      <Toaster />
       <div className="flex min-h-screen bg-white">
         <div className="relative z-10 flex flex-col justify-center flex-1 px-4 py-8 bg-white ring-1 ring-black ring-opacity-5 sm:px-6">
           <div className="w-full max-w-sm mx-auto lg:w-96">
@@ -117,52 +184,59 @@ const Login: NextPage = () => {
                   />
                 </svg>
               </button>
-              {/* <div className="relative mt-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
+              <div className="relative mt-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm leading-5">
+                  <span className="px-2 text-gray-500 bg-white">
+                    {' '}
+                    Or sign in with your email{' '}
+                  </span>
+                </div>
               </div>
-              <div className="relative flex justify-center text-sm leading-5">
-                <span className="px-2 text-gray-500 bg-white">
-                  {' '}
-                  Or sign in with your email{' '}
-                </span>
-              </div>
-            </div> */}
             </div>
             <div className="mt-8">
               <div className="mt-6">
-                <form>
-                  {/* <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium leading-5 text-gray-700"
-                  >
-                    {' '}
-                    Email address{' '}
-                  </label>
-                  <div className="mt-1 rounded-md shadow-sm">
-                    <input
-                      id="email"
-                      type="email"
-                      required={true}
-                      className="block w-full form-input"
-                    />
-                  </div>
-                </div>
-                <div className="mt-6">
-                  <span className="block w-full rounded-md shadow-sm">
-                    <button
-                      type="submit"
-                      className="relative inline-flex items-center justify-center overflow-hidden font-semibold transition duration-100 ease-in-out rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 px-5 py-2 text-base leading-6 text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 shadow-sm hover:text-gray-500 dark:hover:text-white dark:hover:bg-gray-600 selectionRing dark:ring-offset-gray-900 active:bg-gray-50 active:text-gray-800 w-full"
-                      onClick={() =>
-                        signIn('email', { email: 'xjordanmeyerx@gmail.com' })
-                      }
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    handleEmailSignIn()
+                  }}
+                >
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium leading-5 text-gray-700"
                     >
                       {' '}
-                      Continue with Email{' '}
-                    </button>
-                  </span>
-                </div> */}
+                      Email address{' '}
+                    </label>
+                    <div className="mt-1 rounded-md shadow-sm">
+                      <input
+                        id="email"
+                        type="email"
+                        required={true}
+                        className="mr-3 border focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 block w-full py-2 pr-3 text-gray-700 placeholder-gray-400 transition-shadow duration-150 ease-in-out bg-white border-gray-200 rounded-md shadow-sm outline-none resize-none focus:outline-none focus:ring-blue-700 focus:border-blue-700"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        disabled={isDisabled}
+                        autoComplete="email"
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-6">
+                    <span className="block w-full rounded-md shadow-sm">
+                      <button
+                        type="submit"
+                        className="relative inline-flex items-center justify-center overflow-hidden font-semibold transition duration-100 ease-in-out rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 px-5 py-2 text-base leading-6 text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 shadow-sm hover:text-gray-500 dark:hover:text-white dark:hover:bg-gray-600 selectionRing dark:ring-offset-gray-900 active:bg-gray-50 active:text-gray-800 w-full"
+                        disabled={isDisabled}
+                      >
+                        {' '}
+                        Login with Email{' '}
+                      </button>
+                    </span>
+                  </div>{' '}
                   <p className="mt-6 text-sm text-center text-gray-400">
                     {' '}
                     Don't have an account yet?{' '}
