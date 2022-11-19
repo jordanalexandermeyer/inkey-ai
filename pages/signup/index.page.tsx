@@ -33,8 +33,7 @@ const Signup: NextPage = () => {
       sendSignInLinkToEmail(auth, email, actionCodeSettings),
       {
         loading: 'Sending email',
-        success:
-          "Email sent! Please check your inbox. If you can't find the email, check your spam folder.",
+        success: 'Email sent! Please check your spam folder.',
         error: (error) => {
           setIsDisabled(false)
           return error.message
