@@ -1,4 +1,4 @@
-import { ChangeEventHandler } from 'react'
+import { ChangeEventHandler, useState } from 'react'
 
 const TemplateInput = ({
   label,
@@ -11,9 +11,9 @@ const TemplateInput = ({
   placeholder: string
   maxLength: number
   onChange: ChangeEventHandler<HTMLInputElement>
-
   value: any
 }) => {
+  const [numberOfCharacters, setNumberOfCharacters] = useState(0)
   return (
     <div>
       <div className="mb-6 last:mb-1">
@@ -35,7 +35,10 @@ const TemplateInput = ({
               type="text"
               maxLength={maxLength}
               value={value}
-              onChange={onChange}
+              onChange={(e) => {
+                onChange(e)
+                setNumberOfCharacters(e.target.value.length)
+              }}
             />
           </div>
         </div>

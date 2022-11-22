@@ -13,6 +13,7 @@ export default async function handler(
 ) {
   const {
     id,
+    userId,
     inputs: { prompt, thesis },
     numberOfOutputs,
   } = req.body
@@ -54,6 +55,8 @@ export default async function handler(
       max_tokens: 1000,
       n: numberOfOutputs,
       stop: '##',
+      frequency_penalty: 0.5,
+      user: userId || '',
     })
 
     const completions = response.data.choices

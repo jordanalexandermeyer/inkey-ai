@@ -10,11 +10,14 @@ import Output from './components/Output'
 import TemplateInput from './components/TemplateInput'
 import TemplateTextArea from './components/TemplateTextArea'
 import toast, { Toaster } from 'react-hot-toast'
+import { getAuth } from 'firebase/auth'
+import { useAuthState } from 'react-firebase-hooks/auth'
 
 const getOutputs = async (
   prompt: string,
   thesis: string,
   numberOfOutputs: number,
+  userId: string,
 ) => {
   try {
     const { data } = await axios({
@@ -26,6 +29,7 @@ const getOutputs = async (
           prompt,
           thesis,
         },
+        userId,
         numberOfOutputs,
       },
     })
@@ -49,10 +53,17 @@ const FiveParagraphEssayTemplate: NextPage = () => {
   const [outputs, setOutputs] = useState<Output[]>([])
   const [numberOfOutputs, setNumberOfOutputs] = useState(1)
   const [generateIsLoading, setGenerateIsLoading] = useState(false)
+  const auth = getAuth()
+  const [user] = useAuthState(auth)
 
   const handleGenerate = async () => {
     setGenerateIsLoading(true)
-    const responseOutputs = await getOutputs(prompt, thesis, numberOfOutputs)
+    const responseOutputs = await getOutputs(
+      prompt,
+      thesis,
+      numberOfOutputs,
+      user!.uid,
+    )
     for (let i = 0; i < responseOutputs.length; i++) {
       outputs.unshift(responseOutputs[i])
     }
