@@ -20,6 +20,7 @@ export async function createCheckoutSession(
       price: process.env.NEXT_PUBLIC_STRIPE_EARLY_ACCESS_PRODUCT,
       success_url: window.location.href,
       cancel_url: window.location.href,
+      allow_promotion_codes: true,
     },
   )
 
