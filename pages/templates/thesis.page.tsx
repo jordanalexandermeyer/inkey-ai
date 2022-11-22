@@ -9,8 +9,14 @@ import { THESIS_ID } from '../../lib/constants'
 import Output from './components/Output'
 import TemplateInput from './components/TemplateInput'
 import toast, { Toaster } from 'react-hot-toast'
+import { getAuth } from 'firebase/auth'
+import { useAuthState } from 'react-firebase-hooks/auth'
 
-const getOutputs = async (prompt: string, numberOfOutputs: number) => {
+const getOutputs = async (
+  prompt: string,
+  numberOfOutputs: number,
+  userId: string,
+) => {
   try {
     const { data } = await axios({
       method: 'post',
@@ -21,6 +27,7 @@ const getOutputs = async (prompt: string, numberOfOutputs: number) => {
           prompt,
         },
         numberOfOutputs,
+        userId,
       },
     })
 
@@ -42,10 +49,12 @@ const ThesisTemplate: NextPage = () => {
   const [outputs, setOutputs] = useState<Output[]>([])
   const [numberOfOutputs, setNumberOfOutputs] = useState(1)
   const [generateIsLoading, setGenerateIsLoading] = useState(false)
+  const auth = getAuth()
+  const [user] = useAuthState(auth)
 
   const handleGenerate = async () => {
     setGenerateIsLoading(true)
-    const responseOutputs = await getOutputs(prompt, numberOfOutputs)
+    const responseOutputs = await getOutputs(prompt, numberOfOutputs, user!.uid)
     for (let i = 0; i < responseOutputs.length; i++) {
       outputs.unshift(responseOutputs[i])
     }

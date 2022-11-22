@@ -23,6 +23,7 @@ const Subscriptions: NextPage = () => {
 
   const handleClick = async () => {
     if (user) {
+      await (window as any).ttq.track('ClickButton', {})
       await createCheckoutSession(user.uid, setIsLoading)
     }
   }
