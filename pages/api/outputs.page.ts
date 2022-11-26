@@ -3,7 +3,9 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { Configuration, OpenAIApi } from 'openai'
 import {
   COMMON_APP_ESSAY_ID,
+  EXPOSITORY_ESSAY_ID,
   FIVE_PARAGRAPH_ESSAY_ID,
+  PERSUASIVE_ESSAY_ID,
   THESIS_ID,
 } from '../../lib/constants'
 
@@ -33,6 +35,14 @@ export default async function handler(
     case COMMON_APP_ESSAY_ID:
       openaiPrompt = `${prompt}\n\n###\n\n`
       model = 'davinci:ft-personal-2022-11-05-02-06-03'
+      break
+    case PERSUASIVE_ESSAY_ID:
+      openaiPrompt = `${prompt}\n\n###\n\n`
+      model = 'davinci:ft-ghostwritten:persuasive-essay-v2-2022-11-26-03-42-34'
+      break
+    case EXPOSITORY_ESSAY_ID:
+      openaiPrompt = `${prompt}\n\n###\n\n`
+      model = 'davinci:ft-ghostwritten:expository-essay-v2-2022-11-26-04-04-23'
       break
     default:
       res.status(400).json('Bad Request')

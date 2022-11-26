@@ -1,6 +1,8 @@
 import {
   COMMON_APP_ESSAY_ID,
+  EXPOSITORY_ESSAY_ID,
   FIVE_PARAGRAPH_ESSAY_ID,
+  PERSUASIVE_ESSAY_ID,
   THESIS_ID,
 } from '../../lib/constants'
 
@@ -30,6 +32,24 @@ export const templates = [
       'Write some words and themes you want included in your Common App essay and let the AI do the work!',
     maxOutputs: 1,
     href: '/templates/common-app-essay',
+  },
+  {
+    id: PERSUASIVE_ESSAY_ID,
+    icon: '📝',
+    title: 'Persuasive Essay',
+    description:
+      'Write a prompt for a persuasive essay and a unique, never before seen essay will be written.',
+    maxOutputs: 1,
+    href: '/templates/persuasive-essay',
+  },
+  {
+    id: EXPOSITORY_ESSAY_ID,
+    icon: '📝',
+    title: 'Expository Essay',
+    description:
+      'Write a prompt for an expository essay and a unique, never before seen essay will be written.',
+    maxOutputs: 1,
+    href: '/templates/expository-essay',
   },
   // {
   //   id: '2',
