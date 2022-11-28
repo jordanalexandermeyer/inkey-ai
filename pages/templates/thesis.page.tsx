@@ -53,12 +53,14 @@ const ThesisTemplate: NextPage = () => {
   const [user] = useAuthState(auth)
 
   const handleGenerate = async () => {
+    const toastId = toast.loading('Hold tight! This could take a minute.')
     setGenerateIsLoading(true)
     const responseOutputs = await getOutputs(prompt, numberOfOutputs, user!.uid)
     for (let i = 0; i < responseOutputs.length; i++) {
       outputs.unshift(responseOutputs[i])
     }
     setGenerateIsLoading(false)
+    toast.dismiss(toastId)
   }
 
   const clearInputs = () => {

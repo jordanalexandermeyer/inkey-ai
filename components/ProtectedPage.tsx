@@ -13,13 +13,6 @@ const ProtectedPage = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (!user && !loading) {
       router.push('/login')
-    } else if (
-      user &&
-      !isRoleLoading &&
-      !isUserEarlyAccess &&
-      window.location.pathname != '/subscriptions'
-    ) {
-      router.push('/subscriptions')
     }
   }, [user, loading, isUserEarlyAccess, isRoleLoading])
 
