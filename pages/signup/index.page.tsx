@@ -55,7 +55,7 @@ const Signup: NextPage = () => {
 
   useEffect(() => {
     if (user) {
-      router.push('/subscriptions')
+      router.push('/')
     }
   }, [user])
 
@@ -200,46 +200,6 @@ const Signup: NextPage = () => {
                     handleEmailSignIn()
                   }}
                 >
-                  {/* <div className="grid grid-cols-2 gap-3 mt-1">
-                    <div>
-                      <label
-                        htmlFor="firstName"
-                        className="block text-sm font-medium leading-5 text-gray-700"
-                      >
-                        {' '}
-                        First name{' '}
-                      </label>
-                      <div className="mt-1 rounded-md shadow-sm">
-                        <input
-                          id="firstName"
-                          autoComplete="given-name"
-                          type="text"
-                          required={true}
-                          className="block w-full form-input"
-                          data-gtm-form-interact-field-id="0"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="lastName"
-                        className="block text-sm font-medium leading-5 text-gray-700"
-                      >
-                        {' '}
-                        Last name{' '}
-                      </label>
-                      <div className="mt-1 rounded-md shadow-sm">
-                        <input
-                          id="lastName"
-                          autoComplete="family-name"
-                          type="text"
-                          required={true}
-                          className="block w-full form-input"
-                          data-gtm-form-interact-field-id="1"
-                        />
-                      </div>
-                    </div>
-                  </div> */}
                   <div>
                     <label
                       htmlFor="email"

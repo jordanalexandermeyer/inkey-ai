@@ -54,11 +54,13 @@ const CommonAppEssay: NextPage = () => {
 
   const handleGenerate = async () => {
     setGenerateIsLoading(true)
+    const toastId = toast.loading('Hold tight! This could take a minute.')
     const responseOutputs = await getOutputs(prompt, numberOfOutputs, user!.uid)
     for (let i = 0; i < responseOutputs.length; i++) {
       outputs.unshift(responseOutputs[i])
     }
     setGenerateIsLoading(false)
+    toast.dismiss(toastId)
   }
 
   const clearInputs = () => {

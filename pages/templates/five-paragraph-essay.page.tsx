@@ -58,6 +58,7 @@ const FiveParagraphEssayTemplate: NextPage = () => {
 
   const handleGenerate = async () => {
     setGenerateIsLoading(true)
+    const toastId = toast.loading('Hold tight! This could take a minute.')
     const responseOutputs = await getOutputs(
       prompt,
       thesis,
@@ -67,6 +68,7 @@ const FiveParagraphEssayTemplate: NextPage = () => {
     for (let i = 0; i < responseOutputs.length; i++) {
       outputs.unshift(responseOutputs[i])
     }
+    toast.dismiss(toastId)
     setGenerateIsLoading(false)
   }
 
