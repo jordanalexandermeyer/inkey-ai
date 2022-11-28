@@ -1,4 +1,13 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+initializeFirebaseApp()
+import {
+  doc,
+  getDoc,
+  getFirestore,
+  increment,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { Configuration, OpenAIApi } from 'openai'
 import {
@@ -8,6 +17,7 @@ import {
   PERSUASIVE_ESSAY_ID,
   THESIS_ID,
 } from '../../lib/constants'
+import initializeFirebaseApp from '../../lib/initializeFirebase'
 
 export default async function handler(
   req: NextApiRequest,
@@ -74,9 +84,29 @@ export default async function handler(
     const responseObject: { completions: { text: string | undefined }[] } = {
       completions: [],
     }
+
+    let counter = 0
+
     for (let i = 0; i < completions.length; i++) {
       const text = completions[i].text
       responseObject.completions.push({ text: text?.trim() })
+      // count words generated and save to firestore
+      const numberOfWords = text?.split(' ').length || 0
+      counter += numberOfWords
+    }
+
+    const db = getFirestore()
+    const counterRef = doc(db, 'counters', userId)
+
+    const counterSnap = await getDoc(counterRef)
+    if (counterSnap.exists()) {
+      await updateDoc(counterRef, {
+        words_generated: increment(counter),
+      })
+    } else {
+      await setDoc(counterRef, {
+        words_generated: counter,
+      })
     }
 
     res.status(200).json(responseObject)

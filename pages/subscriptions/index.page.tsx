@@ -4,7 +4,6 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import ProtectedPage from '../../components/ProtectedPage'
-import { useRole } from '../../components/RoleProvider'
 import { createCheckoutSession } from '../../lib/createCheckoutSession'
 import classNames from 'classnames'
 
@@ -12,16 +11,14 @@ const Subscriptions: NextPage = () => {
   const auth = getAuth()
   const router = useRouter()
   const [user] = useAuthState(auth)
-  const { isUserEarlyAccess } = useRole()
   const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
-    router.push('/')
-  }, [isUserEarlyAccess])
+  // useEffect(() => {
+  //   router.push('/')
+  // }, [])
 
   const handleClick = async () => {
     if (user) {
-      await (window as any).ttq.track('ClickButton', {})
       await createCheckoutSession(user.uid, setIsLoading)
     }
   }

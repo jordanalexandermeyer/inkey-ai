@@ -220,7 +220,7 @@ const CommonAppEssay: NextPage = () => {
                   })
                 ) : (
                   <div className="flex flex-col items-center justify-center my-20 py-40 xl:inset-0 xl:absolute xl:mt-0">
-                    <div className="max-w-lg relative py-3 pl-8 space-x-2 text-xs text-gray-400 rounded-md ring-1 ring-gray-200">
+                    <div className="max-w-lg relative py-3 pl-8 space-x-2 text-xs text-gray-400 rounded-md ring-1 ring-gray-200 mx-3">
                       <div className="absolute inset-y-0 left-0 flex items-center justify-center w-8 bg-gray-100 rounded-l-md">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
