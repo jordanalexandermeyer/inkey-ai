@@ -39,14 +39,14 @@ const Body = () => {
                           </div>
                         </div>
                         <h3 className="text-lg font-semibold tracking-tight text-white md:text-2xl">
-                          Ghostwritten 101: Write a Five Paragraph Essay
+                          Ghostwritten 101: Write a Persuasive Essay
                         </h3>
                         <p className="mt-1 mb-4 text-sm text-white text-opacity-70 md:text-lg md:mb-7">
                           The best way to learn how to use Ghostwritten is by
-                          trying it out. Click the button below to write a five
-                          paragraph essay with only a prompt and a thesis!
+                          trying it out. Click the button below to write a
+                          persuasive essay with only a prompt!
                         </p>
-                        <Link href={'/templates/five-paragraph-essay'}>
+                        <Link href={'/templates/persuasive-essay'}>
                           <button
                             className="inline-flex items-center overflow-hidden ease-in-out focus:outline-none focus:ring-offset-2inline-flex justify-center transition-all duration-150 relative rounded-lg focusRing space-x-2 font-bold text-white bg-white shadow-sm outline-none hover:bg-opacity-30 bg-opacity-20 ring-opacity-20 border-none focus:ring-0 px-4 py-2 text-sm"
                             type="button"
