@@ -25,7 +25,9 @@ const TemplateInput = ({
               </label>
             </div>
             <div className="flex items-center justify-end px-3 py-2 text-xs text-gray-600">
-              <span className="text-xs">0/{maxLength}</span>
+              <span className="text-xs">
+                {numberOfCharacters}/{maxLength}
+              </span>
             </div>
           </div>
           <div className="relative flex items-center">

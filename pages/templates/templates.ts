@@ -1,5 +1,6 @@
 import {
   COMMON_APP_ESSAY_ID,
+  COMPARE_CONTRAST_ESSAY_ID,
   EXPOSITORY_ESSAY_ID,
   FIVE_PARAGRAPH_ESSAY_ID,
   PERSUASIVE_ESSAY_ID,
@@ -11,8 +12,7 @@ export const templates = [
     id: FIVE_PARAGRAPH_ESSAY_ID,
     icon: '📝',
     title: 'Five Paragraph Essay',
-    description:
-      'Supply a prompt and thesis to create a compelling five paragraph essay.',
+    description: 'Supply a prompt to create a compelling five paragraph essay.',
     maxOutputs: 1,
     href: '/templates/five-paragraph-essay',
   },
@@ -29,7 +29,7 @@ export const templates = [
     icon: '📝',
     title: 'Common App Essay',
     description:
-      'Write some words and themes you want included in your Common App essay and let the AI do the work!',
+      'Write some words and themes you want included in your college application essay and get a never-before-seen essay!',
     maxOutputs: 1,
     href: '/templates/common-app-essay',
   },
@@ -50,6 +50,15 @@ export const templates = [
       'Write a prompt for an expository essay and a unique, never before seen essay will be written.',
     maxOutputs: 1,
     href: '/templates/expository-essay',
+  },
+  {
+    id: COMPARE_CONTRAST_ESSAY_ID,
+    icon: '📝',
+    title: 'Compare and Contrast Essay',
+    description:
+      'Write a prompt for a compare and contrast essay and a unique, never before seen essay will be written.',
+    maxOutputs: 1,
+    href: '/templates/compare-contrast-essay',
   },
   // {
   //   id: '2',
