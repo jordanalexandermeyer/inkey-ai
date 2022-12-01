@@ -11,8 +11,8 @@ export const templates = [
   {
     id: FIVE_PARAGRAPH_ESSAY_ID,
     icon: '📝',
-    title: 'Five Paragraph Essay',
-    description: 'Supply a prompt to create a compelling five paragraph essay.',
+    title: 'General Essay',
+    description: 'Ask a prompt and receive a compelling essay.',
     maxOutputs: 1,
     href: '/templates/five-paragraph-essay',
   },
@@ -26,7 +26,7 @@ export const templates = [
   },
   {
     id: COMMON_APP_ESSAY_ID,
-    icon: '📝',
+    icon: '🎓',
     title: 'Common App Essay',
     description:
       'Write some words and themes you want included in your college application essay and get a never-before-seen essay!',
@@ -35,7 +35,7 @@ export const templates = [
   },
   {
     id: PERSUASIVE_ESSAY_ID,
-    icon: '📝',
+    icon: '📣',
     title: 'Persuasive Essay',
     description:
       'Write a prompt for a persuasive essay and a unique, never before seen essay will be written.',
@@ -44,7 +44,7 @@ export const templates = [
   },
   {
     id: EXPOSITORY_ESSAY_ID,
-    icon: '📝',
+    icon: '🧑‍🎨',
     title: 'Expository Essay',
     description:
       'Write a prompt for an expository essay and a unique, never before seen essay will be written.',
@@ -53,7 +53,7 @@ export const templates = [
   },
   {
     id: COMPARE_CONTRAST_ESSAY_ID,
-    icon: '📝',
+    icon: '💁',
     title: 'Compare and Contrast Essay',
     description:
       'Write a prompt for a compare and contrast essay and a unique, never before seen essay will be written.',

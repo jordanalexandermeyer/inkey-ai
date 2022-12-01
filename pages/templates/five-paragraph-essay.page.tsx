@@ -8,8 +8,8 @@ const FiveParagraphEssayTemplate: NextPage = () => {
     <TemplatePage
       id={FIVE_PARAGRAPH_ESSAY_ID}
       icon="📝"
-      title="Five Paragraph Essay"
-      subtitle="Supply a prompt to create a compelling five paragraph essay."
+      title="General Essay"
+      subtitle="Ask a prompt and receive a compelling essay."
       promptPlaceholder="What is the importance of investing money in space exploration?"
     />
   )
