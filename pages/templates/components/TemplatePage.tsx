@@ -36,25 +36,6 @@ const TemplatePage = ({
   const auth = getAuth()
   const [user] = useAuthState(auth)
 
-  async function readAllChunks(readableStream: ReadableStream<Uint8Array>) {
-    const reader = readableStream.getReader()
-
-    let chunkNumber = 0
-    let done, value
-    let newOutput = ''
-    while (!done) {
-      chunkNumber++
-      ;({ value, done } = await reader.read())
-      if (done) {
-        return
-      }
-      if (chunkNumber < 3) continue
-      const text = convertValueToText(value)
-      newOutput += text
-      setOutput(newOutput)
-    }
-  }
-
   const getOutputs = async (prompt: string, userId: string) => {
     try {
       const response = await fetch('/api/outputs', {
@@ -71,7 +52,7 @@ const TemplatePage = ({
         },
       })
 
-      response.body && (await readAllChunks(response.body))
+      await readAllChunks(response.body)
 
       return
     } catch (error) {
@@ -82,30 +63,20 @@ const TemplatePage = ({
     }
   }
 
-  const getListedDataFromChunk = (chunk: string): Array<string> => {
-    const datum = [...chunk.matchAll(/(?<=data: ).*$/gm)]
-    const listOfData: Array<string> = []
-    for (let i = 0; i < datum.length; i++) {
-      listOfData.push(datum[i][0])
-    }
-    return listOfData
-  }
+  async function readAllChunks(readableStream: any) {
+    const reader = readableStream.getReader()
 
-  const convertValueToText = (value: Uint8Array) => {
-    const chunk = new TextDecoder().decode(value)
-    let text = ''
-
-    const listOfData = getListedDataFromChunk(chunk)
-    for (let i = 0; i < listOfData.length; i++) {
-      const data = listOfData[i]
-      if (data == '[DONE]') {
-        break
+    let done, value
+    let newOutput = ''
+    while (!done) {
+      ;({ value, done } = await reader.read())
+      if (done) {
+        return
       }
-      const parsedData = JSON.parse(data)
-      const responseText = parsedData.choices[0].text
-      text += responseText
+      const text = new TextDecoder().decode(value)
+      newOutput += text
+      setOutput(newOutput)
     }
-    return text
   }
 
   const handleGenerate = async () => {
