@@ -46,15 +46,15 @@ export default async function handler(
       model = 'davinci:ft-personal-2022-11-05-02-06-03'
       break
     case PERSUASIVE_ESSAY_ID:
-      openaiPrompt = `${prompt}\n\n###\n\n`
-      model = 'davinci:ft-ghostwritten:persuasive-essay-v2-2022-11-26-03-42-34'
+      openaiPrompt = `Write a persuasive essay that answers the following prompt: "${prompt}"`
+      model = 'text-davinci-003'
       break
     case EXPOSITORY_ESSAY_ID:
-      openaiPrompt = `${prompt}\n\n###\n\n`
-      model = 'davinci:ft-ghostwritten:expository-essay-v2-2022-11-26-04-04-23'
+      openaiPrompt = `Write an expository essay that answers the following prompt: "${prompt}"`
+      model = 'text-davinci-003'
       break
     case COMPARE_CONTRAST_ESSAY_ID:
-      openaiPrompt = `${prompt}\n\n###\n\n`
+      openaiPrompt = `Write a compare and contrast essay that answers the following prompt: ${prompt}`
       model = 'text-davinci-003'
       break
     default:

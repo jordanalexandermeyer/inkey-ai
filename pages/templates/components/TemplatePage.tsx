@@ -31,7 +31,7 @@ const TemplatePage = ({
 }) => {
   const [prompt, setPrompt] = useState('')
   const [thesis, setThesis] = useState('')
-  const [outputs, setOutputs] = useState<Output[]>([])
+  const [output, setOutput] = useState('')
   const [generateIsLoading, setGenerateIsLoading] = useState(false)
   const auth = getAuth()
   const [user] = useAuthState(auth)
@@ -67,15 +67,15 @@ const TemplatePage = ({
     const reader = readableStream.getReader()
 
     let done, value
-    let newOutput = { text: '' }
+    let newOutput = ''
     while (!done) {
       ;({ value, done } = await reader.read())
       if (done) {
         return
       }
       const text = new TextDecoder().decode(value)
-      newOutput = { text: newOutput.text + text }
-      setOutputs([newOutput, ...outputs])
+      newOutput += text
+      setOutput(newOutput)
     }
   }
 
@@ -93,7 +93,7 @@ const TemplatePage = ({
   }
 
   const clearOutputs = () => {
-    setOutputs([])
+    setOutput('')
   }
 
   const canSubmit = prompt
@@ -222,7 +222,7 @@ const TemplatePage = ({
                     aria-label="Tabs"
                   >
                     <button className="relative transition-all duration-150 before:transition-all before:duration-150 before:absolute before:inset-0 whitespace-nowrap py-2 px-3 text-xs font-medium before:bg-gray-100 before:rounded-lg before:scale-100 before:opacity-100 text-gray-600">
-                      <span className="relative">Outputs</span>
+                      <span className="relative">Output</span>
                     </button>
                   </nav>
                   <div>
@@ -234,10 +234,8 @@ const TemplatePage = ({
                     </button>
                   </div>
                 </div>
-                {outputs.length > 0 ? (
-                  outputs.map((output) => {
-                    return <Output text={output.text} />
-                  })
+                {output.length > 0 ? (
+                  <Output text={output} />
                 ) : (
                   <div className="flex flex-col items-center justify-center my-20 py-40 xl:inset-0 xl:absolute xl:mt-0">
                     <div className="max-w-lg relative py-3 pl-8 space-x-2 text-xs text-gray-400 rounded-md ring-1 ring-gray-200 mx-3">

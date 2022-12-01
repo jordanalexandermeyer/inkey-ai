@@ -7,7 +7,7 @@ const PersuasiveEssayTemplate: NextPage = () => {
   return (
     <TemplatePage
       id={PERSUASIVE_ESSAY_ID}
-      icon="📝"
+      icon="📣"
       title="Persuasive Essay"
       subtitle="Write a prompt for a persuasive essay and a unique, never before seen essay will be written."
       promptPlaceholder="Write an essay persuading readers that working remotely is superior to working in-person."

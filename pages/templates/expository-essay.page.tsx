@@ -7,7 +7,7 @@ const ExpositoryEssayTemplate: NextPage = () => {
   return (
     <TemplatePage
       id={EXPOSITORY_ESSAY_ID}
-      icon="📝"
+      icon="🧑‍🎨"
       title="Expository Essay"
       subtitle="Write a prompt for an expository essay and a unique, never before seen essay will be written."
       promptPlaceholder="Describe a major environmental problem and what you believe should be done about it."
