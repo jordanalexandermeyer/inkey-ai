@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 initializeFirebaseApp()
 import axios from 'axios'
 import {
@@ -27,7 +26,7 @@ export default async function handler(
   const {
     id,
     userId,
-    inputs: { prompt, thesis },
+    inputs: { prompt },
   } = req.body
 
   let openaiPrompt
@@ -93,42 +92,60 @@ export default async function handler(
     let chunks = ''
 
     for await (const chunk of stream) {
-      let readableChunk = chunk.toString()
-      readableChunk = readableChunk.slice(6) // removing 'data ' prefix
-      if (readableChunk.slice(0, 6) == '[DONE]') {
-        break
-      }
+      const readableChunk = chunk.toString()
       try {
-        const data = JSON.parse(readableChunk)
-        const text = data.choices[0].text
-        if (text == '\n' && chunkNumber < 2) continue // beginning response usually has 2 new lines
-        res.write(text)
-        chunks += text
+        const listOfData = getListedDataFromChunk(readableChunk)
+        for (let i = 0; i < listOfData.length; i++) {
+          const data = listOfData[i]
+          if (data == '[DONE]') {
+            break
+          }
+          const parsedData = JSON.parse(data)
+          const text = parsedData.choices[0].text
+          if (text == '\n' && chunkNumber < 2) continue // beginning response usually has 2 new lines
+          res.write(text)
+          chunks += text
+        }
       } catch (error) {
         console.log(error)
       }
       chunkNumber++
     }
 
-    const db = getFirestore()
-    const counterRef = doc(db, 'counters', userId)
-    const counterSnap = await getDoc(counterRef)
-    const numberOfWordsGenerated = chunks.split(' ').length
+    await updateUserWordsGenerated(userId, chunks.split(' ').length)
 
-    if (counterSnap.exists()) {
-      await updateDoc(counterRef, {
-        words_generated: increment(numberOfWordsGenerated),
-      })
-    } else {
-      await setDoc(counterRef, {
-        words_generated: numberOfWordsGenerated,
-      })
-    }
-
-    res.status(200).end()
+    return res.status(200).end()
   } catch (error) {
     console.log(error)
     res.status(500).json('Server Error')
-    res.end()
+    return res.end()
+  }
+}
+
+function getListedDataFromChunk(chunk: string): Array<string> {
+  const datum = [...chunk.matchAll(/(?<=data: ).*$/gm)]
+  const listOfData: Array<string> = []
+  for (let i = 0; i < datum.length; i++) {
+    listOfData.push(datum[i][0])
+  }
+  return listOfData
+}
+
+async function updateUserWordsGenerated(
+  userId: string,
+  numberOfWordsGenerated: number,
+) {
+  const db = getFirestore()
+  const counterRef = doc(db, 'counters', userId)
+  const counterSnap = await getDoc(counterRef)
+
+  if (counterSnap.exists()) {
+    await updateDoc(counterRef, {
+      words_generated: increment(numberOfWordsGenerated),
+    })
+  } else {
+    await setDoc(counterRef, {
+      words_generated: numberOfWordsGenerated,
+    })
   }
 }

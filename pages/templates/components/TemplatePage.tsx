@@ -130,7 +130,7 @@ const TemplatePage = ({
                   <TemplateInput
                     label="Prompt"
                     placeholder={promptPlaceholder}
-                    maxLength={100}
+                    maxLength={150}
                     value={prompt}
                     onChange={(e: any) => setPrompt(e.target.value)}
                   />
