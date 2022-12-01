@@ -1,11 +1,10 @@
 import { getAuth } from 'firebase/auth'
 import {
-  collection,
+  doc,
+  getDoc,
   getFirestore,
   onSnapshot,
-  query,
   Timestamp,
-  where,
 } from 'firebase/firestore'
 import {
   createContext,
@@ -16,14 +15,9 @@ import {
 } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 
-const RoleContext = createContext<
-  | undefined
-  | {
-      subscriptions: Subscription[]
-      isUserEarlyAccess: boolean
-      isRoleLoading: boolean
-    }
->(undefined)
+const RoleContext = createContext<{ isUserPastLimit: boolean } | undefined>(
+  undefined,
+)
 
 interface Subscription {
   role: string
@@ -33,44 +27,29 @@ interface Subscription {
 }
 
 function RoleProvider({ children }: { children: ReactNode }) {
-  const [isUserEarlyAccess, setIsUserEarlyAccess] = useState<boolean>(false)
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
-  const [isRoleLoading, setIsRoleLoading] = useState(true)
+  const [isUserPastLimit, setIsUserPastLimit] = useState(false)
 
   const auth = getAuth()
-  const [user, loading, error] = useAuthState(auth)
+  const [user] = useAuthState(auth)
   const db = getFirestore()
 
   useEffect(() => {
     if (user) {
-      const collectionRef = collection(
-        db,
-        'customers',
-        user.uid,
-        'subscriptions',
-      )
-
-      const q = query(
-        collectionRef,
-        where('status', 'in', ['trialing', 'active']),
-      )
-
-      onSnapshot(q, (querySnapshot) => {
-        const subscriptionsFromDB: any = []
-        querySnapshot.forEach((doc) => {
-          subscriptionsFromDB.push(doc.data())
-        })
-        setSubscriptions(subscriptionsFromDB)
-        setIsUserEarlyAccess(subscriptionsFromDB.length > 0)
-        setIsRoleLoading(false)
+      const docRef = doc(db, 'counters', user.uid)
+      const unsubscribe = onSnapshot(docRef, (doc) => {
+        const data = doc.data()
+        if (data) {
+          const count = data!['words_generated']
+          setIsUserPastLimit(count > 1000)
+        }
       })
+
+      return unsubscribe
     }
   }, [user])
 
   return (
-    <RoleContext.Provider
-      value={{ subscriptions, isUserEarlyAccess, isRoleLoading }}
-    >
+    <RoleContext.Provider value={{ isUserPastLimit }}>
       {children}
     </RoleContext.Provider>
   )
@@ -79,7 +58,7 @@ function RoleProvider({ children }: { children: ReactNode }) {
 function useRole() {
   const context = useContext(RoleContext)
   if (context === undefined) {
-    throw new Error('useUser must be used within a UserProvider')
+    throw new Error('useRole must be used within a UserProvider')
   }
   return context
 }

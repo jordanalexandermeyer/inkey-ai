@@ -1,28 +1,36 @@
 import { getAuth, signOut } from 'firebase/auth'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import ProtectedPage from '../../components/ProtectedPage'
-import { useRole } from '../../components/RoleProvider'
-import { createCheckoutSession } from '../../lib/createCheckoutSession'
 import classNames from 'classnames'
 
 const Subscriptions: NextPage = () => {
   const auth = getAuth()
   const router = useRouter()
   const [user] = useAuthState(auth)
-  const { isUserEarlyAccess } = useRole()
   const [isLoading, setIsLoading] = useState(false)
-
-  useEffect(() => {
-    router.push('/')
-  }, [isUserEarlyAccess])
 
   const handleClick = async () => {
     if (user) {
-      await (window as any).ttq.track('ClickButton', {})
-      await createCheckoutSession(user.uid, setIsLoading)
+      setIsLoading(true)
+      const response = await fetch(
+        `/api/checkout?price_id=${process.env.NEXT_PUBLIC_STRIPE_PAY_AS_YOU_GO_PRODUCT}`,
+        {
+          method: 'GET',
+
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+          },
+        },
+      )
+
+      const data = await response.json()
+      const checkoutUrl = data.checkoutUrl
+      setIsLoading(false)
+      router.push(checkoutUrl)
     }
   }
 
@@ -84,8 +92,12 @@ const Subscriptions: NextPage = () => {
           <div className="text-center">
             <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl lg:text-5xl">
               {' '}
-              Try it free for 5 days{' '}
+              😱 Your free trial has run out!{' '}
             </h2>
+            <p className="text-xl mt-4 text-gray-900">
+              To continue writing essays at the speed of light ⚡️, sign up
+              below!
+            </p>
           </div>
         </div>
         <div>
@@ -100,25 +112,20 @@ const Subscriptions: NextPage = () => {
                         className="inline-flex px-4 py-2 font-bold leading-4 rounded-full text bg-gray-100 text-blue-700"
                       >
                         {' '}
-                        Early Access{' '}
+                        Pay As You Go{' '}
                       </h3>
-                      <div>
-                        <div className="inline-block mt-2 text-sm leading-5 text-gray-500 border-b-2 border-gray-300 sm:mt-0">
-                          Pricing available for a limited time
-                        </div>
-                      </div>
                     </div>
-                    <div className="flex items-baseline mt-3 text-6xl font-extrabold">
+                    <div className="flex items-baseline mt-3 text-5xl font-extrabold">
                       {' '}
-                      $15{' '}
-                      <span className="text-2xl font-medium text-gray-500">
+                      $0.99{' '}
+                      <span className="text-xl font-medium text-gray-500">
                         {' '}
-                        .95/month{' '}
+                        /1000 words generated{' '}
                       </span>
                     </div>
                     <p className="mt-3 text-lg text-gray-500">
-                      {' '}
-                      Unlimited access to everything.{' '}
+                      This plan gives you unlimited access to all of our
+                      templates and products.
                     </p>
                   </div>
                   <div className="flex flex-col justify-between flex-1 px-6 pt-6 pb-8 space-y-6 bg-white border-t border-gray-100 sm:p-10 sm:pt-6">
@@ -136,7 +143,7 @@ const Subscriptions: NextPage = () => {
                             },
                           )}
                         >
-                          <div> Start free trial </div>
+                          <div>Start</div>
                           <svg
                             fill="none"
                             stroke="currentColor"
