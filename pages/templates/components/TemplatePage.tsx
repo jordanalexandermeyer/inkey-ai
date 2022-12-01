@@ -49,11 +49,9 @@ const TemplatePage = ({
         return
       }
       if (chunkNumber < 3) continue
-      if (value) {
-        const text = convertValueToText(value)
-        newOutput += text
-        setOutput(newOutput)
-      }
+      const text = convertValueToText(value)
+      newOutput += text
+      setOutput(newOutput)
     }
   }
 

@@ -8,6 +8,7 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { pipeline, Transform } from 'stream'
 import {
   COMMON_APP_ESSAY_ID,
   COMPARE_CONTRAST_ESSAY_ID,
