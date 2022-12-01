@@ -1,5 +1,4 @@
 initializeFirebaseApp()
-import axios from 'axios'
 import {
   doc,
   getDoc,
@@ -9,6 +8,7 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { pipeline, Transform } from 'stream'
 import {
   COMMON_APP_ESSAY_ID,
   COMPARE_CONTRAST_ESSAY_ID,
@@ -64,9 +64,9 @@ export default async function handler(
   }
 
   try {
-    const response = await axios.post(
-      'https://api.openai.com/v1/completions',
-      {
+    const response = await fetch('https://api.openai.com/v1/completions', {
+      method: 'POST',
+      body: JSON.stringify({
         stream: true,
         model: model,
         prompt: openaiPrompt,
@@ -76,47 +76,48 @@ export default async function handler(
         stop: '##',
         frequency_penalty: 0.75,
         user: userId || '',
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${process.env.OPEN_AI_KEY}`,
       },
-      {
-        responseType: 'stream',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${process.env.OPEN_AI_KEY}`,
-        },
-      },
-    )
+    })
 
-    const stream = response.data
+    const stream = response.body
 
-    let chunkNumber = 0
-    let chunks = ''
+    res.send(stream)
 
-    const textEncoder = new TextEncoder()
-    for await (const chunk of stream) {
-      const readableChunk = chunk.toString()
-      try {
-        const listOfData = getListedDataFromChunk(readableChunk)
-        for (let i = 0; i < listOfData.length; i++) {
-          const data = listOfData[i]
-          if (data == '[DONE]') {
-            break
-          }
-          const parsedData = JSON.parse(data)
-          const text = parsedData.choices[0].text
-          if (text == '\n' && chunkNumber < 2) continue // beginning response usually has 2 new lines
-          res.write(textEncoder.encode(text))
+    return
 
-          chunks += text
-        }
-      } catch (error) {
-        console.log(error)
-      }
-      chunkNumber++
-    }
+    // let chunkNumber = 0
+    // let chunks = ''
 
-    await updateUserWordsGenerated(userId, chunks.split(' ').length)
+    // const textEncoder = new TextEncoder()
+    // if (stream)
+    //   for await (const chunk of stream) {
+    //     const readableChunk = chunk.toString()
+    //     try {
+    //       const listOfData = getListedDataFromChunk(readableChunk)
+    //       for (let i = 0; i < listOfData.length; i++) {
+    //         const data = listOfData[i]
+    //         if (data == '[DONE]') {
+    //           break
+    //         }
+    //         const parsedData = JSON.parse(data)
+    //         const text = parsedData.choices[0].text
+    //         if (text == '\n' && chunkNumber < 2) continue // beginning response usually has 2 new lines
+    //         // res.write(textEncoder.encode(text))
+    //         chunks += text
+    //       }
+    //     } catch (error) {
+    //       console.log(error)
+    //     }
+    //     chunkNumber++
+    //   }
 
-    return res.status(200).end()
+    // await updateUserWordsGenerated(userId, chunks.split(' ').length)
+
+    // return res.status(200).end()
   } catch (error) {
     console.log(error)
     res.status(500).json('Server Error')
