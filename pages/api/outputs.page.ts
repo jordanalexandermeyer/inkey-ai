@@ -91,6 +91,7 @@ export default async function handler(
     let chunkNumber = 0
     let chunks = ''
 
+    const textEncoder = new TextEncoder()
     for await (const chunk of stream) {
       const readableChunk = chunk.toString()
       try {
@@ -103,7 +104,8 @@ export default async function handler(
           const parsedData = JSON.parse(data)
           const text = parsedData.choices[0].text
           if (text == '\n' && chunkNumber < 2) continue // beginning response usually has 2 new lines
-          res.write(text)
+          res.write(textEncoder.encode(text))
+
           chunks += text
         }
       } catch (error) {
