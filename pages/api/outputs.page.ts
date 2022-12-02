@@ -83,41 +83,9 @@ export default async function handler(request: Request, response: Response) {
       },
     })
 
-    const encoder = new TextEncoder()
-    const decoder = new TextDecoder()
-
     const stream = response.body
 
-    let chunkNumber = 0
-    let chunks = ''
-
-    const transformedResponse = stream!.pipeThrough(
-      new TransformStream({
-        start(controller) {},
-        transform(chunk, controller) {
-          const readableChunk = decoder.decode(chunk)
-          const listOfData = getListedDataFromChunk(readableChunk)
-          for (let i = 0; i < listOfData.length; i++) {
-            const data = listOfData[i]
-            if (data == '[DONE]') {
-              break
-            }
-            console.log(data)
-            const parsedData = JSON.parse(data)
-            const text = parsedData.choices[0].text
-            if (text == '\n' && chunkNumber < 2) continue // beginning response usually has 2 new lines
-            controller.enqueue(encoder.encode(text))
-            chunks += text
-            chunkNumber++
-          }
-        },
-        async flush(controller) {
-          await updateUserWordsGenerated(userId, chunks.split(' ').length)
-        },
-      }),
-    )
-
-    return new Response(transformedResponse, {
+    return new Response(stream, {
       status: 200,
     })
   } catch (error) {
@@ -125,34 +93,6 @@ export default async function handler(request: Request, response: Response) {
     return new Response(null, {
       status: 500,
       statusText: 'Server Error',
-    })
-  }
-}
-
-function getListedDataFromChunk(chunk: string): Array<string> {
-  const datum = [...chunk.matchAll(/(?<=data: ).*$/gm)]
-  const listOfData: Array<string> = []
-  for (let i = 0; i < datum.length; i++) {
-    listOfData.push(datum[i][0])
-  }
-  return listOfData
-}
-
-async function updateUserWordsGenerated(
-  userId: string,
-  numberOfWordsGenerated: number,
-) {
-  const db = getFirestore()
-  const counterRef = doc(db, 'counters', userId)
-  const counterSnap = await getDoc(counterRef)
-
-  if (counterSnap.exists()) {
-    await updateDoc(counterRef, {
-      words_generated: increment(numberOfWordsGenerated),
-    })
-  } else {
-    await setDoc(counterRef, {
-      words_generated: numberOfWordsGenerated,
     })
   }
 }
