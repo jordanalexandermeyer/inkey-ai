@@ -62,6 +62,7 @@ const TemplatePage = ({
 
       return
     } catch (error) {
+      console.log(error)
       toast.error(
         'Oh no! Something went wrong. \nPlease refresh the page and try again.',
       )
@@ -70,10 +71,11 @@ const TemplatePage = ({
   }
 
   function getListedDataFromChunk(chunk: string): Array<string> {
-    const datum = [...chunk.matchAll(/(?<=data: ).*$/gm)]
+    console.log(chunk)
+    const datum = [...chunk.matchAll(/^data: .*/gm)]
     const listOfData: Array<string> = []
     for (let i = 0; i < datum.length; i++) {
-      listOfData.push(datum[i][0])
+      listOfData.push(datum[i][0].slice(6))
     }
     return listOfData
   }
