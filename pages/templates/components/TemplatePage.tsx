@@ -66,13 +66,10 @@ const TemplatePage = ({
   async function readAllChunks(readableStream: any) {
     const reader = readableStream.getReader()
 
-    let done, value
     let newOutput = ''
-    while (!done) {
-      ;({ value, done } = await reader.read())
-      if (done) {
-        return
-      }
+    while (true) {
+      const { value, done } = await reader.read()
+      if (done) break
       const text = new TextDecoder().decode(value)
       newOutput += text
       setOutput(newOutput)
