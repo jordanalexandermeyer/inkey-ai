@@ -1,12 +1,3 @@
-initializeFirebaseApp()
-import {
-  doc,
-  getDoc,
-  getFirestore,
-  increment,
-  setDoc,
-  updateDoc,
-} from 'firebase/firestore'
 import {
   COLLEGE_APP_ESSAY_ID,
   COMPARE_CONTRAST_ESSAY_ID,
@@ -15,7 +6,6 @@ import {
   PERSUASIVE_ESSAY_ID,
   THESIS_ID,
 } from '../../lib/constants'
-import initializeFirebaseApp from '../../lib/initializeFirebase'
 
 export const config = {
   runtime: 'experimental-edge',
