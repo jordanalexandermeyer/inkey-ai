@@ -1,12 +1,12 @@
 import { NextPage } from 'next'
 import React from 'react'
-import { FIVE_PARAGRAPH_ESSAY_ID } from '../../lib/constants'
+import { GENERAL_ESSAY_ID } from '../../lib/constants'
 import TemplatePage from './components/TemplatePage'
 
-const FiveParagraphEssayTemplate: NextPage = () => {
+const GeneralParagraphEssayTemplate: NextPage = () => {
   return (
     <TemplatePage
-      id={FIVE_PARAGRAPH_ESSAY_ID}
+      id={GENERAL_ESSAY_ID}
       icon="📝"
       title="General Essay"
       subtitle="Ask a prompt and receive a compelling essay."
@@ -15,4 +15,4 @@ const FiveParagraphEssayTemplate: NextPage = () => {
   )
 }
 
-export default FiveParagraphEssayTemplate
+export default GeneralParagraphEssayTemplate
