@@ -1,5 +1,4 @@
 initializeFirebaseApp()
-import fetch from 'node-fetch'
 import {
   doc,
   getDoc,
@@ -8,12 +7,11 @@ import {
   setDoc,
   updateDoc,
 } from 'firebase/firestore'
-import type { NextApiRequest, NextApiResponse } from 'next'
 import {
-  COMMON_APP_ESSAY_ID,
+  COLLEGE_APP_ESSAY_ID,
   COMPARE_CONTRAST_ESSAY_ID,
   EXPOSITORY_ESSAY_ID,
-  FIVE_PARAGRAPH_ESSAY_ID,
+  GENERAL_ESSAY_ID,
   PERSUASIVE_ESSAY_ID,
   THESIS_ID,
 } from '../../lib/constants'
@@ -23,21 +21,18 @@ export const config = {
   runtime: 'experimental-edge',
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export default async function handler(request: Request, response: Response) {
   const {
     id,
     userId,
     inputs: { prompt },
-  } = req.body
+  } = await request.json()
 
   let openaiPrompt
   let model
 
   switch (id) {
-    case FIVE_PARAGRAPH_ESSAY_ID:
+    case GENERAL_ESSAY_ID:
       openaiPrompt = `Write an essay that answers the following prompt: "${prompt}"`
       model = 'text-davinci-003'
       break
@@ -45,9 +40,9 @@ export default async function handler(
       openaiPrompt = `Write a one sentence thesis statement that contains three supporting points for an essay with the following prompt: "${prompt}"`
       model = 'text-davinci-003'
       break
-    case COMMON_APP_ESSAY_ID:
-      openaiPrompt = `${prompt}\n\n###\n\n`
-      model = 'davinci:ft-personal-2022-11-05-02-06-03'
+    case COLLEGE_APP_ESSAY_ID:
+      openaiPrompt = `Write a college application essay that answers the following prompt: "${prompt}"`
+      model = 'text-davinci-003'
       break
     case PERSUASIVE_ESSAY_ID:
       openaiPrompt = `Write a persuasive essay that answers the following prompt: "${prompt}"`
@@ -62,9 +57,10 @@ export default async function handler(
       model = 'text-davinci-003'
       break
     default:
-      res.status(400).json('Bad Request')
-      res.end()
-      return
+      return new Response(null, {
+        status: 400,
+        statusText: 'Bad Request',
+      })
   }
 
   try {
@@ -87,16 +83,19 @@ export default async function handler(
       },
     })
 
+    const encoder = new TextEncoder()
+    const decoder = new TextDecoder()
+
     const stream = response.body
 
     let chunkNumber = 0
     let chunks = ''
 
-    const textEncoder = new TextEncoder()
-    if (stream)
-      for await (const chunk of stream) {
-        const readableChunk = chunk.toString()
-        try {
+    const transformedResponse = stream!.pipeThrough(
+      new TransformStream({
+        start(controller) {},
+        transform(chunk, controller) {
+          const readableChunk = decoder.decode(chunk)
           const listOfData = getListedDataFromChunk(readableChunk)
           for (let i = 0; i < listOfData.length; i++) {
             const data = listOfData[i]
@@ -106,23 +105,26 @@ export default async function handler(
             const parsedData = JSON.parse(data)
             const text = parsedData.choices[0].text
             if (text == '\n' && chunkNumber < 2) continue // beginning response usually has 2 new lines
-            res.write(textEncoder.encode(text))
-
+            controller.enqueue(encoder.encode(text))
             chunks += text
+            chunkNumber++
           }
-        } catch (error) {
-          console.log(error)
-        }
-        chunkNumber++
-      }
+        },
+        async flush(controller) {
+          await updateUserWordsGenerated(userId, chunks.split(' ').length)
+        },
+      }),
+    )
 
-    await updateUserWordsGenerated(userId, chunks.split(' ').length)
-
-    return res.status(200).end()
+    return new Response(transformedResponse, {
+      status: 200,
+    })
   } catch (error) {
     console.log(error)
-    res.status(500).json('Server Error')
-    return res.end()
+    return new Response(null, {
+      status: 500,
+      statusText: 'Server Error',
+    })
   }
 }
 

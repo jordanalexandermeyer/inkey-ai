@@ -6,9 +6,7 @@ import { getAuth } from 'firebase/auth'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import ProtectedPage from '../../../components/ProtectedPage'
 import Navigation from '../../../components/Navigation'
-import TemplateInput from './TemplateInput'
 import Output from './Output'
-import TemplateTextArea from './TemplateTextArea'
 
 interface Output {
   text: string
@@ -20,18 +18,16 @@ const TemplatePage = ({
   title,
   subtitle,
   promptPlaceholder,
-  thesisPlaceholder,
 }: {
   id: string
   icon: string
   title: string
   subtitle: string
   promptPlaceholder: string
-  thesisPlaceholder?: string
 }) => {
   const [prompt, setPrompt] = useState('')
-  const [thesis, setThesis] = useState('')
   const [output, setOutput] = useState('')
+  const [numberOfCharacters, setNumberOfCharacters] = useState(0)
   const [generateIsLoading, setGenerateIsLoading] = useState(false)
   const auth = getAuth()
   const [user] = useAuthState(auth)
@@ -86,7 +82,6 @@ const TemplatePage = ({
 
   const clearInputs = () => {
     setPrompt('')
-    setThesis('')
   }
 
   const clearOutputs = () => {
@@ -124,28 +119,43 @@ const TemplatePage = ({
                   </div>
                 </div>
                 <div className="p-3 xl:p-6 xl:pb-28 flex-1 space-y-6">
-                  <TemplateInput
-                    label="Prompt"
-                    placeholder={promptPlaceholder}
-                    maxLength={150}
-                    value={prompt}
-                    onChange={(e: any) => setPrompt(e.target.value)}
-                  />
-                  {thesisPlaceholder && (
-                    <TemplateTextArea
-                      label="Thesis"
-                      placeholder={thesisPlaceholder}
-                      maxLength={250}
-                      value={thesis}
-                      onChange={(e) => setThesis(e.target.value)}
-                    />
-                  )}
+                  <div>
+                    <div className="mb-6 last:mb-1">
+                      <div className="flex flex-col flex-1">
+                        <div className="flex justify-end items-center">
+                          <div className="flex-grow mb-1 flex items-center">
+                            <label className="text-sm font-medium dark:text-gray-300 text-gray-700">
+                              Prompt
+                            </label>
+                          </div>
+                          <div className="flex items-center justify-end px-3 py-2 text-xs text-gray-600">
+                            <span className="text-xs">
+                              {numberOfCharacters}/{250}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="relative flex items-center">
+                          <textarea
+                            maxLength={250}
+                            rows={4}
+                            placeholder={promptPlaceholder}
+                            className="px-3 py-2 w-full block text-sm text-gray-600 placeholder-gray-400 transition-shadow duration-150 ease-in-out bg-white border border-gray-200 rounded shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500"
+                            value={prompt}
+                            onChange={(e) => {
+                              setPrompt(e.target.value)
+                              setNumberOfCharacters(e.target.value.length)
+                            }}
+                          ></textarea>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   <button
                     className="inline-flex items-center overflow-hidden ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2inline-flex justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-gray-700 bg-white border border-black-300 shadow-sm hover:text-gray-500 selectionRing active:bg-gray-50 active:text-gray-800 px-3 py-2 text-sm leading-3"
                     type="button"
                     onClick={() => {
                       setPrompt(promptPlaceholder)
-                      thesisPlaceholder && setThesis(thesisPlaceholder)
+                      setNumberOfCharacters(promptPlaceholder.length)
                     }}
                   >
                     Try the example prompt
