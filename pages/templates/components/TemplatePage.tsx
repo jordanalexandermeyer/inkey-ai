@@ -71,7 +71,7 @@ const TemplatePage = ({
   }
 
   function getListedDataFromChunk(chunk: string): Array<string> {
-    console.log(chunk)
+    console.log(JSON.stringify(chunk))
     const datum = [...chunk.matchAll(/^data: .*/gm)]
     const listOfData: Array<string> = []
     for (let i = 0; i < datum.length; i++) {
@@ -104,22 +104,48 @@ const TemplatePage = ({
 
     let newOutput = ''
     let chunkNumber = 0
+    let incompleteChunk = ''
     while (true) {
       const { value, done } = await reader.read()
       if (done) break
+
+      // get chunk in string format
       const chunk = new TextDecoder().decode(value)
-      const listOfData = getListedDataFromChunk(chunk)
-      for (let i = 0; i < listOfData.length; i++) {
-        const data = listOfData[i]
-        if (data == '[DONE]') {
+
+      // separate chunks into lines of data
+      const listOfChunks = chunk.split('\n\n')
+
+      // iterate through chunks
+      for (let i = 0; i < listOfChunks.length; i++) {
+        // if string is empty, continue
+        if (!listOfChunks[i]) continue
+
+        let fullChunk = listOfChunks[i]
+
+        // if incompleteChunk not empty, append it to front of chunk then clear incompleteChunk
+        if (incompleteChunk) {
+          fullChunk = incompleteChunk + listOfChunks[i]
+          incompleteChunk = ''
+        }
+
+        // if chunk is last chunk, break
+        if (fullChunk.slice(6) == '[DONE]') {
           break
         }
-        const parsedData = JSON.parse(data)
-        const text = parsedData.choices[0].text
-        if (text == '\n' && chunkNumber < 2) continue // beginning response usually has 2 new lines
-        newOutput += text
-        setOutput(newOutput)
-        chunkNumber++
+
+        // if chunk is data, parse it and append it to output
+        try {
+          const parsedData = JSON.parse(fullChunk.slice(6))
+          const text = parsedData.choices[0].text
+          if (text == '\n' && chunkNumber < 2) continue // beginning response usually has 2 new lines
+          newOutput += text
+          setOutput(newOutput)
+          chunkNumber++
+        } catch (error) {
+          // if chunk is incomplete, store it in incompleteChunk and continue
+          incompleteChunk = fullChunk
+          continue
+        }
       }
     }
   }
