@@ -1,5 +1,5 @@
 initializeFirebaseApp()
-import axios from 'axios'
+import fetch from 'node-fetch'
 import {
   doc,
   getDoc,
@@ -64,9 +64,9 @@ export default async function handler(
   }
 
   try {
-    const response = await axios.post(
-      'https://api.openai.com/v1/completions',
-      {
+    const response = await fetch('https://api.openai.com/v1/completions', {
+      method: 'POST',
+      body: JSON.stringify({
         stream: true,
         model: model,
         prompt: openaiPrompt,
@@ -76,43 +76,41 @@ export default async function handler(
         stop: '##',
         frequency_penalty: 0.75,
         user: userId || '',
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${process.env.OPEN_AI_KEY}`,
       },
-      {
-        responseType: 'stream',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${process.env.OPEN_AI_KEY}`,
-        },
-      },
-    )
+    })
 
-    const stream = response.data
+    const stream = response.body
 
     let chunkNumber = 0
     let chunks = ''
 
     const textEncoder = new TextEncoder()
-    for await (const chunk of stream) {
-      const readableChunk = chunk.toString()
-      try {
-        const listOfData = getListedDataFromChunk(readableChunk)
-        for (let i = 0; i < listOfData.length; i++) {
-          const data = listOfData[i]
-          if (data == '[DONE]') {
-            break
-          }
-          const parsedData = JSON.parse(data)
-          const text = parsedData.choices[0].text
-          if (text == '\n' && chunkNumber < 2) continue // beginning response usually has 2 new lines
-          res.write(textEncoder.encode(text))
+    if (stream)
+      for await (const chunk of stream) {
+        const readableChunk = chunk.toString()
+        try {
+          const listOfData = getListedDataFromChunk(readableChunk)
+          for (let i = 0; i < listOfData.length; i++) {
+            const data = listOfData[i]
+            if (data == '[DONE]') {
+              break
+            }
+            const parsedData = JSON.parse(data)
+            const text = parsedData.choices[0].text
+            if (text == '\n' && chunkNumber < 2) continue // beginning response usually has 2 new lines
+            res.write(textEncoder.encode(text))
 
-          chunks += text
+            chunks += text
+          }
+        } catch (error) {
+          console.log(error)
         }
-      } catch (error) {
-        console.log(error)
+        chunkNumber++
       }
-      chunkNumber++
-    }
 
     await updateUserWordsGenerated(userId, chunks.split(' ').length)
 
