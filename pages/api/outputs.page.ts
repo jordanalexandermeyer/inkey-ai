@@ -102,6 +102,7 @@ export default async function handler(request: Request, response: Response) {
             if (data == '[DONE]') {
               break
             }
+            console.log(data)
             const parsedData = JSON.parse(data)
             const text = parsedData.choices[0].text
             if (text == '\n' && chunkNumber < 2) continue // beginning response usually has 2 new lines
