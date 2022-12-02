@@ -7,6 +7,14 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import ProtectedPage from '../../../components/ProtectedPage'
 import Navigation from '../../../components/Navigation'
 import Output from './Output'
+import {
+  doc,
+  getDoc,
+  getFirestore,
+  increment,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore'
 
 interface Output {
   text: string
@@ -50,6 +58,8 @@ const TemplatePage = ({
 
       await readAllChunks(response.body)
 
+      await updateUserWordsGenerated(user!.uid, output.split(' ').length)
+
       return
     } catch (error) {
       toast.error(
@@ -59,16 +69,56 @@ const TemplatePage = ({
     }
   }
 
+  function getListedDataFromChunk(chunk: string): Array<string> {
+    const datum = [...chunk.matchAll(/(?<=data: ).*$/gm)]
+    const listOfData: Array<string> = []
+    for (let i = 0; i < datum.length; i++) {
+      listOfData.push(datum[i][0])
+    }
+    return listOfData
+  }
+
+  async function updateUserWordsGenerated(
+    userId: string,
+    numberOfWordsGenerated: number,
+  ) {
+    const db = getFirestore()
+    const counterRef = doc(db, 'counters', userId)
+    const counterSnap = await getDoc(counterRef)
+
+    if (counterSnap.exists()) {
+      await updateDoc(counterRef, {
+        words_generated: increment(numberOfWordsGenerated),
+      })
+    } else {
+      await setDoc(counterRef, {
+        words_generated: numberOfWordsGenerated,
+      })
+    }
+  }
+
   async function readAllChunks(readableStream: any) {
     const reader = readableStream.getReader()
 
     let newOutput = ''
+    let chunkNumber = 0
     while (true) {
       const { value, done } = await reader.read()
       if (done) break
-      const text = new TextDecoder().decode(value)
-      newOutput += text
-      setOutput(newOutput)
+      const chunk = new TextDecoder().decode(value)
+      const listOfData = getListedDataFromChunk(chunk)
+      for (let i = 0; i < listOfData.length; i++) {
+        const data = listOfData[i]
+        if (data == '[DONE]') {
+          break
+        }
+        const parsedData = JSON.parse(data)
+        const text = parsedData.choices[0].text
+        if (text == '\n' && chunkNumber < 2) continue // beginning response usually has 2 new lines
+        newOutput += text
+        setOutput(newOutput)
+        chunkNumber++
+      }
     }
   }
 
@@ -87,8 +137,6 @@ const TemplatePage = ({
   const clearOutputs = () => {
     setOutput('')
   }
-
-  const canSubmit = prompt
 
   return (
     <ProtectedPage>
@@ -176,12 +224,12 @@ const TemplatePage = ({
                           'inline-flex items-center ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2inline-flex justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-white shadow-sm selectionRing px-6 py-4 text-base w-full',
                           {
                             'active:bg-blue-800 hover:bg-blue-400 bg-blue-500':
-                              canSubmit && !generateIsLoading,
+                              prompt && !generateIsLoading,
                             'bg-blue-400 hover:bg-blue-300 cursor-not-allowed':
-                              !canSubmit || generateIsLoading,
+                              !prompt || generateIsLoading,
                           },
                         )}
-                        disabled={!canSubmit || generateIsLoading}
+                        disabled={!prompt || generateIsLoading}
                         onClick={(event) => {
                           event.preventDefault()
                           handleGenerate()
