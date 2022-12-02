@@ -132,6 +132,7 @@ const TemplatePage = ({
 
   const clearInputs = () => {
     setPrompt('')
+    setNumberOfCharacters(0)
   }
 
   const clearOutputs = () => {
