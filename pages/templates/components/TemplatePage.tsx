@@ -71,7 +71,8 @@ const TemplatePage = ({
   }
 
   function getListedDataFromChunk(chunk: string): Array<string> {
-    const datum = [...chunk.matchAll(/^data: .*/g)]
+    console.log(chunk)
+    const datum = [...chunk.matchAll(/^data: .*/gm)]
     const listOfData: Array<string> = []
     for (let i = 0; i < datum.length; i++) {
       listOfData.push(datum[i][0].slice(6))
