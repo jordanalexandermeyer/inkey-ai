@@ -9,7 +9,7 @@ import {
   isSignInWithEmailLink,
   sendSignInLinkToEmail,
   signInWithEmailLink,
-  signInWithRedirect,
+  signInWithPopup,
 } from 'firebase/auth'
 import classNames from 'classnames'
 import { useAuthState } from 'react-firebase-hooks/auth'
@@ -23,7 +23,7 @@ const Login: NextPage = () => {
   const [isDisabled, setIsDisabled] = useState(false)
 
   const signInWithGoogle = () => {
-    signInWithRedirect(auth, new GoogleAuthProvider())
+    signInWithPopup(auth, new GoogleAuthProvider())
   }
 
   const handleEmailSignIn = async () => {
