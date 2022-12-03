@@ -88,6 +88,11 @@ const TemplatePage = ({
     setOutput('')
   }
 
+  const handleCopyClick = () => {
+    navigator.clipboard.writeText(output)
+    toast.success('Copied to clipboard!')
+  }
+
   return (
     <ProtectedPage>
       <Head>
@@ -240,7 +245,7 @@ const TemplatePage = ({
                   </div>
                 </div>
                 {output.length > 0 ? (
-                  <Output text={output} />
+                  <Output text={output} onClick={handleCopyClick} />
                 ) : (
                   <div className="flex flex-col items-center justify-center my-20 py-40 xl:inset-0 xl:absolute xl:mt-0">
                     <div className="max-w-lg relative py-3 pl-8 space-x-2 text-xs text-gray-400 rounded-md ring-1 ring-gray-200 mx-3">
