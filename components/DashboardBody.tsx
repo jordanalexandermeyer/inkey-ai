@@ -79,15 +79,15 @@ const Body = () => {
                         <p className="mt-1 mb-4 text-sm text-opacity-80 md:text-lg md:mb-7">
                           Each template is a different type of essay that
                           Ghostwritten can write. If there are any types of
-                          essays that are missing, email{' '}
-                          <i>jordan@ghostwritten.ai</i> to get a new one added!
+                          essays that are missing, submit a feature request
+                          below to get a new one added!
                         </p>
                         <Link
                           className="flex flex-col w-full items-stretch md:items-start"
                           href={'/templates'}
                         >
                           <button
-                            className="font-bold text-white bg-blue-700 hover:bg-opacity-30 px-16 py-2 text-md overflow-hidden ease-in-out focus:outline-none focus:ring-offset-2 transition-all duration-150 relative rounded-lg focusRing space-x-2  ring-opacity-20 border-none focus:ring-0"
+                            className="font-bold text-white bg-blue-500 hover:bg-opacity-30 px-16 py-2 text-md overflow-hidden ease-in-out focus:outline-none focus:ring-offset-2 transition-all duration-150 relative rounded-lg focusRing space-x-2 ring-opacity-20 border-none focus:ring-0"
                             type="button"
                           >
                             See templates
@@ -129,7 +129,7 @@ const Body = () => {
               </div>
               <div className="flex flex-col w-full items-stretch md:items-start">
                 <button
-                  className="px-16 py-2 text-md overflow-hidden ease-in-out focus:outline-none focus:ring-offset-2 transition-all duration-150 relative rounded-lg focusRing space-x-2 font-medium text-gray-700 bg-white border border-black-300 shadow-sm hover:text-gray-500 selectionRing active:bg-gray-50 active:text-gray-800 mt-3"
+                  className="px-16 py-2 text-md overflow-hidden ease-in-out focus:outline-none focus:ring-offset-2 transition-all duration-150 relative rounded-lg focusRing space-x-2 font-medium text-gray-700 bg-white border border-black-300 shadow-sm hover:text-gray-500 selectionRing active:bg-gray-50 active:text-gray-800 mt-4"
                   type="button"
                   disabled={feedback.length == 0}
                   onClick={() => {
