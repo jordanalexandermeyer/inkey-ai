@@ -1,3 +1,12 @@
+initializeFirebaseApp()
+import {
+  doc,
+  getDoc,
+  getFirestore,
+  increment,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore'
 import {
   COLLEGE_APP_ESSAY_ID,
   COMPARE_CONTRAST_ESSAY_ID,
@@ -6,6 +15,7 @@ import {
   PERSUASIVE_ESSAY_ID,
   THESIS_ID,
 } from '../../lib/constants'
+import initializeFirebaseApp from '../../lib/initializeFirebase'
 
 export const config = {
   runtime: 'experimental-edge',
@@ -75,7 +85,63 @@ export default async function handler(request: Request, response: Response) {
 
     const stream = response.body
 
-    return new Response(stream, {
+    const encoder = new TextEncoder()
+    const decoder = new TextDecoder()
+
+    let chunkNumber = 0
+    let output = ''
+    let incompleteChunk = ''
+
+    const transformedResponse = stream!.pipeThrough(
+      new TransformStream({
+        start(controller) {},
+        transform(chunk, controller) {
+          // get chunk in string format
+          const textChunk = decoder.decode(chunk)
+
+          // separate chunks into lines of data
+          const listOfChunks = textChunk.split('\n\n')
+
+          // iterate through chunks
+          for (let i = 0; i < listOfChunks.length; i++) {
+            // if string is empty, continue
+            if (!listOfChunks[i]) continue
+
+            let fullChunk = listOfChunks[i]
+
+            // if incompleteChunk not empty, append it to front of chunk then clear incompleteChunk
+            if (incompleteChunk) {
+              fullChunk = incompleteChunk + listOfChunks[i]
+              incompleteChunk = ''
+            }
+
+            // if chunk is last chunk, break
+            if (fullChunk.slice(6) == '[DONE]') {
+              break
+            }
+
+            // if chunk is data, parse it and append it to output
+            try {
+              const parsedData = JSON.parse(fullChunk.slice(6))
+              const text = parsedData.choices[0].text
+              if (text == '\n' && chunkNumber < 2) continue // beginning response usually has 2 new lines
+              controller.enqueue(encoder.encode(text))
+              output += text
+              chunkNumber++
+            } catch (error) {
+              // if chunk is incomplete, store it in incompleteChunk and continue
+              incompleteChunk = fullChunk
+              continue
+            }
+          }
+        },
+        async flush(controller) {
+          await updateUserWordsGenerated(userId, output.split(' ').length)
+        },
+      }),
+    )
+
+    return new Response(transformedResponse, {
       status: 200,
     })
   } catch (error) {
@@ -83,6 +149,25 @@ export default async function handler(request: Request, response: Response) {
     return new Response(null, {
       status: 500,
       statusText: 'Server Error',
+    })
+  }
+}
+
+async function updateUserWordsGenerated(
+  userId: string,
+  numberOfWordsGenerated: number,
+) {
+  const db = getFirestore()
+  const counterRef = doc(db, 'counters', userId)
+  const counterSnap = await getDoc(counterRef)
+
+  if (counterSnap.exists()) {
+    await updateDoc(counterRef, {
+      words_generated: increment(numberOfWordsGenerated),
+    })
+  } else {
+    await setDoc(counterRef, {
+      words_generated: numberOfWordsGenerated,
     })
   }
 }

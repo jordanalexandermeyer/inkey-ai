@@ -7,14 +7,6 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import ProtectedPage from '../../../components/ProtectedPage'
 import Navigation from '../../../components/Navigation'
 import Output from './Output'
-import {
-  doc,
-  getDoc,
-  getFirestore,
-  increment,
-  setDoc,
-  updateDoc,
-} from 'firebase/firestore'
 
 interface Output {
   text: string
@@ -56,11 +48,7 @@ const TemplatePage = ({
         },
       })
 
-      await readAllChunks(response.body)
-
-      await updateUserWordsGenerated(user!.uid, output.split(' ').length)
-
-      return
+      await readStreamIntoOutput(response.body)
     } catch (error) {
       console.log(error)
       toast.error(
@@ -70,83 +58,16 @@ const TemplatePage = ({
     }
   }
 
-  function getListedDataFromChunk(chunk: string): Array<string> {
-    console.log(JSON.stringify(chunk))
-    const datum = [...chunk.matchAll(/^data: .*/gm)]
-    const listOfData: Array<string> = []
-    for (let i = 0; i < datum.length; i++) {
-      listOfData.push(datum[i][0].slice(6))
-    }
-    return listOfData
-  }
-
-  async function updateUserWordsGenerated(
-    userId: string,
-    numberOfWordsGenerated: number,
-  ) {
-    const db = getFirestore()
-    const counterRef = doc(db, 'counters', userId)
-    const counterSnap = await getDoc(counterRef)
-
-    if (counterSnap.exists()) {
-      await updateDoc(counterRef, {
-        words_generated: increment(numberOfWordsGenerated),
-      })
-    } else {
-      await setDoc(counterRef, {
-        words_generated: numberOfWordsGenerated,
-      })
-    }
-  }
-
-  async function readAllChunks(readableStream: any) {
+  async function readStreamIntoOutput(readableStream: any) {
     const reader = readableStream.getReader()
 
+    const decoder = new TextDecoder()
     let newOutput = ''
-    let chunkNumber = 0
-    let incompleteChunk = ''
     while (true) {
       const { value, done } = await reader.read()
       if (done) break
-
-      // get chunk in string format
-      const chunk = new TextDecoder().decode(value)
-
-      // separate chunks into lines of data
-      const listOfChunks = chunk.split('\n\n')
-
-      // iterate through chunks
-      for (let i = 0; i < listOfChunks.length; i++) {
-        // if string is empty, continue
-        if (!listOfChunks[i]) continue
-
-        let fullChunk = listOfChunks[i]
-
-        // if incompleteChunk not empty, append it to front of chunk then clear incompleteChunk
-        if (incompleteChunk) {
-          fullChunk = incompleteChunk + listOfChunks[i]
-          incompleteChunk = ''
-        }
-
-        // if chunk is last chunk, break
-        if (fullChunk.slice(6) == '[DONE]') {
-          break
-        }
-
-        // if chunk is data, parse it and append it to output
-        try {
-          const parsedData = JSON.parse(fullChunk.slice(6))
-          const text = parsedData.choices[0].text
-          if (text == '\n' && chunkNumber < 2) continue // beginning response usually has 2 new lines
-          newOutput += text
-          setOutput(newOutput)
-          chunkNumber++
-        } catch (error) {
-          // if chunk is incomplete, store it in incompleteChunk and continue
-          incompleteChunk = fullChunk
-          continue
-        }
-      }
+      newOutput += decoder.decode(value)
+      setOutput(newOutput)
     }
   }
 
