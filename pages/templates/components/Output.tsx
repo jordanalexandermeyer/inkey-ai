@@ -20,8 +20,8 @@ const Output = ({
   }, [isLoading])
 
   return (
-    <div className="px-6 py-3 border-b border-gray-200 group">
-      <div className="sticky top-0 flex justify-start border rounded-lg p-2 ">
+    <div className="px-6 py-3">
+      <div className="sticky top-14 z-10 flex justify-start border rounded-lg p-2 bg-white">
         <button
           onClick={(e) => {
             navigator.clipboard.writeText(
