@@ -6,6 +6,19 @@ import classnames from 'classnames'
 
 const Navigation = () => {
   const [showNavbar, setShowNavbar] = useState(false)
+  const [opacity, setOpacity] = useState(0)
+  const [showBackdrop, setShowBackdrop] = useState(false)
+
+  const removeBackdrop = () => {
+    setOpacity(0)
+    setTimeout(() => setShowBackdrop(false), 150)
+  }
+
+  const addBackdrop = () => {
+    setShowBackdrop(true)
+    // need to wait a bit for the above to render the element so the transition occurs
+    setTimeout(() => setOpacity(50), 10)
+  }
 
   const router = useRouter()
 
@@ -18,7 +31,13 @@ const Navigation = () => {
         <div className="flex text-gray-800 h-16">
           <button
             className="grow h-full flex items-center justify-center"
-            onClick={() => setShowNavbar(!showNavbar)}
+            onClick={() => {
+              if (showBackdrop) removeBackdrop()
+              else {
+                addBackdrop()
+              }
+              setShowNavbar(!showNavbar)
+            }}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -92,23 +111,39 @@ const Navigation = () => {
           </Link>
         </div>
       </div>
-      <div className="relative z-30 lg:hidden" role="dialog" aria-modal="true">
-        {showNavbar && (
-          <>
-            <div className="fixed inset-0 bg-gray-700 opacity-50 animate-fade-in"></div>
-            <div className="fixed inset-0 flex z-10 pb-16">
-              <div className="animate-slide-in relative flex w-full max-w-md sm:w-72">
-                <Navbar router={router} />
-              </div>
-              {showNavbar && (
-                <div
-                  className="w-full"
-                  onClick={() => setShowNavbar(false)}
-                ></div>
+      <div className="relative z-30 lg:hidden">
+        <>
+          {showBackdrop && (
+            <div
+              className={classnames(
+                'fixed inset-0 bg-gray-700 transition-opacity duration-150',
+                {
+                  'opacity-0': opacity == 0,
+                  'opacity-50': opacity == 50,
+                },
               )}
+            ></div>
+          )}
+          <div className="fixed inset-0 flex z-10 pb-16">
+            <div
+              className={classnames(
+                'transition-width duration-150 relative flex',
+                { 'w-72': showNavbar, 'w-0': !showNavbar },
+              )}
+            >
+              <Navbar router={router} />
             </div>
-          </>
-        )}
+            {showNavbar && (
+              <div
+                className="w-full"
+                onClick={() => {
+                  removeBackdrop()
+                  setShowNavbar(false)
+                }}
+              ></div>
+            )}
+          </div>
+        </>
       </div>
     </>
   )

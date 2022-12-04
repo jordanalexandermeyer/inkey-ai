@@ -6,19 +6,8 @@ module.exports = {
   ],
   theme: {
     extend: {
-      animation: {
-        'fade-in': 'fadeIn .15s',
-        'slide-in': 'slideIn .15s',
-      },
-      keyframes: {
-        fadeIn: {
-          '0%': { opacity: 0 },
-          '100%': { opacity: 0.5 },
-        },
-        slideIn: {
-          '0%': { transform: 'translate(-18rem)' },
-          '100%': { transform: 'translate(0)' },
-        },
+      transitionProperty: {
+        width: 'width',
       },
     },
   },
