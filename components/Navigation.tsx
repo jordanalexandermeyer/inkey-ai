@@ -124,10 +124,10 @@ const Navigation = () => {
               )}
             ></div>
           )}
-          <div className="fixed inset-0 flex z-10 pb-16">
+          <div className="lg:hidden fixed inset-0 w-0 flex z-10 pb-16">
             <div
               className={classnames(
-                'transition-width duration-150 relative flex',
+                'transition-width duration-150 relative flex z-10',
                 { 'w-72': showNavbar, 'w-0': !showNavbar },
               )}
             >
@@ -135,7 +135,7 @@ const Navigation = () => {
             </div>
             {showNavbar && (
               <div
-                className="w-full"
+                className="fixed inset-0"
                 onClick={() => {
                   removeBackdrop()
                   setShowNavbar(false)
