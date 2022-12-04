@@ -6,7 +6,7 @@ import { getAuth, signOut } from 'firebase/auth'
 const Navbar = ({ router }: { router: NextRouter }) => {
   const auth = getAuth()
   return (
-    <div className="flex flex-col flex-grow bg-white border-r border-gray-200 overflow-y-auto w-full sm:w-72 pt-7">
+    <div className="flex flex-col flex-grow bg-white border-r border-gray-200 overflow-hidden w-72 pt-7">
       <div className="flex-shrink-0 flex flex-col items-start justify-center px-5 space-y-6">
         <a href="/">
           <svg
@@ -190,7 +190,7 @@ const Navbar = ({ router }: { router: NextRouter }) => {
               onClick={() => signOut(auth)}
               className="w-full hover:bg-gray-50 rounded-md group flex items-center justify-between p-2 font-medium text-gray-600 hover:text-gray-800"
             >
-              <span className="flex items-center">
+              <span className="flex items-center whitespace-nowrap">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
