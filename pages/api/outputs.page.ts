@@ -70,11 +70,9 @@ export default async function handler(request: Request, response: Response) {
         stream: true,
         model: model,
         prompt: openaiPrompt,
-        temperature: 0.7,
-        top_p: 1,
+        temperature: 1,
+        top_p: 0.9,
         max_tokens: 1000,
-        stop: '##',
-        frequency_penalty: 0.75,
         user: userId || '',
       }),
       headers: {
