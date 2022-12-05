@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { getAuth } from 'firebase/auth'
 import { useAuthState } from 'react-firebase-hooks/auth'
@@ -33,6 +33,7 @@ const TemplatePage = ({
   const [numberOfCharacters, setNumberOfCharacters] = useState(0)
   const [generateIsLoading, setGenerateIsLoading] = useState(false)
   const [generateReferences, setGenerateReferences] = useState(false)
+  const textEditorReference: React.Ref<any> = useRef(null)
   const auth = getAuth()
   const [user] = useAuthState(auth)
 
@@ -81,6 +82,7 @@ const TemplatePage = ({
     setGenerateIsLoading(true)
     await getOutputs(prompt, user!.uid)
     setGenerateIsLoading(false)
+    textEditorReference.current.focus()
     toast.dismiss(toastId)
   }
 
@@ -282,7 +284,7 @@ const TemplatePage = ({
                   <Output
                     toast={toast}
                     text={output}
-                    isLoading={generateIsLoading}
+                    textEditorReference={textEditorReference}
                   />
                 ) : (
                   <OutputEmptyState />

@@ -7,25 +7,19 @@ import { useEffect, useRef } from 'react'
 const Output = ({
   toast,
   text,
-  isLoading,
+  textEditorReference,
 }: {
   text: string
   toast: any
-  isLoading: boolean
+  textEditorReference: any
 }) => {
-  const textEditorReference: React.Ref<any> = useRef(null)
-
-  useEffect(() => {
-    if (isLoading) textEditorReference.current.focus()
-  }, [isLoading])
-
   return (
     <div className="px-6 py-3">
       <div className="sticky top-14 z-10 flex justify-start border rounded-lg p-2 bg-white">
         <button
           onClick={(e) => {
             navigator.clipboard.writeText(
-              textEditorReference.current!.textContent,
+              textEditorReference.current.textContent,
             )
             toast.success('Copied to clipboard!')
           }}
