@@ -26,6 +26,7 @@ export default async function handler(request: Request, response: Response) {
     id,
     userId,
     inputs: { prompt },
+    references,
   } = await request.json()
 
   let openaiPrompt
@@ -53,7 +54,7 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case COMPARE_CONTRAST_ESSAY_ID:
-      openaiPrompt = `Write a compare and contrast essay that answers the following prompt: ${prompt}`
+      openaiPrompt = `Write a compare and contrast essay that answers the following prompt: "${prompt}"`
       model = 'text-davinci-003'
       break
     default:
@@ -61,6 +62,11 @@ export default async function handler(request: Request, response: Response) {
         status: 400,
         statusText: 'Bad Request',
       })
+  }
+
+  if (references) {
+    openaiPrompt +=
+      ' Provide data to support your claims with specific sources. Provide references at the end of the essay citing your sources.'
   }
 
   try {
@@ -72,7 +78,7 @@ export default async function handler(request: Request, response: Response) {
         prompt: openaiPrompt,
         temperature: 1,
         top_p: 0.9,
-        max_tokens: 1000,
+        max_tokens: 1500,
         user: userId || '',
       }),
       headers: {

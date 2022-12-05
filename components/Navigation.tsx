@@ -27,16 +27,18 @@ const Navigation = () => {
       <div className="hidden lg:flex lg:w-72 lg:flex-col lg:fixed lg:inset-y-0">
         <Navbar router={router} />
       </div>
-      <div className="fixed bottom-0 border-t border-gray-200 left-0 w-screen bg-white shadow z-40 lg:hidden">
+      <div className="lg:hidden fixed bottom-0 border-t border-gray-200 left-0 w-screen bg-white shadow z-40">
         <div className="flex text-gray-800 h-16">
           <button
             className="grow h-full flex items-center justify-center"
             onClick={() => {
-              if (showBackdrop) removeBackdrop()
-              else {
+              if (showBackdrop) {
+                removeBackdrop()
+                setShowNavbar(false)
+              } else {
                 addBackdrop()
+                setShowNavbar(true)
               }
-              setShowNavbar(!showNavbar)
             }}
           >
             <svg
@@ -111,39 +113,29 @@ const Navigation = () => {
           </Link>
         </div>
       </div>
-      <div className="relative z-30 lg:hidden">
-        <>
-          {showBackdrop && (
-            <div
-              className={classnames(
-                'fixed inset-0 bg-gray-700 transition-opacity duration-150',
-                {
-                  'opacity-0': opacity == 0,
-                  'opacity-50': opacity == 50,
-                },
-              )}
-            ></div>
+      {showBackdrop && (
+        <div
+          className={classnames(
+            'lg:hidden fixed inset-0 bg-gray-700 transition-opacity duration-150 z-20',
+            {
+              'opacity-0': opacity == 0,
+              'opacity-50': opacity == 50,
+            },
           )}
-          <div className="lg:hidden fixed inset-0 w-0 flex z-10 pb-16">
-            <div
-              className={classnames(
-                'transition-width duration-150 relative flex z-10',
-                { 'w-72': showNavbar, 'w-0': !showNavbar },
-              )}
-            >
-              <Navbar router={router} />
-            </div>
-            {showNavbar && (
-              <div
-                className="fixed inset-0"
-                onClick={() => {
-                  removeBackdrop()
-                  setShowNavbar(false)
-                }}
-              ></div>
-            )}
-          </div>
-        </>
+          onClick={() => {
+            removeBackdrop()
+            setShowNavbar(false)
+          }}
+        ></div>
+      )}
+
+      <div
+        className={classnames(
+          'lg:hidden fixed inset-0 transition-width duration-150 flex z-20 pb-16',
+          { 'w-72': showNavbar, 'w-0': !showNavbar },
+        )}
+      >
+        <Navbar router={router} />
       </div>
     </>
   )
