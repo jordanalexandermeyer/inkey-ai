@@ -1,6 +1,7 @@
 import classNames from 'classnames'
 import Link from 'next/link'
 import { NextRouter } from 'next/router'
+import { ReactNode } from 'react'
 
 const NavbarLink = ({
   router,
@@ -9,7 +10,7 @@ const NavbarLink = ({
 }: {
   router: NextRouter
   href: string
-  children: JSX.Element[]
+  children: ReactNode
 }) => {
   return (
     <ul className="pb-1 px-3">

@@ -1,13 +1,13 @@
 import classNames from 'classnames'
-import Head from 'next/head'
 import React, { useState } from 'react'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 import { getAuth } from 'firebase/auth'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import ProtectedPage from '../../../components/ProtectedPage'
-import Navigation from '../../../components/Navigation'
 import Output from './Output'
 import OutputEmptyState from './OutputEmptyState'
+import Page from '../../../components/Page'
+import ReactTooltip from 'react-tooltip'
 
 interface Output {
   text: string
@@ -19,17 +19,20 @@ const TemplatePage = ({
   title,
   subtitle,
   promptPlaceholder,
+  supportReferences,
 }: {
   id: string
   icon: string
   title: string
   subtitle: string
   promptPlaceholder: string
+  supportReferences?: boolean
 }) => {
   const [prompt, setPrompt] = useState('')
   const [output, setOutput] = useState('')
   const [numberOfCharacters, setNumberOfCharacters] = useState(0)
   const [generateIsLoading, setGenerateIsLoading] = useState(false)
+  const [generateReferences, setGenerateReferences] = useState(false)
   const auth = getAuth()
   const [user] = useAuthState(auth)
 
@@ -43,6 +46,7 @@ const TemplatePage = ({
             prompt,
           },
           userId,
+          references: generateReferences,
         }),
         headers: {
           'Content-Type': 'application/json',
@@ -91,13 +95,7 @@ const TemplatePage = ({
 
   return (
     <ProtectedPage>
-      <Head>
-        <title>{title} - Ghostwritten</title>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      </Head>
-      <div>
-        <Toaster />
-        <Navigation />
+      <Page title={title}>
         <div className="relative lg:ml-72">
           <div className="relative flex-1 w-full min-h-screen">
             <div className="overflow-y-auto xl:mb-0 xl:absolute xl:w-1/2 xl:inset-y-0 xl:left-0 xl:border-r xl:border-gray-200 bg-gray-50">
@@ -117,7 +115,7 @@ const TemplatePage = ({
                     <p className="w-full text-sm text-gray-500">{subtitle}</p>
                   </div>
                 </div>
-                <div className="p-3 xl:p-6 xl:pb-28 flex-1 space-y-6">
+                <div className="p-3 xl:p-6 xl:pb-28 flex-1 space-y-6 flex flex-col content-start">
                   <div>
                     <div className="mb-6 last:mb-1">
                       <div className="flex flex-col flex-1">
@@ -149,16 +147,56 @@ const TemplatePage = ({
                       </div>
                     </div>
                   </div>
-                  <button
-                    className="inline-flex items-center overflow-hidden ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2inline-flex justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-gray-700 bg-white border border-black-300 shadow-sm hover:text-gray-500 selectionRing active:bg-gray-50 active:text-gray-800 px-3 py-2 text-sm leading-3"
-                    type="button"
-                    onClick={() => {
-                      setPrompt(promptPlaceholder)
-                      setNumberOfCharacters(promptPlaceholder.length)
-                    }}
-                  >
-                    Try the example prompt
-                  </button>
+                  <div>
+                    <button
+                      className="inline-flex items-center overflow-hidden ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2inline-flex justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-gray-700 bg-white border border-black-300 shadow-sm hover:text-gray-500 selectionRing active:bg-gray-50 active:text-gray-800 px-3 py-2 text-sm leading-3"
+                      type="button"
+                      onClick={() => {
+                        setPrompt(promptPlaceholder)
+                        setNumberOfCharacters(promptPlaceholder.length)
+                      }}
+                    >
+                      Try the example prompt
+                    </button>
+                  </div>
+                  {supportReferences && (
+                    <div>
+                      <div className="inline-flex relative items-center">
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          checked={generateReferences}
+                          readOnly={true}
+                        />
+                        <div
+                          onClick={(e) => {
+                            setGenerateReferences(!generateReferences)
+                          }}
+                          className="cursor-pointer w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
+                        ></div>
+                        <span className="ml-3 mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                          Add references
+                        </span>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 48 48"
+                          fill="red"
+                          className="w-5"
+                          data-tip="This feature is experimental and will give you fake data and references."
+                        >
+                          <path
+                            xmlns="http://www.w3.org/2000/svg"
+                            d="M2 42 24 4l22 38Zm5.2-3h33.6L24 10Zm17-2.85q.65 0 1.075-.425.425-.425.425-1.075 0-.65-.425-1.075-.425-.425-1.075-.425-.65 0-1.075.425Q22.7 34 22.7 34.65q0 .65.425 1.075.425.425 1.075.425Zm-1.5-5.55h3V19.4h-3Zm1.3-6.1Z"
+                          />
+                        </svg>
+                        <ReactTooltip
+                          effect="solid"
+                          place="right"
+                          type="error"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="pointer-events-none xl:bottom-0 xl:sticky xl:w-full xl:left-0 xl:z-20">
                   <div className="flex items-center justify-between px-3 pb-3 border-b border-gray-200 pointer-events-auto xl:py-3 bg-gray-50 xl:bg-white xl:border-t xl:border-0 xl:border-gray-200 xl:px-6">
@@ -253,7 +291,7 @@ const TemplatePage = ({
             </div>
           </div>
         </div>
-      </div>
+      </Page>
     </ProtectedPage>
   )
 }
