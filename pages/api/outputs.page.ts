@@ -8,7 +8,6 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 import initializeFirebaseApp from '../../lib/initializeFirebase'
-import { EssayLength } from '../templates/components/TemplatePage'
 import { EssayId } from '../templates/templates'
 
 export const config = {
@@ -84,7 +83,8 @@ export default async function handler(request: Request, response: Response) {
       })
   }
 
-  if (length == EssayLength.LONG) {
+  if (length == 'long') {
+    // couldn't use EssayLength.LONG here because of edge runtime doesn't support the eval() function
     openaiPrompt =
       `In approximately 1000 words, ` +
       openaiPrompt[0].toLowerCase() +
