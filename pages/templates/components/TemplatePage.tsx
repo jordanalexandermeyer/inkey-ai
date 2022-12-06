@@ -8,31 +8,34 @@ import Output from './Output'
 import OutputEmptyState from './OutputEmptyState'
 import Page from '../../../components/Page'
 import ReactTooltip from 'react-tooltip'
+import { Template } from '../templates'
 
 interface Output {
   text: string
+}
+
+export enum EssayLength {
+  SHORT = 'short',
+  LONG = 'long',
 }
 
 const TemplatePage = ({
   id,
   icon,
   title,
-  subtitle,
+  description,
   promptPlaceholder,
+  supportQuotes,
   supportReferences,
-}: {
-  id: string
-  icon: string
-  title: string
-  subtitle: string
-  promptPlaceholder: string
-  supportReferences?: boolean
-}) => {
+  supportRequestedLength,
+}: Template) => {
   const [prompt, setPrompt] = useState('')
   const [output, setOutput] = useState('')
   const [numberOfCharacters, setNumberOfCharacters] = useState(0)
   const [generateIsLoading, setGenerateIsLoading] = useState(false)
+  const [addQuotes, setAddQuotes] = useState(false)
   const [generateReferences, setGenerateReferences] = useState(false)
+  const [requestedLength, setRequestedLength] = useState(EssayLength.SHORT)
   const textEditorReference: React.Ref<any> = useRef(null)
   const auth = getAuth()
   const [user] = useAuthState(auth)
@@ -47,7 +50,9 @@ const TemplatePage = ({
             prompt,
           },
           userId,
-          references: generateReferences,
+          ...(supportQuotes && { quotes: addQuotes }),
+          ...(supportReferences && { references: generateReferences }),
+          ...(supportRequestedLength && { length: requestedLength }),
         }),
         headers: {
           'Content-Type': 'application/json',
@@ -114,7 +119,9 @@ const TemplatePage = ({
                     <h2 className="text-xl font-bold leading-7 text-gray-900 sm:truncate">
                       {title}
                     </h2>
-                    <p className="w-full text-sm text-gray-500">{subtitle}</p>
+                    <p className="w-full text-sm text-gray-500">
+                      {description}
+                    </p>
                   </div>
                 </div>
                 <div className="p-3 xl:p-6 xl:pb-28 flex-1 space-y-6 flex flex-col content-start">
@@ -161,8 +168,101 @@ const TemplatePage = ({
                       Try the example prompt
                     </button>
                   </div>
-                  {supportReferences && (
+                  {supportRequestedLength && (
                     <div>
+                      <label
+                        htmlFor="length"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Length
+                      </label>
+                      <select
+                        id="length"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        onChange={(event) => {
+                          const length = event.target.value as EssayLength
+                          setRequestedLength(length)
+                        }}
+                      >
+                        <option value={EssayLength.SHORT}>
+                          Short (~250 words)
+                        </option>
+                        <option value={EssayLength.LONG}>
+                          Long (~500 words)
+                        </option>
+                      </select>
+                    </div>
+                  )}
+                  {supportQuotes && (
+                    <div className="flex flex-col">
+                      <div className="inline-flex items-center mb-2">
+                        <label
+                          htmlFor="length"
+                          className="block text-sm mr-1 font-medium text-gray-900 dark:text-white"
+                        >
+                          Add quotes
+                        </label>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 48 48"
+                          fill="red"
+                          className="w-5"
+                          data-tip="This feature is experimental and will add quotes that may be fake."
+                        >
+                          <path
+                            xmlns="http://www.w3.org/2000/svg"
+                            d="M2 42 24 4l22 38Zm5.2-3h33.6L24 10Zm17-2.85q.65 0 1.075-.425.425-.425.425-1.075 0-.65-.425-1.075-.425-.425-1.075-.425-.65 0-1.075.425Q22.7 34 22.7 34.65q0 .65.425 1.075.425.425 1.075.425Zm-1.5-5.55h3V19.4h-3Zm1.3-6.1Z"
+                          />
+                        </svg>
+                        <ReactTooltip
+                          effect="solid"
+                          place="right"
+                          type="error"
+                        />
+                      </div>
+                      <div className="inline-flex relative items-center">
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          checked={addQuotes}
+                          readOnly={true}
+                        />
+                        <div
+                          onClick={(e) => {
+                            setAddQuotes(!addQuotes)
+                          }}
+                          className="cursor-pointer w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
+                        ></div>
+                      </div>
+                    </div>
+                  )}
+                  {supportReferences && (
+                    <div className="flex flex-col">
+                      <div className="inline-flex items-center mb-2">
+                        <label
+                          htmlFor="length"
+                          className="block text-sm mr-1 font-medium text-gray-900 dark:text-white"
+                        >
+                          Generate references
+                        </label>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 48 48"
+                          fill="red"
+                          className="w-5"
+                          data-tip="This feature is experimental and may add fake data and references."
+                        >
+                          <path
+                            xmlns="http://www.w3.org/2000/svg"
+                            d="M2 42 24 4l22 38Zm5.2-3h33.6L24 10Zm17-2.85q.65 0 1.075-.425.425-.425.425-1.075 0-.65-.425-1.075-.425-.425-1.075-.425-.65 0-1.075.425Q22.7 34 22.7 34.65q0 .65.425 1.075.425.425 1.075.425Zm-1.5-5.55h3V19.4h-3Zm1.3-6.1Z"
+                          />
+                        </svg>
+                        <ReactTooltip
+                          effect="solid"
+                          place="right"
+                          type="error"
+                        />
+                      </div>
                       <div className="inline-flex relative items-center">
                         <input
                           type="checkbox"
@@ -176,26 +276,6 @@ const TemplatePage = ({
                           }}
                           className="cursor-pointer w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
                         ></div>
-                        <span className="ml-3 mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                          Add references
-                        </span>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 48 48"
-                          fill="red"
-                          className="w-5"
-                          data-tip="This feature is experimental and will give you fake data and references."
-                        >
-                          <path
-                            xmlns="http://www.w3.org/2000/svg"
-                            d="M2 42 24 4l22 38Zm5.2-3h33.6L24 10Zm17-2.85q.65 0 1.075-.425.425-.425.425-1.075 0-.65-.425-1.075-.425-.425-1.075-.425-.65 0-1.075.425Q22.7 34 22.7 34.65q0 .65.425 1.075.425.425 1.075.425Zm-1.5-5.55h3V19.4h-3Zm1.3-6.1Z"
-                          />
-                        </svg>
-                        <ReactTooltip
-                          effect="solid"
-                          place="right"
-                          type="error"
-                        />
                       </div>
                     </div>
                   )}

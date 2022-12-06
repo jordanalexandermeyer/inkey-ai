@@ -7,7 +7,7 @@ import TemplatesBody from './components/TemplatesBody'
 const Templates: NextPage = () => {
   return (
     <ProtectedPage>
-      <Page title="Templates - Ghostwritten">
+      <Page title="Templates">
         <TemplatesBody />
         {/* <Footer /> */}
       </Page>

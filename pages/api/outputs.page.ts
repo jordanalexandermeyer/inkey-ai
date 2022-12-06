@@ -20,6 +20,8 @@ export default async function handler(request: Request, response: Response) {
     userId,
     inputs: { prompt },
     references,
+    quotes,
+    length,
   } = await request.json()
 
   let openaiPrompt
@@ -80,6 +82,19 @@ export default async function handler(request: Request, response: Response) {
         statusText: 'Bad Request',
       })
   }
+
+  if (length == 'long') {
+    // couldn't use EssayLength.LONG here because of edge runtime doesn't support the eval() function
+    openaiPrompt =
+      `In approximately 1000 words, ` +
+      openaiPrompt[0].toLowerCase() +
+      openaiPrompt.slice(1)
+
+    openaiPrompt +=
+      ' Use numerous examples for each argument presented. Be very descriptive.'
+  }
+
+  if (quotes) openaiPrompt += ' Include quotes supporting each argument.'
 
   if (references) {
     openaiPrompt +=
