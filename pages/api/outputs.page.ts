@@ -91,7 +91,7 @@ export default async function handler(request: Request, response: Response) {
       openaiPrompt.slice(1)
 
     openaiPrompt +=
-      ' Use numerous examples for each argument presented. Be very descriptive.'
+      ' Use numerous examples for each argument presented. Please be as detailed as possible.'
   }
 
   if (quotes) openaiPrompt += ' Include quotes supporting each argument.'

@@ -69,7 +69,7 @@ export const templates: TemplateMap = {
     description:
       "A persuasive essay is intended to convince the reader of the writer's opinion on a particular subject, using evidence and reasoning to support the writer's position.",
     promptPlaceholder:
-      'Write an essay persuading readers that working remotely is superior to working in-person.',
+      'Write an essay persuading readers that working in-person is superior to working remotely.',
     supportQuotes: true,
     supportReferences: true,
     supportRequestedLength: true,
