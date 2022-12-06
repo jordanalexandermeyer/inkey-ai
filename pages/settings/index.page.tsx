@@ -1,20 +1,14 @@
 import type { NextPage } from 'next'
-import Head from 'next/head'
-import Navigation from '../../components/Navigation'
+import Page from '../../components/Page'
 import ProtectedPage from '../../components/ProtectedPage'
 import SettingsBody from './SettingsBody'
 
 const Documents: NextPage = () => {
   return (
     <ProtectedPage>
-      <Head>
-        <title>Settings - Ghostwritten</title>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      </Head>
-      <div>
-        <Navigation />
+      <Page title="Settings">
         <SettingsBody />
-      </div>
+      </Page>
     </ProtectedPage>
   )
 }

@@ -8,6 +8,7 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 import initializeFirebaseApp from '../../lib/initializeFirebase'
+import { EssayLength } from '../templates/components/TemplatePage'
 import { EssayId } from '../templates/templates'
 
 export const config = {
@@ -20,6 +21,8 @@ export default async function handler(request: Request, response: Response) {
     userId,
     inputs: { prompt },
     references,
+    quotes,
+    length,
   } = await request.json()
 
   let openaiPrompt
@@ -80,6 +83,18 @@ export default async function handler(request: Request, response: Response) {
         statusText: 'Bad Request',
       })
   }
+
+  if (length == EssayLength.LONG) {
+    openaiPrompt =
+      `In approximately 1000 words, ` +
+      openaiPrompt[0].toLowerCase() +
+      openaiPrompt.slice(1)
+
+    openaiPrompt +=
+      ' Use numerous examples for each argument presented. Be very descriptive.'
+  }
+
+  if (quotes) openaiPrompt += ' Include quotes supporting each argument.'
 
   if (references) {
     openaiPrompt +=

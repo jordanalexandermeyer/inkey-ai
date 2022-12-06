@@ -15,9 +15,12 @@ const DynamicTemplatePage: NextPage = () => {
       id={pageData.id}
       icon={pageData.icon}
       title={pageData.title}
-      subtitle={pageData.description}
+      description={pageData.description}
       promptPlaceholder={pageData.promptPlaceholder}
+      supportQuotes={pageData.supportQuotes}
       supportReferences={pageData.supportReferences}
+      supportRequestedLength={pageData.supportRequestedLength}
+      href={pageData.href}
     />
   )
 }
