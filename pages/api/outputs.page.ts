@@ -7,15 +7,8 @@ import {
   setDoc,
   updateDoc,
 } from 'firebase/firestore'
-import {
-  COLLEGE_APP_ESSAY_ID,
-  COMPARE_CONTRAST_ESSAY_ID,
-  EXPOSITORY_ESSAY_ID,
-  GENERAL_ESSAY_ID,
-  PERSUASIVE_ESSAY_ID,
-  THESIS_ID,
-} from '../../lib/constants'
 import initializeFirebaseApp from '../../lib/initializeFirebase'
+import { EssayId } from '../templates/templates'
 
 export const config = {
   runtime: 'experimental-edge',
@@ -33,28 +26,52 @@ export default async function handler(request: Request, response: Response) {
   let model
 
   switch (id) {
-    case GENERAL_ESSAY_ID:
+    case EssayId.GENERAL_ESSAY_ID:
       openaiPrompt = `Write an essay that answers the following prompt: "${prompt}"`
       model = 'text-davinci-003'
       break
-    case THESIS_ID:
+    case EssayId.THESIS_ID:
       openaiPrompt = `Write a one sentence thesis statement that contains three supporting points for an essay with the following prompt: "${prompt}"`
       model = 'text-davinci-003'
       break
-    case COLLEGE_APP_ESSAY_ID:
+    case EssayId.COLLEGE_APP_ESSAY_ID:
       openaiPrompt = `Write a college application essay that answers the following prompt: "${prompt}"`
       model = 'text-davinci-003'
       break
-    case PERSUASIVE_ESSAY_ID:
+    case EssayId.PERSUASIVE_ESSAY_ID:
       openaiPrompt = `Write a persuasive essay that answers the following prompt: "${prompt}"`
       model = 'text-davinci-003'
       break
-    case EXPOSITORY_ESSAY_ID:
+    case EssayId.EXPOSITORY_ESSAY_ID:
       openaiPrompt = `Write an expository essay that answers the following prompt: "${prompt}"`
       model = 'text-davinci-003'
       break
-    case COMPARE_CONTRAST_ESSAY_ID:
+    case EssayId.COMPARE_CONTRAST_ESSAY_ID:
       openaiPrompt = `Write a compare and contrast essay that answers the following prompt: "${prompt}"`
+      model = 'text-davinci-003'
+      break
+    case EssayId.ARGUMENTATIVE_ESSAY_ID:
+      openaiPrompt = `Write an argumentative essay that answers the following prompt: "${prompt}"`
+      model = 'text-davinci-003'
+      break
+    case EssayId.CAUSE_EFFECT_ESSAY_ID:
+      openaiPrompt = `Write a cause and effect essay that answers the following prompt: "${prompt}"`
+      model = 'text-davinci-003'
+      break
+    case EssayId.NARRATIVE_ESSAY_ID:
+      openaiPrompt = `Write a narrative essay that answers the following prompt: "${prompt}"`
+      model = 'text-davinci-003'
+      break
+    case EssayId.DEFINITION_ESSAY_ID:
+      openaiPrompt = `Write a definition essay that answers the following prompt: "${prompt}"`
+      model = 'text-davinci-003'
+      break
+    case EssayId.DESCRIPTIVE_ESSAY_ID:
+      openaiPrompt = `Write a descriptive essay that answers the following prompt: "${prompt}"`
+      model = 'text-davinci-003'
+      break
+    case EssayId.LITERARY_ESSAY_ID:
+      openaiPrompt = `Write a literary essay that answers the following prompt: "${prompt}"`
       model = 'text-davinci-003'
       break
     default:
