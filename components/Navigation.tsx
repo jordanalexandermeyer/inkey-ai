@@ -25,7 +25,7 @@ const Navigation = () => {
   return (
     <>
       <div className="hidden lg:flex lg:w-72 lg:flex-col lg:fixed lg:inset-y-0">
-        <Navbar router={router} />
+        <Navbar id="1" />
       </div>
       <div className="lg:hidden fixed bottom-0 border-t border-gray-200 left-0 w-screen bg-white shadow z-40">
         <div className="flex text-gray-800 h-16">
@@ -128,14 +128,13 @@ const Navigation = () => {
           }}
         ></div>
       )}
-
       <div
         className={classnames(
           'lg:hidden fixed inset-0 transition-width duration-150 flex z-20 pb-16',
           { 'w-72': showNavbar, 'w-0': !showNavbar },
         )}
       >
-        <Navbar router={router} />
+        <Navbar id="2" />
       </div>
     </>
   )
