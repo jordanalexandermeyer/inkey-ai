@@ -1,4 +1,4 @@
-import { templates } from '../templates'
+import { EssayId, templates } from '../templates'
 import TemplateCard from './TemplateCard'
 
 const TemplatesBody = () => {
@@ -85,14 +85,14 @@ const TemplatesBody = () => {
                     })}
                   </div> */}
                   <div className="my-2 grid gap-5 mb-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {templates.map((template, index) => {
+                    {(Object.keys(templates) as EssayId[]).map((id, index) => {
                       return (
                         <TemplateCard
                           key={index}
-                          icon={template.icon}
-                          title={template.title}
-                          description={template.description}
-                          href={template.href}
+                          icon={templates[id].icon}
+                          title={templates[id].title}
+                          description={templates[id].description}
+                          href={templates[id].href}
                         />
                       )
                     })}

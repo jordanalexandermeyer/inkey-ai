@@ -1,6 +1,0 @@
-export const GENERAL_ESSAY_ID = 'general-essay'
-export const THESIS_ID = 'thesis'
-export const COLLEGE_APP_ESSAY_ID = 'college-app-essay'
-export const PERSUASIVE_ESSAY_ID = 'persuasive-essay'
-export const EXPOSITORY_ESSAY_ID = 'expository-essay'
-export const COMPARE_CONTRAST_ESSAY_ID = 'compare-contrast-essay'
