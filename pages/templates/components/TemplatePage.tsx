@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { getAuth } from 'firebase/auth'
 import { useAuthState } from 'react-firebase-hooks/auth'
@@ -114,13 +114,28 @@ const TemplatePage = ({
     setOutput('')
   }
 
+  const disabled = () => {
+    let isThereEmptyQuote = false
+
+    for (const key in Object.keys(quotes)) {
+      if (quotes[key].value == '') isThereEmptyQuote = true
+    }
+
+    return !prompt || isThereEmptyQuote || generateIsLoading
+  }
+
   return (
     <ProtectedPage>
       <Page title={title}>
         <div className="relative lg:ml-72">
           <div className="relative flex-1 w-full min-h-screen">
             <div className="overflow-y-auto xl:mb-0 xl:absolute xl:w-1/2 xl:inset-y-0 xl:left-0 xl:border-r xl:border-gray-200 bg-gray-50">
-              <form className="flex flex-col h-full">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault()
+                }}
+                className="flex flex-col h-full"
+              >
                 <div className="sticky top-0 flex items-center px-6 py-4 bg-white border-b border-gray-200 z-10">
                   <div className="mr-6">
                     <div className="flex items-center justify-center w-10 h-10 text-gray-500">
@@ -212,7 +227,7 @@ const TemplatePage = ({
                     <div className="flex flex-col">
                       <div className="inline-flex items-center mb-2">
                         <label
-                          htmlFor="length"
+                          htmlFor="add-quotes"
                           className="block text-sm mr-1 font-medium text-gray-900 dark:text-white"
                         >
                           Add quotes
@@ -234,6 +249,7 @@ const TemplatePage = ({
                       </div>
                       <div className="inline-flex relative items-center">
                         <input
+                          id="add-quotes"
                           type="checkbox"
                           className="sr-only peer"
                           checked={addQuotes}
@@ -241,8 +257,9 @@ const TemplatePage = ({
                         />
                         <div
                           onClick={(e) => {
+                            if (addQuotes) setQuotes({})
+                            else setQuotes({ '0': { value: '' } })
                             setAddQuotes(!addQuotes)
-                            setQuotes({ '0': { value: '' } })
                           }}
                           className="cursor-pointer w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
                         ></div>
@@ -265,7 +282,10 @@ const TemplatePage = ({
                       </div>
                       {Object.keys(quotes).map((index) => {
                         return (
-                          <div className="relative flex items-center mb-2">
+                          <div
+                            key={index}
+                            className="relative flex items-center mb-2"
+                          >
                             <input
                               maxLength={250}
                               placeholder={quotePlaceholder || ''}
@@ -290,9 +310,9 @@ const TemplatePage = ({
                       <div className="flex justify-center">
                         <button
                           type="button"
+                          disabled={Object.keys(quotes).length > 3}
                           className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-1 text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                           onClick={() => {
-                            if (Object.keys(quotes).length > 3) return
                             setQuotes((quotes) => {
                               return {
                                 ...quotes,
@@ -318,9 +338,9 @@ const TemplatePage = ({
                         </button>
                         <button
                           type="button"
+                          disabled={Object.keys(quotes).length < 2}
                           className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-1 text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                           onClick={() => {
-                            if (Object.keys(quotes).length < 2) return
                             setQuotes((quotes) => {
                               const newQuotes = quotes
                               delete newQuotes[
@@ -398,20 +418,16 @@ const TemplatePage = ({
                     </button>
                     <div className="flex">
                       <button
+                        type="submit"
                         className={classNames(
-                          'inline-flex items-center ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2inline-flex justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-white shadow-sm selectionRing px-6 py-4 text-base w-full',
+                          'inline-flex items-center ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 inline-flex justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-white shadow-sm selectionRing px-6 py-4 text-base w-full',
                           {
-                            'active:bg-blue-800 hover:bg-blue-400 bg-blue-500':
-                              prompt && !generateIsLoading,
-                            'bg-blue-400 hover:bg-blue-300 cursor-not-allowed':
-                              !prompt || generateIsLoading,
+                            'active:bg-blue-800 hover:bg-blue-400 bg-blue-500': !disabled(),
+                            'bg-blue-400 hover:bg-blue-300 cursor-not-allowed': disabled(),
                           },
                         )}
-                        disabled={!prompt || generateIsLoading}
-                        onClick={(event) => {
-                          event.preventDefault()
-                          handleGenerate()
-                        }}
+                        disabled={disabled()}
+                        onClick={handleGenerate}
                       >
                         <div
                           className={classNames({

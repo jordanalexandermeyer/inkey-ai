@@ -34,8 +34,8 @@ const Navbar = ({ id }: { id: string }) => {
                 y2="0.312805"
                 gradientUnits="userSpaceOnUse"
               >
-                <stop stop-color="#542DF0" stop-opacity="0.1" />
-                <stop offset="1" stop-color="#542DF0" />
+                <stop stopColor="#542DF0" stopOpacity="0.1" />
+                <stop offset="1" stopColor="#542DF0" />
               </linearGradient>
             </defs>
           </svg>
