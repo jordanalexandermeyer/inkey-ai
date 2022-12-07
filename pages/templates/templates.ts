@@ -4,6 +4,7 @@ export interface Template {
   title: string
   description: string
   promptPlaceholder: string
+  quotePlaceholder?: string
   supportQuotes?: boolean
   supportReferences?: boolean
   supportRequestedLength?: boolean
@@ -37,6 +38,8 @@ export const templates: TemplateMap = {
     description: 'Ask a prompt and receive a compelling essay.',
     promptPlaceholder:
       'What is the importance of investing money in space exploration?',
+    quotePlaceholder:
+      '"That\'s one small step for man, one giant leap for mankind." - Neil Armstrong',
     supportQuotes: true,
     supportReferences: true,
     supportRequestedLength: true,
@@ -59,6 +62,8 @@ export const templates: TemplateMap = {
       'A college application essay is a written statement that is submitted as part of a college application, in which the writer presents their goals, experiences, and qualifications in order to demonstrate their suitability for admission to the college.',
     promptPlaceholder:
       'Some students have a background, identity, interest, or talent that is so meaningful they believe their application would be incomplete without it. If this sounds like you, then please share your story.',
+    quotePlaceholder: 'My father said, "You can\'t live here anymore."',
+    supportQuotes: true,
     supportRequestedLength: true,
     href: `/templates/${EssayId.COLLEGE_APP_ESSAY_ID}`,
   },
@@ -70,6 +75,8 @@ export const templates: TemplateMap = {
       "A persuasive essay is intended to convince the reader of the writer's opinion on a particular subject, using evidence and reasoning to support the writer's position.",
     promptPlaceholder:
       'Write an essay persuading readers that working in-person is superior to working remotely.',
+    quotePlaceholder:
+      'According to Elon Musk, "Remote work is no longer acceptable."',
     supportQuotes: true,
     supportReferences: true,
     supportRequestedLength: true,
@@ -83,6 +90,8 @@ export const templates: TemplateMap = {
       'An expository essay explains or informs the reader about a particular topic or idea. The purpose of this type of essay is to provide information and clarify ideas or concepts for the reader.',
     promptPlaceholder:
       'Describe how communication has changed in the last twenty years.',
+    quotePlaceholder:
+      '"iPhone is a revolutionary and magical product that is literally five years ahead of any other mobile phone," - Steve Jobs',
     supportQuotes: true,
     supportReferences: true,
     supportRequestedLength: true,
@@ -96,6 +105,8 @@ export const templates: TemplateMap = {
       'A compare and contrast essay compares and contrasts two or more subjects, and analyzes the similarities and differences between them.',
     promptPlaceholder:
       'Compare and contrast the book Lord of the Flies with the TV show Survivor.',
+    quotePlaceholder:
+      '"Ralph wept for the end of innocence, the darkness of man\'s heart, and the fall through the air of the true, wise friend called Piggy." - William Golding',
     supportQuotes: true,
     supportReferences: true,
     supportRequestedLength: true,
@@ -109,6 +120,8 @@ export const templates: TemplateMap = {
       "An argumentative essay presents the writer's point of view on a particular issue and provides evidence and arguments to support that point of view.",
     promptPlaceholder:
       'Do you think middle schoolers should have jobs like babysitting or mowing lawns?',
+    quotePlaceholder:
+      '"You have a lifetime to work, but children are only young once." - Polish proverb',
     supportQuotes: true,
     supportReferences: true,
     supportRequestedLength: true,
@@ -122,6 +135,8 @@ export const templates: TemplateMap = {
       'A cause and effect essay explains the cause of a particular phenomenon and its effects on something else.',
     promptPlaceholder:
       'Write an essay on the causes of famine and the effects it has on human population.',
+    quotePlaceholder:
+      '"This is the moment when we must come together to save this planet. Let us resolve that we will not leave our children a world where the oceans rise and famine spreads and terrible storms devastate our lands." - Barack Obama',
     supportQuotes: true,
     supportReferences: true,
     supportRequestedLength: true,
@@ -135,6 +150,8 @@ export const templates: TemplateMap = {
       'A narrative essay tells a story or relates a personal experience.',
     promptPlaceholder:
       'Most of us remember exactly where we were and what we were doing when we received shocking or important news. Tell the story of what you were doing when you heard about an important event and how that news affected you.',
+    quotePlaceholder: '"Your aunt is going to live." - Doctor Jerry',
+    supportQuotes: true,
     supportRequestedLength: true,
     href: `/templates/${EssayId.NARRATIVE_ESSAY_ID}`,
   },
@@ -145,6 +162,8 @@ export const templates: TemplateMap = {
     description:
       'A definition essay defines a particular term or concept, and provides detailed information and examples to help the reader understand the term or concept being defined.',
     promptPlaceholder: 'How has the definition of "health" changed over time?',
+    quotePlaceholder:
+      '"Time and health are two precious assets that we don\'t recognize and appreciate until they have been depleted." - Denis Waitley',
     supportQuotes: true,
     supportReferences: true,
     supportRequestedLength: true,
@@ -157,6 +176,8 @@ export const templates: TemplateMap = {
     description:
       'A descriptive essay provides a detailed description of a person, place, object, experience, or emotion.',
     promptPlaceholder: 'What is the role of pi in mathematics and physics?',
+    quotePlaceholder:
+      '"This mysterious 3.141592..., which comes in at every door and window, and down every chimney, calling itself the circumference to a unit of diameter." - Augustus De Morgan',
     supportQuotes: true,
     supportReferences: true,
     supportRequestedLength: true,
@@ -170,6 +191,9 @@ export const templates: TemplateMap = {
       'A literary essay analyzes and evaluates a piece of literature, such as a novel, poem, or play.',
     promptPlaceholder:
       "Compare and contrast the fear of terrorism and the concern with safety issues in present day society with George Orwell's novel, 1984.",
+    quotePlaceholder:
+      '"War is peace. Freedom is slavery. Ignorance is strength." - George Orwell',
+    supportQuotes: true,
     supportRequestedLength: true,
     href: `/templates/${EssayId.LITERARY_ESSAY_ID}`,
   },
