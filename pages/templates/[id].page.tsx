@@ -17,6 +17,7 @@ const DynamicTemplatePage: NextPage = () => {
       title={pageData.title}
       description={pageData.description}
       promptPlaceholder={pageData.promptPlaceholder}
+      quotePlaceholder={pageData.quotePlaceholder}
       supportQuotes={pageData.supportQuotes}
       supportReferences={pageData.supportReferences}
       supportRequestedLength={pageData.supportRequestedLength}

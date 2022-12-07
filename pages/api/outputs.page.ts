@@ -8,6 +8,7 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 import initializeFirebaseApp from '../../lib/initializeFirebase'
+import { EssayLength, QuoteMap } from '../templates/components/TemplatePage'
 import { EssayId } from '../templates/templates'
 
 export const config = {
@@ -22,6 +23,13 @@ export default async function handler(request: Request, response: Response) {
     references,
     quotes,
     length,
+  }: {
+    id: EssayId
+    userId: string
+    inputs: { prompt: string }
+    references: boolean
+    quotes: QuoteMap
+    length: EssayLength
   } = await request.json()
 
   let openaiPrompt
@@ -94,7 +102,10 @@ export default async function handler(request: Request, response: Response) {
       ' Use numerous examples for each argument presented. Please be as detailed as possible.'
   }
 
-  if (quotes) openaiPrompt += ' Include quotes supporting each argument.'
+  if (quotes) openaiPrompt += ' Include the following quotes: \n'
+  for (const index in Object.keys(quotes)) {
+    openaiPrompt += quotes[index].value + '\n'
+  }
 
   if (references) {
     openaiPrompt +=
