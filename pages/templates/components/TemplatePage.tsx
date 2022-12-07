@@ -155,7 +155,7 @@ const TemplatePage = ({
                 </div>
                 <div className="p-3 xl:p-6 xl:pb-28 flex-1 space-y-6 flex flex-col content-start">
                   <div>
-                    <div className="mb-6 last:mb-1">
+                    <div>
                       <div className="flex flex-col flex-1">
                         <div className="flex justify-end items-center">
                           <div className="flex-grow mb-1 flex items-center">
@@ -169,7 +169,7 @@ const TemplatePage = ({
                             </span>
                           </div>
                         </div>
-                        <div className="relative flex items-center">
+                        <div className="relative flex items-center mb-2">
                           <textarea
                             maxLength={500}
                             rows={4}
@@ -182,20 +182,20 @@ const TemplatePage = ({
                             }}
                           ></textarea>
                         </div>
+                        <div>
+                          <button
+                            className="inline-flex items-center overflow-hidden ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2inline-flex justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-gray-700 bg-white border border-black-300 shadow-sm hover:text-gray-500 selectionRing active:bg-gray-50 active:text-gray-800 px-3 py-2 text-sm leading-3"
+                            type="button"
+                            onClick={() => {
+                              setPrompt(promptPlaceholder)
+                              setNumberOfCharacters(promptPlaceholder.length)
+                            }}
+                          >
+                            Try the example prompt
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div>
-                    <button
-                      className="inline-flex items-center overflow-hidden ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2inline-flex justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-gray-700 bg-white border border-black-300 shadow-sm hover:text-gray-500 selectionRing active:bg-gray-50 active:text-gray-800 px-3 py-2 text-sm leading-3"
-                      type="button"
-                      onClick={() => {
-                        setPrompt(promptPlaceholder)
-                        setNumberOfCharacters(promptPlaceholder.length)
-                      }}
-                    >
-                      Try the example prompt
-                    </button>
                   </div>
                   {supportRequestedLength && (
                     <div>
