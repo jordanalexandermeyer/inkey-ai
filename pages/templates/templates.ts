@@ -25,6 +25,7 @@ export enum EssayId {
   DESCRIPTIVE_ESSAY_ID = 'descriptive-essay',
   LITERARY_ESSAY_ID = 'literary-essay',
   SCIENTIFIC_ESSAY_ID = 'scientific-essay',
+  BLOG_ID = 'blog',
 }
 
 export type TemplateMap = {
@@ -116,7 +117,7 @@ export const templates: TemplateMap = {
   [EssayId.ARGUMENTATIVE_ESSAY_ID]: {
     id: EssayId.ARGUMENTATIVE_ESSAY_ID,
     icon: '🗣',
-    title: 'Argumentative Essay Essay',
+    title: 'Argumentative Essay',
     description:
       "An argumentative essay presents the writer's point of view on a particular issue and provides evidence and arguments to support that point of view.",
     promptPlaceholder:
@@ -210,5 +211,18 @@ export const templates: TemplateMap = {
     supportQuotes: true,
     supportRequestedLength: true,
     href: `/templates/${EssayId.SCIENTIFIC_ESSAY_ID}`,
+  },
+  [EssayId.BLOG_ID]: {
+    id: EssayId.BLOG_ID,
+    icon: '💻',
+    title: 'Blog Post',
+    description:
+      'A blog post is an online article or entry that shares opinions, information, stories, and other media.',
+    promptPlaceholder: '5 Ways to Make Your Workplace More Productive',
+    quotePlaceholder:
+      '"The most productive workplaces are those that foster collaboration, innovation, and a sense of purpose." - Bill Gates',
+    supportQuotes: true,
+    supportRequestedLength: true,
+    href: `/templates/${EssayId.BLOG_ID}`,
   },
 }
