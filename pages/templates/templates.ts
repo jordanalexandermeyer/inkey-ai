@@ -76,7 +76,7 @@ export const templates: TemplateMap = {
     promptPlaceholder:
       'Write an essay persuading readers that working in-person is superior to working remotely.',
     quotePlaceholder:
-      "According to the Startup Genome's 2019 report, 92% of startups fail.",
+      'According to Elon Musk, "Remote work is no longer acceptable."',
     supportQuotes: true,
     supportReferences: true,
     supportRequestedLength: true,

@@ -398,7 +398,6 @@ const TemplatePage = ({
                     </button>
                     <div className="flex">
                       <button
-                        type="submit"
                         className={classNames(
                           'inline-flex items-center ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2inline-flex justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-white shadow-sm selectionRing px-6 py-4 text-base w-full',
                           {
