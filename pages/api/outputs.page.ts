@@ -84,6 +84,10 @@ export default async function handler(request: Request, response: Response) {
       openaiPrompt = `Write a literary essay that answers the following prompt: "${prompt}"`
       model = 'text-davinci-003'
       break
+    case EssayId.SCIENTIFIC_ESSAY_ID:
+      openaiPrompt = `Write a scientific essay that answers the following prompt: "${prompt}". Use scientific terms.`
+      model = 'text-davinci-003'
+      break
     default:
       return new Response(null, {
         status: 400,
