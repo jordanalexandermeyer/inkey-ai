@@ -28,7 +28,7 @@ export default async function handler(request: Request, response: Response) {
     userId: string
     inputs: { prompt: string }
     references: boolean
-    quotes: QuoteMap
+    quotes?: QuoteMap
     length: EssayLength
   } = await request.json()
 
@@ -102,9 +102,12 @@ export default async function handler(request: Request, response: Response) {
       ' Use numerous examples for each argument presented. Please be as detailed as possible.'
   }
 
-  if (quotes) openaiPrompt += ' Include the following quotes: \n'
-  for (const index in Object.keys(quotes)) {
-    openaiPrompt += quotes[index].value + '\n'
+  if (quotes) {
+    openaiPrompt += ' Include the following quotes: \n'
+    for (const index in Object.keys(quotes)) {
+      openaiPrompt += quotes[index].value + '\n'
+    }
+    openaiPrompt += " Don't include any other quotes."
   }
 
   if (references) {
