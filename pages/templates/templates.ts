@@ -24,6 +24,7 @@ export enum EssayId {
   DEFINITION_ESSAY_ID = 'definition-essay',
   DESCRIPTIVE_ESSAY_ID = 'descriptive-essay',
   LITERARY_ESSAY_ID = 'literary-essay',
+  SCIENTIFIC_ESSAY_ID = 'scientific-essay',
 }
 
 export type TemplateMap = {
@@ -196,5 +197,18 @@ export const templates: TemplateMap = {
     supportQuotes: true,
     supportRequestedLength: true,
     href: `/templates/${EssayId.LITERARY_ESSAY_ID}`,
+  },
+  [EssayId.SCIENTIFIC_ESSAY_ID]: {
+    id: EssayId.SCIENTIFIC_ESSAY_ID,
+    icon: '🔬',
+    title: 'Scientific Essay',
+    description:
+      'A scientific essay describes a scientific concept or idea in a clear and concise manner.',
+    promptPlaceholder: 'Vitamin D and health - The missing vitamin in humans',
+    quotePlaceholder:
+      'The American Academy of Dermatology declared ultraviolet radiation to be a known skin carcinogen.',
+    supportQuotes: true,
+    supportRequestedLength: true,
+    href: `/templates/${EssayId.SCIENTIFIC_ESSAY_ID}`,
   },
 }
