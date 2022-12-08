@@ -14,6 +14,7 @@ export interface Template {
   supportRequestedLength?: boolean
   supportPointOfView?: boolean
   href: string
+  new?: boolean
 }
 
 export enum TemplateId {
@@ -52,6 +53,7 @@ export const templates: TemplateMap = {
     supportExamplePrompt: false,
     supportRequestedLength: false,
     href: `/templates/${TemplateId.PARAPHRASER_ID}`,
+    new: true,
   },
   [TemplateId.SUMMARIZER_ID]: {
     id: TemplateId.SUMMARIZER_ID,
@@ -68,6 +70,7 @@ export const templates: TemplateMap = {
     supportTone: false,
     supportPointOfView: false,
     href: `/templates/${TemplateId.SUMMARIZER_ID}`,
+    new: true,
   },
   [TemplateId.BLOG_ID]: {
     id: TemplateId.BLOG_ID,
@@ -80,6 +83,7 @@ export const templates: TemplateMap = {
       '"The most productive workplaces are those that foster collaboration, innovation, and a sense of purpose." - Bill Gates',
     supportQuotes: true,
     href: `/templates/${TemplateId.BLOG_ID}`,
+    new: true,
   },
   [TemplateId.GENERAL_ESSAY_ID]: {
     id: TemplateId.GENERAL_ESSAY_ID,

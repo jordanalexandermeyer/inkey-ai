@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { TemplateId, Template, templates } from '../templates'
+import { Template, templates } from '../templates'
 import TemplateCard from './TemplateCard'
 
 const TemplatesBody = () => {
@@ -107,6 +107,7 @@ const TemplatesBody = () => {
                           title={template.title}
                           description={template.description}
                           href={template.href}
+                          newCard={template.new}
                         />
                       )
                     })}

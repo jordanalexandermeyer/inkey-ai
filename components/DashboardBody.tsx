@@ -77,10 +77,9 @@ const Body = () => {
                           Ghostwritten 102: Using Templates 🎭
                         </div>
                         <p className="mt-1 mb-4 text-sm text-opacity-80 md:text-lg md:mb-7">
-                          Each template is a different type of essay that
-                          Ghostwritten can write. If there are any types of
-                          essays that are missing, submit a feature request
-                          below to get a new one added!
+                          Each template is something different that Ghostwritten
+                          can do. If there is anything we are missing, submit a
+                          feature request below to get a new template added!
                         </p>
                         <Link
                           className="flex flex-col w-full items-stretch md:items-start"

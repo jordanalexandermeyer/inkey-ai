@@ -5,11 +5,13 @@ const TemplateCard = ({
   description,
   icon,
   href,
+  newCard,
 }: {
   title: string
   description: string
   icon: string
   href: string
+  newCard?: boolean
 }) => {
   return (
     <div id="template-card">
@@ -34,6 +36,11 @@ const TemplateCard = ({
               </svg>
             </button>
           </div> */}
+          {newCard && (
+            <div className="absolute top-4 right-4 text-sm font-bold text-white uppercase bg-green-400 rounded-full px-3 py-1">
+              New
+            </div>
+          )}
           <div>
             <div className="flex items-center justify-center w-16 h-16 text-2xl rounded-full text-gray-600 mb-6 bg-gray-100/75">
               <span className="text-3xl" role="img" aria-hidden="false">
