@@ -8,7 +8,7 @@ import Output from './Output'
 import OutputEmptyState from './OutputEmptyState'
 import Page from '../../../components/Page'
 import ReactTooltip from 'react-tooltip'
-import { Template } from '../templates'
+import { Template, TemplateId } from '../templates'
 
 export interface Output {
   text: string
@@ -19,6 +19,71 @@ export enum EssayLength {
   LONG = 'long',
 }
 
+export const tones = {
+  accusatory: 'implying blame or wrongdoing',
+  adoring: 'expressing admiration or affection',
+  angry: 'feeling or showing annoyance',
+  anxious: 'feeling worry or unease',
+  ashamed: 'feeling embarrassed or guilty',
+  blunt: 'direct and to the point, without beating around the bush',
+  bold: 'confident and daring',
+  boring: 'uninteresting and tedious',
+  brisk: 'active, fast, and energetic',
+  bubbly: 'cheerful and lively',
+  burlesque: 'absurd or mocking imitation of something',
+  calm: 'composed and unruffled',
+  candid: 'straightforward and honest',
+  casual: 'relaxed and unconcerned',
+  cheerful: 'happy and optimistic',
+  cliché:
+    "a phrase that's been used so often it has lost its original meaning or impact",
+  clinical: 'objective and detached, like a doctor or scientist',
+  conceited: 'having an excessively favorable opinion of oneself',
+  condescending: 'talking down to others in a patronizing way',
+  curious: 'eager to learn or know something',
+  depressed: 'feeling down or hopeless',
+  desperate: 'urgently needing or wanting something',
+  disturbed: 'marked by mental illness or instability',
+  dramatic: 'intense and confrontational',
+  eloquent: 'fluent and persuasive in speaking or writing',
+  emotional: 'easily displaying or influenced by emotions',
+  empathetic: 'able to understand and share the feelings of others',
+  empowering: 'making someone more confident and capable',
+  engaging: 'charming and attractive',
+  expectant: 'showing anticipation or excitement for something to happen',
+  familiar: 'well-known or commonly encountered',
+  friendly: 'kind and pleasant',
+  funny: 'causing amusement or laughter',
+  furious: 'extremely angry',
+  gentle: 'kind and considerate',
+  helpful: 'offering assistance or support',
+  hopeful: 'full of hope',
+  hopeless: 'without hope',
+  intimate: 'private or personal',
+  lively: 'active and energetic',
+  loving: 'showing deep concern or affection for someone or something',
+  mysterious: 'puzzling or inexplicable',
+  nervous: 'uneasy or anxious',
+  nonchalant: 'unconcerned and indifferent',
+  nostalgic: 'longing for past events or experiences',
+  paranoid: 'showing irrational fear or suspicion',
+  pedantic: 'overly concerned with minor details or rules',
+  pessimistic: 'expecting the worst possible outcome',
+  playful: 'lighthearted and humorous',
+  powerful: 'showing great strength or influence',
+  professional: 'qualified in a particular profession',
+  psychotic: 'experiencing a loss of contact with reality',
+  questioning: 'characterized by a desire to learn or understand',
+  reassuring: "removing someone's doubts or fears",
+  respectful: 'showing politeness or deference',
+  satiric: 'exposing or criticizing something through ridicule or humor',
+  scholarly: 'concerned with academic learning and research',
+  serious: 'demanding careful consideration',
+  vibrant: 'full of energy and enthusiasm',
+  witty: 'clever and humorous in a verbal exchange',
+  zealous: 'actively and passionately devoted to something',
+}
+
 export interface Quote {
   value: string
 }
@@ -27,16 +92,33 @@ export interface QuoteMap {
   [key: string]: Quote
 }
 
+export enum PointOfView {
+  FIRST = 'first',
+  SECOND = 'second',
+  THIRD = 'third',
+}
+
+export enum SummaryMethod {
+  PARAGRAPH = 'paragraph',
+  TLDR = 'TLDR',
+  BULLET_POINTS = 'bullet-points',
+}
+
 const TemplatePage = ({
   id,
   icon,
   title,
   description,
+  characterLimit = 500,
+  inputRows = 4,
   promptPlaceholder,
   quotePlaceholder,
-  supportQuotes,
-  supportReferences,
-  supportRequestedLength,
+  supportExamplePrompt = true,
+  supportQuotes = false,
+  supportReferences = false,
+  supportRequestedLength = true,
+  supportTone = true,
+  supportPointOfView = true,
 }: Template) => {
   const [prompt, setPrompt] = useState('')
   const [output, setOutput] = useState('')
@@ -46,9 +128,14 @@ const TemplatePage = ({
   const [quotes, setQuotes] = useState<QuoteMap>({})
   const [generateReferences, setGenerateReferences] = useState(false)
   const [requestedLength, setRequestedLength] = useState(EssayLength.SHORT)
+  const [tone, setTone] = useState('professional')
+  const [pointOfView, setPointOfView] = useState(PointOfView.THIRD)
+  const [summaryMethod, setSummaryMethod] = useState(SummaryMethod.PARAGRAPH)
   const textEditorReference: React.Ref<any> = useRef(null)
   const auth = getAuth()
   const [user] = useAuthState(auth)
+
+  const isSummarizer = id == TemplateId.SUMMARIZER_ID
 
   const getOutputs = async (prompt: string, userId: string) => {
     try {
@@ -63,6 +150,9 @@ const TemplatePage = ({
           ...(supportQuotes && addQuotes && { quotes: quotes }),
           ...(supportReferences && { references: generateReferences }),
           ...(supportRequestedLength && { length: requestedLength }),
+          ...(supportTone && { tone: tone }),
+          ...(supportPointOfView && { point_of_view: pointOfView }),
+          ...(isSummarizer && { summary_method: summaryMethod }),
         }),
         headers: {
           'Content-Type': 'application/json',
@@ -104,9 +194,11 @@ const TemplatePage = ({
   const clearInputs = () => {
     setPrompt('')
     setAddQuotes(false)
-    setQuotes({ '0': { value: '' } })
+    setQuotes({})
     setGenerateReferences(false)
     setRequestedLength(EssayLength.SHORT)
+    setTone('professional')
+    setSummaryMethod(SummaryMethod.PARAGRAPH)
     setNumberOfCharacters(0)
   }
 
@@ -155,33 +247,33 @@ const TemplatePage = ({
                 </div>
                 <div className="p-3 xl:p-6 xl:pb-28 flex-1 space-y-6 flex flex-col content-start">
                   <div>
-                    <div>
-                      <div className="flex flex-col flex-1">
-                        <div className="flex justify-end items-center">
-                          <div className="flex-grow mb-1 flex items-center">
-                            <label className="text-sm font-medium dark:text-gray-300 text-gray-700">
-                              Prompt
-                            </label>
-                          </div>
-                          <div className="flex items-center justify-end px-3 py-2 text-xs text-gray-600">
-                            <span className="text-xs">
-                              {numberOfCharacters}/{500}
-                            </span>
-                          </div>
+                    <div className="flex flex-col flex-1">
+                      <div className="flex justify-end items-center">
+                        <div className="flex-grow mb-1 flex items-center">
+                          <label className="text-sm font-medium dark:text-gray-300 text-gray-700">
+                            Prompt
+                          </label>
                         </div>
-                        <div className="relative flex items-center mb-2">
-                          <textarea
-                            maxLength={500}
-                            rows={4}
-                            placeholder={promptPlaceholder}
-                            className="px-3 py-2 w-full block text-sm text-gray-600 placeholder-gray-400 transition-shadow duration-150 ease-in-out bg-white border border-gray-200 rounded shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500"
-                            value={prompt}
-                            onChange={(e) => {
-                              setPrompt(e.target.value)
-                              setNumberOfCharacters(e.target.value.length)
-                            }}
-                          ></textarea>
+                        <div className="flex items-center justify-end px-3 py-2 text-xs text-gray-600">
+                          <span className="text-xs">
+                            {numberOfCharacters}/{characterLimit}
+                          </span>
                         </div>
+                      </div>
+                      <div className="relative flex items-center mb-2">
+                        <textarea
+                          maxLength={characterLimit}
+                          rows={inputRows}
+                          placeholder={promptPlaceholder}
+                          className="px-3 py-2 w-full block text-sm text-gray-600 placeholder-gray-400 transition-shadow duration-150 ease-in-out bg-white border border-gray-200 rounded shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500"
+                          value={prompt}
+                          onChange={(e) => {
+                            setPrompt(e.target.value)
+                            setNumberOfCharacters(e.target.value.length)
+                          }}
+                        ></textarea>
+                      </div>
+                      {supportExamplePrompt && (
                         <div>
                           <button
                             className="inline-flex items-center overflow-hidden ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2inline-flex justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-gray-700 bg-white border border-black-300 shadow-sm hover:text-gray-500 selectionRing active:bg-gray-50 active:text-gray-800 px-3 py-2 text-sm leading-3"
@@ -194,7 +286,7 @@ const TemplatePage = ({
                             Try the example prompt
                           </button>
                         </div>
-                      </div>
+                      )}
                     </div>
                   </div>
                   {supportRequestedLength && (
@@ -220,6 +312,87 @@ const TemplatePage = ({
                         <option value={EssayLength.LONG}>
                           Long (~500 words)
                         </option>
+                      </select>
+                    </div>
+                  )}
+                  {supportTone && (
+                    <div>
+                      <label
+                        htmlFor="tone"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Tone
+                      </label>
+                      <select
+                        id="tone"
+                        value={tone}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        onChange={(event) => {
+                          setTone(event.target.value)
+                        }}
+                      >
+                        {Object.keys(tones).map((key, index) => {
+                          return (
+                            <option key={index} value={key}>
+                              {key[0].toUpperCase() + key.slice(1)}:{' '}
+                              {tones[key as keyof typeof tones]}
+                            </option>
+                          )
+                        })}
+                      </select>
+                    </div>
+                  )}
+                  {supportPointOfView && (
+                    <div>
+                      <label
+                        htmlFor="point-of-view"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Point of view
+                      </label>
+                      <select
+                        id="point-of-view"
+                        value={pointOfView}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        onChange={(event) => {
+                          const pov = event.target.value as PointOfView
+                          setPointOfView(pov)
+                        }}
+                      >
+                        {Object.values(PointOfView).map((value, index) => {
+                          return (
+                            <option key={index} value={value}>
+                              {value[0].toUpperCase() + value.slice(1)}
+                            </option>
+                          )
+                        })}
+                      </select>
+                    </div>
+                  )}
+                  {isSummarizer && (
+                    <div>
+                      <label
+                        htmlFor="summary-method"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Summary method
+                      </label>
+                      <select
+                        id="summary-method"
+                        value={summaryMethod}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        onChange={(event) => {
+                          const method = event.target.value as SummaryMethod
+                          setSummaryMethod(method)
+                        }}
+                      >
+                        {Object.values(SummaryMethod).map((value, index) => {
+                          return (
+                            <option key={index} value={value}>
+                              {value[0].toUpperCase() + value.slice(1)}
+                            </option>
+                          )
+                        })}
                       </select>
                     </div>
                   )}
