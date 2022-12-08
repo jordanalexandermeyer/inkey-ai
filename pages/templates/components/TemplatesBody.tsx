@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { EssayId, Template, templates } from '../templates'
+import { TemplateId, Template, templates } from '../templates'
 import TemplateCard from './TemplateCard'
 
 const TemplatesBody = () => {

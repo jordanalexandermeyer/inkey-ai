@@ -1,17 +1,22 @@
 export interface Template {
-  id: EssayId
+  id: TemplateId
   icon: string
   title: string
   description: string
+  characterLimit?: number
+  inputRows?: number
   promptPlaceholder: string
   quotePlaceholder?: string
+  supportExamplePrompt?: boolean
+  supportTone?: boolean
   supportQuotes?: boolean
   supportReferences?: boolean
   supportRequestedLength?: boolean
+  supportPointOfView?: boolean
   href: string
 }
 
-export enum EssayId {
+export enum TemplateId {
   GENERAL_ESSAY_ID = 'general-essay',
   THESIS_ID = 'thesis',
   COLLEGE_APP_ESSAY_ID = 'college-app-essay',
@@ -26,15 +31,58 @@ export enum EssayId {
   LITERARY_ESSAY_ID = 'literary-essay',
   SCIENTIFIC_ESSAY_ID = 'scientific-essay',
   BLOG_ID = 'blog',
+  PARAPHRASER_ID = 'paraphraser',
+  SUMMARIZER_ID = 'summarizer',
 }
 
 export type TemplateMap = {
-  [key in EssayId]: Template
+  [key in TemplateId]: Template
 }
 
 export const templates: TemplateMap = {
-  [EssayId.GENERAL_ESSAY_ID]: {
-    id: EssayId.GENERAL_ESSAY_ID,
+  [TemplateId.PARAPHRASER_ID]: {
+    id: TemplateId.PARAPHRASER_ID,
+    icon: '♻️',
+    title: 'Paraphraser',
+    description: 'This template takes in text and paraphrases it.',
+    characterLimit: 4000,
+    inputRows: 10,
+    promptPlaceholder:
+      'Ghostwritten will rewrite your text. Start by writing or pasting something here and then press "Generate".',
+    supportExamplePrompt: false,
+    supportRequestedLength: false,
+    href: `/templates/${TemplateId.PARAPHRASER_ID}`,
+  },
+  [TemplateId.SUMMARIZER_ID]: {
+    id: TemplateId.SUMMARIZER_ID,
+    icon: '🛠️',
+    title: 'Summarizer',
+    description:
+      'Condenses articles, papers, or documents down to the key points instantly.',
+    characterLimit: 4000,
+    inputRows: 10,
+    promptPlaceholder:
+      'Ghostwritten will summarize your text. Start by writing or pasting something here and then press "Generate".',
+    supportExamplePrompt: false,
+    supportRequestedLength: false,
+    supportTone: false,
+    supportPointOfView: false,
+    href: `/templates/${TemplateId.SUMMARIZER_ID}`,
+  },
+  [TemplateId.BLOG_ID]: {
+    id: TemplateId.BLOG_ID,
+    icon: '💻',
+    title: 'Blog Post',
+    description:
+      'A blog post is an online article or entry that shares opinions, information, stories, and other media.',
+    promptPlaceholder: '5 Ways to Make Your Workplace More Productive',
+    quotePlaceholder:
+      '"The most productive workplaces are those that foster collaboration, innovation, and a sense of purpose." - Bill Gates',
+    supportQuotes: true,
+    href: `/templates/${TemplateId.BLOG_ID}`,
+  },
+  [TemplateId.GENERAL_ESSAY_ID]: {
+    id: TemplateId.GENERAL_ESSAY_ID,
     icon: '📝',
     title: 'General Essay',
     description: 'Ask a prompt and receive a compelling essay.',
@@ -43,21 +91,22 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       '"That\'s one small step for man, one giant leap for mankind." - Neil Armstrong',
     supportQuotes: true,
-    supportReferences: true,
-    supportRequestedLength: true,
-    href: `/templates/${EssayId.GENERAL_ESSAY_ID}`,
+    href: `/templates/${TemplateId.GENERAL_ESSAY_ID}`,
   },
-  [EssayId.THESIS_ID]: {
-    id: EssayId.THESIS_ID,
+  [TemplateId.THESIS_ID]: {
+    id: TemplateId.THESIS_ID,
     icon: '✏️',
     title: 'Thesis',
     description: 'Write an essay prompt to create a thesis statement.',
     promptPlaceholder:
       'What is the importance of investing money in space exploration?',
-    href: `/templates/${EssayId.THESIS_ID}`,
+    supportRequestedLength: false,
+    supportTone: false,
+    supportPointOfView: false,
+    href: `/templates/${TemplateId.THESIS_ID}`,
   },
-  [EssayId.COLLEGE_APP_ESSAY_ID]: {
-    id: EssayId.COLLEGE_APP_ESSAY_ID,
+  [TemplateId.COLLEGE_APP_ESSAY_ID]: {
+    id: TemplateId.COLLEGE_APP_ESSAY_ID,
     icon: '🎓',
     title: 'College Application Essay',
     description:
@@ -66,11 +115,10 @@ export const templates: TemplateMap = {
       'Some students have a background, identity, interest, or talent that is so meaningful they believe their application would be incomplete without it. If this sounds like you, then please share your story.',
     quotePlaceholder: 'My father said, "You can\'t live here anymore."',
     supportQuotes: true,
-    supportRequestedLength: true,
-    href: `/templates/${EssayId.COLLEGE_APP_ESSAY_ID}`,
+    href: `/templates/${TemplateId.COLLEGE_APP_ESSAY_ID}`,
   },
-  [EssayId.PERSUASIVE_ESSAY_ID]: {
-    id: EssayId.PERSUASIVE_ESSAY_ID,
+  [TemplateId.PERSUASIVE_ESSAY_ID]: {
+    id: TemplateId.PERSUASIVE_ESSAY_ID,
     icon: '📣',
     title: 'Persuasive Essay',
     description:
@@ -80,12 +128,10 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       'According to Elon Musk, "Remote work is no longer acceptable."',
     supportQuotes: true,
-    supportReferences: true,
-    supportRequestedLength: true,
-    href: `/templates/${EssayId.PERSUASIVE_ESSAY_ID}`,
+    href: `/templates/${TemplateId.PERSUASIVE_ESSAY_ID}`,
   },
-  [EssayId.EXPOSITORY_ESSAY_ID]: {
-    id: EssayId.EXPOSITORY_ESSAY_ID,
+  [TemplateId.EXPOSITORY_ESSAY_ID]: {
+    id: TemplateId.EXPOSITORY_ESSAY_ID,
     icon: '🧑‍🎨',
     title: 'Expository Essay',
     description:
@@ -95,12 +141,10 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       '"iPhone is a revolutionary and magical product that is literally five years ahead of any other mobile phone," - Steve Jobs',
     supportQuotes: true,
-    supportReferences: true,
-    supportRequestedLength: true,
-    href: `/templates/${EssayId.EXPOSITORY_ESSAY_ID}`,
+    href: `/templates/${TemplateId.EXPOSITORY_ESSAY_ID}`,
   },
-  [EssayId.COMPARE_CONTRAST_ESSAY_ID]: {
-    id: EssayId.COMPARE_CONTRAST_ESSAY_ID,
+  [TemplateId.COMPARE_CONTRAST_ESSAY_ID]: {
+    id: TemplateId.COMPARE_CONTRAST_ESSAY_ID,
     icon: '💁',
     title: 'Compare and Contrast Essay',
     description:
@@ -110,12 +154,10 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       '"Ralph wept for the end of innocence, the darkness of man\'s heart, and the fall through the air of the true, wise friend called Piggy." - William Golding',
     supportQuotes: true,
-    supportReferences: true,
-    supportRequestedLength: true,
-    href: `/templates/${EssayId.COMPARE_CONTRAST_ESSAY_ID}`,
+    href: `/templates/${TemplateId.COMPARE_CONTRAST_ESSAY_ID}`,
   },
-  [EssayId.ARGUMENTATIVE_ESSAY_ID]: {
-    id: EssayId.ARGUMENTATIVE_ESSAY_ID,
+  [TemplateId.ARGUMENTATIVE_ESSAY_ID]: {
+    id: TemplateId.ARGUMENTATIVE_ESSAY_ID,
     icon: '🗣',
     title: 'Argumentative Essay',
     description:
@@ -125,12 +167,10 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       '"You have a lifetime to work, but children are only young once." - Polish proverb',
     supportQuotes: true,
-    supportReferences: true,
-    supportRequestedLength: true,
-    href: `/templates/${EssayId.ARGUMENTATIVE_ESSAY_ID}`,
+    href: `/templates/${TemplateId.ARGUMENTATIVE_ESSAY_ID}`,
   },
-  [EssayId.CAUSE_EFFECT_ESSAY_ID]: {
-    id: EssayId.CAUSE_EFFECT_ESSAY_ID,
+  [TemplateId.CAUSE_EFFECT_ESSAY_ID]: {
+    id: TemplateId.CAUSE_EFFECT_ESSAY_ID,
     icon: '↔️',
     title: 'Cause and Effect Essay',
     description:
@@ -140,12 +180,10 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       '"This is the moment when we must come together to save this planet. Let us resolve that we will not leave our children a world where the oceans rise and famine spreads and terrible storms devastate our lands." - Barack Obama',
     supportQuotes: true,
-    supportReferences: true,
-    supportRequestedLength: true,
-    href: `/templates/${EssayId.CAUSE_EFFECT_ESSAY_ID}`,
+    href: `/templates/${TemplateId.CAUSE_EFFECT_ESSAY_ID}`,
   },
-  [EssayId.NARRATIVE_ESSAY_ID]: {
-    id: EssayId.NARRATIVE_ESSAY_ID,
+  [TemplateId.NARRATIVE_ESSAY_ID]: {
+    id: TemplateId.NARRATIVE_ESSAY_ID,
     icon: '📖',
     title: 'Narrative Essay',
     description:
@@ -154,11 +192,10 @@ export const templates: TemplateMap = {
       'Most of us remember exactly where we were and what we were doing when we received shocking or important news. Tell the story of what you were doing when you heard about an important event and how that news affected you.',
     quotePlaceholder: '"Your aunt is going to live." - Doctor Jerry',
     supportQuotes: true,
-    supportRequestedLength: true,
-    href: `/templates/${EssayId.NARRATIVE_ESSAY_ID}`,
+    href: `/templates/${TemplateId.NARRATIVE_ESSAY_ID}`,
   },
-  [EssayId.DEFINITION_ESSAY_ID]: {
-    id: EssayId.DEFINITION_ESSAY_ID,
+  [TemplateId.DEFINITION_ESSAY_ID]: {
+    id: TemplateId.DEFINITION_ESSAY_ID,
     icon: '📚',
     title: 'Definition Essay',
     description:
@@ -167,12 +204,10 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       '"Time and health are two precious assets that we don\'t recognize and appreciate until they have been depleted." - Denis Waitley',
     supportQuotes: true,
-    supportReferences: true,
-    supportRequestedLength: true,
-    href: `/templates/${EssayId.DEFINITION_ESSAY_ID}`,
+    href: `/templates/${TemplateId.DEFINITION_ESSAY_ID}`,
   },
-  [EssayId.DESCRIPTIVE_ESSAY_ID]: {
-    id: EssayId.DESCRIPTIVE_ESSAY_ID,
+  [TemplateId.DESCRIPTIVE_ESSAY_ID]: {
+    id: TemplateId.DESCRIPTIVE_ESSAY_ID,
     icon: '🎨',
     title: 'Descriptive Essay',
     description:
@@ -181,12 +216,10 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       '"This mysterious 3.141592..., which comes in at every door and window, and down every chimney, calling itself the circumference to a unit of diameter." - Augustus De Morgan',
     supportQuotes: true,
-    supportReferences: true,
-    supportRequestedLength: true,
-    href: `/templates/${EssayId.DESCRIPTIVE_ESSAY_ID}`,
+    href: `/templates/${TemplateId.DESCRIPTIVE_ESSAY_ID}`,
   },
-  [EssayId.LITERARY_ESSAY_ID]: {
-    id: EssayId.LITERARY_ESSAY_ID,
+  [TemplateId.LITERARY_ESSAY_ID]: {
+    id: TemplateId.LITERARY_ESSAY_ID,
     icon: '📕',
     title: 'Literary Essay',
     description:
@@ -196,11 +229,10 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       '"War is peace. Freedom is slavery. Ignorance is strength." - George Orwell',
     supportQuotes: true,
-    supportRequestedLength: true,
-    href: `/templates/${EssayId.LITERARY_ESSAY_ID}`,
+    href: `/templates/${TemplateId.LITERARY_ESSAY_ID}`,
   },
-  [EssayId.SCIENTIFIC_ESSAY_ID]: {
-    id: EssayId.SCIENTIFIC_ESSAY_ID,
+  [TemplateId.SCIENTIFIC_ESSAY_ID]: {
+    id: TemplateId.SCIENTIFIC_ESSAY_ID,
     icon: '🔬',
     title: 'Scientific Essay',
     description:
@@ -209,20 +241,6 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       'The American Academy of Dermatology declared ultraviolet radiation to be a known skin carcinogen.',
     supportQuotes: true,
-    supportRequestedLength: true,
-    href: `/templates/${EssayId.SCIENTIFIC_ESSAY_ID}`,
-  },
-  [EssayId.BLOG_ID]: {
-    id: EssayId.BLOG_ID,
-    icon: '💻',
-    title: 'Blog Post',
-    description:
-      'A blog post is an online article or entry that shares opinions, information, stories, and other media.',
-    promptPlaceholder: '5 Ways to Make Your Workplace More Productive',
-    quotePlaceholder:
-      '"The most productive workplaces are those that foster collaboration, innovation, and a sense of purpose." - Bill Gates',
-    supportQuotes: true,
-    supportRequestedLength: true,
-    href: `/templates/${EssayId.BLOG_ID}`,
+    href: `/templates/${TemplateId.SCIENTIFIC_ESSAY_ID}`,
   },
 }

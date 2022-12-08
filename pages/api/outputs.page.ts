@@ -8,8 +8,13 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 import initializeFirebaseApp from '../../lib/initializeFirebase'
-import { EssayLength, QuoteMap } from '../templates/components/TemplatePage'
-import { EssayId } from '../templates/templates'
+import {
+  EssayLength,
+  PointOfView,
+  QuoteMap,
+  SummaryMethod,
+} from '../templates/components/TemplatePage'
+import { TemplateId } from '../templates/templates'
 
 export const config = {
   runtime: 'experimental-edge',
@@ -23,73 +28,101 @@ export default async function handler(request: Request, response: Response) {
     references,
     quotes,
     length,
+    tone,
+    point_of_view: pointOfView,
+    summary_method: summaryMethod,
   }: {
-    id: EssayId
+    id: TemplateId
     userId: string
     inputs: { prompt: string }
     references: boolean
     quotes?: QuoteMap
     length: EssayLength
+    tone: string
+    point_of_view: PointOfView
+    summary_method: SummaryMethod
   } = await request.json()
 
   let openaiPrompt
   let model
 
   switch (id) {
-    case EssayId.GENERAL_ESSAY_ID:
-      openaiPrompt = `Write an essay that answers the following prompt: "${prompt}"`
+    case TemplateId.GENERAL_ESSAY_ID:
+      openaiPrompt = `Write an essay that answers the following prompt: "${prompt}".`
       model = 'text-davinci-003'
       break
-    case EssayId.THESIS_ID:
-      openaiPrompt = `Write a one sentence thesis statement that contains three supporting points for an essay with the following prompt: "${prompt}"`
+    case TemplateId.THESIS_ID:
+      openaiPrompt = `Write a one sentence thesis statement that contains three supporting points for an essay with the following prompt: "${prompt}".`
       model = 'text-davinci-003'
       break
-    case EssayId.COLLEGE_APP_ESSAY_ID:
-      openaiPrompt = `Write a college application essay that answers the following prompt: "${prompt}"`
+    case TemplateId.COLLEGE_APP_ESSAY_ID:
+      openaiPrompt = `Write a college application essay that answers the following prompt: "${prompt}".`
       model = 'text-davinci-003'
       break
-    case EssayId.PERSUASIVE_ESSAY_ID:
-      openaiPrompt = `Write a persuasive essay that answers the following prompt: "${prompt}"`
+    case TemplateId.PERSUASIVE_ESSAY_ID:
+      openaiPrompt = `Write a persuasive essay that answers the following prompt: "${prompt}".`
       model = 'text-davinci-003'
       break
-    case EssayId.EXPOSITORY_ESSAY_ID:
-      openaiPrompt = `Write an expository essay that answers the following prompt: "${prompt}"`
+    case TemplateId.EXPOSITORY_ESSAY_ID:
+      openaiPrompt = `Write an expository essay that answers the following prompt: "${prompt}".`
       model = 'text-davinci-003'
       break
-    case EssayId.COMPARE_CONTRAST_ESSAY_ID:
-      openaiPrompt = `Write a compare and contrast essay that answers the following prompt: "${prompt}"`
+    case TemplateId.COMPARE_CONTRAST_ESSAY_ID:
+      openaiPrompt = `Write a compare and contrast essay that answers the following prompt: "${prompt}".`
       model = 'text-davinci-003'
       break
-    case EssayId.ARGUMENTATIVE_ESSAY_ID:
-      openaiPrompt = `Write an argumentative essay that answers the following prompt: "${prompt}"`
+    case TemplateId.ARGUMENTATIVE_ESSAY_ID:
+      openaiPrompt = `Write an argumentative essay that answers the following prompt: "${prompt}".`
       model = 'text-davinci-003'
       break
-    case EssayId.CAUSE_EFFECT_ESSAY_ID:
-      openaiPrompt = `Write a cause and effect essay that answers the following prompt: "${prompt}"`
+    case TemplateId.CAUSE_EFFECT_ESSAY_ID:
+      openaiPrompt = `Write a cause and effect essay that answers the following prompt: "${prompt}".`
       model = 'text-davinci-003'
       break
-    case EssayId.NARRATIVE_ESSAY_ID:
-      openaiPrompt = `Write a narrative essay that answers the following prompt: "${prompt}"`
+    case TemplateId.NARRATIVE_ESSAY_ID:
+      openaiPrompt = `Write a narrative essay that answers the following prompt: "${prompt}".`
       model = 'text-davinci-003'
       break
-    case EssayId.DEFINITION_ESSAY_ID:
-      openaiPrompt = `Write a definition essay that answers the following prompt: "${prompt}"`
+    case TemplateId.DEFINITION_ESSAY_ID:
+      openaiPrompt = `Write a definition essay that answers the following prompt: "${prompt}".`
       model = 'text-davinci-003'
       break
-    case EssayId.DESCRIPTIVE_ESSAY_ID:
-      openaiPrompt = `Write a descriptive essay that answers the following prompt: "${prompt}"`
+    case TemplateId.DESCRIPTIVE_ESSAY_ID:
+      openaiPrompt = `Write a descriptive essay that answers the following prompt: "${prompt}".`
       model = 'text-davinci-003'
       break
-    case EssayId.LITERARY_ESSAY_ID:
-      openaiPrompt = `Write a literary essay that answers the following prompt: "${prompt}"`
+    case TemplateId.LITERARY_ESSAY_ID:
+      openaiPrompt = `Write a literary essay that answers the following prompt: "${prompt}".`
       model = 'text-davinci-003'
       break
-    case EssayId.SCIENTIFIC_ESSAY_ID:
-      openaiPrompt = `Write a scientific essay that answers the following prompt: "${prompt}". Use scientific terms.`
+    case TemplateId.SCIENTIFIC_ESSAY_ID:
+      openaiPrompt = `Write a scientific essay that answers the following prompt: "${prompt}". Use long scientific words.`
       model = 'text-davinci-003'
       break
-    case EssayId.BLOG_ID:
-      openaiPrompt = `Write a blog post with the following title: "${prompt}"`
+    case TemplateId.BLOG_ID:
+      openaiPrompt = `Write a blog post with the following title: "${prompt}".`
+      model = 'text-davinci-003'
+      break
+    case TemplateId.PARAPHRASER_ID:
+      openaiPrompt = `Rewrite the following using different words: "${prompt}".`
+      model = 'text-davinci-003'
+      break
+    case TemplateId.SUMMARIZER_ID:
+      switch (summaryMethod) {
+        // couldn't use SummaryMethod here because of edge runtime doesn't support the eval() function
+        case 'bullet-points':
+          openaiPrompt = `Summarize the following with bullet points: "${prompt}".`
+          break
+        case 'TLDR':
+          openaiPrompt = `"${prompt}"\n\nTl;dr\n`
+          break
+        case 'paragraph':
+          openaiPrompt = `Summarize the following: "${prompt}".`
+          break
+        default:
+          openaiPrompt = `Summarize the following: "${prompt}".`
+          break
+      }
       model = 'text-davinci-003'
       break
     default:
@@ -115,12 +148,20 @@ export default async function handler(request: Request, response: Response) {
     for (const index in Object.keys(quotes)) {
       openaiPrompt += quotes[index].value + '\n'
     }
-    openaiPrompt += " Don't include any other quotes."
+    openaiPrompt += "Don't include any other quotes."
   }
 
   if (references) {
     openaiPrompt +=
       ' Provide data to support your claims with specific sources. Provide references at the end of the essay citing your sources.'
+  }
+
+  if (tone) {
+    openaiPrompt += ` Use the following tone: "${tone}".`
+  }
+
+  if (pointOfView) {
+    openaiPrompt += ` Use ${pointOfView} person point of view.`
   }
 
   try {
