@@ -9,6 +9,7 @@ import OutputEmptyState from './OutputEmptyState'
 import Page from '../../../components/Page'
 import ReactTooltip from 'react-tooltip'
 import { Template, TemplateId } from '../templates'
+import { logEvent } from '@amplitude/analytics-browser'
 
 export interface Output {
   text: string
@@ -600,7 +601,10 @@ const TemplatePage = ({
                           },
                         )}
                         disabled={disabled()}
-                        onClick={handleGenerate}
+                        onClick={() => {
+                          logEvent(`generate-${id}`)
+                          handleGenerate()
+                        }}
                       >
                         <div
                           className={classNames({
@@ -673,5 +677,4 @@ const TemplatePage = ({
     </ProtectedPage>
   )
 }
-
 export default TemplatePage
