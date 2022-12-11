@@ -52,7 +52,7 @@ export const templates: TemplateMap = {
       'Inkey will rewrite your text. Start by writing or pasting something here and then press "Generate".',
     supportExamplePrompt: false,
     supportRequestedLength: false,
-    href: `/templates/${TemplateId.PARAPHRASER_ID}`,
+    href: `/${TemplateId.PARAPHRASER_ID}`,
     new: true,
   },
   [TemplateId.SUMMARIZER_ID]: {
@@ -69,7 +69,7 @@ export const templates: TemplateMap = {
     supportRequestedLength: false,
     supportTone: false,
     supportPointOfView: false,
-    href: `/templates/${TemplateId.SUMMARIZER_ID}`,
+    href: `/${TemplateId.SUMMARIZER_ID}`,
     new: true,
   },
   [TemplateId.BLOG_ID]: {

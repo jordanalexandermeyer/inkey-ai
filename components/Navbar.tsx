@@ -101,14 +101,10 @@ const Navbar = ({
               className={classNames(
                 'w-full hover:bg-gray-50 rounded-md group flex items-center justify-between p-2 font-medium',
                 {
-                  'text-gray-600 hover:text-gray-800':
-                    !router.asPath.includes('/templates') ||
-                    router.asPath.includes('/templates/summarizer') ||
-                    router.asPath.includes('/templates/paraphraser'),
-                  'text-blue-700':
-                    router.asPath.includes('/templates') &&
-                    !router.asPath.includes('/templates/summarizer') &&
-                    !router.asPath.includes('/templates/paraphraser'),
+                  'text-gray-600 hover:text-gray-800': !router.asPath.includes(
+                    '/templates',
+                  ),
+                  'text-blue-700': router.asPath.includes('/templates'),
                 },
               )}
               onClick={() => removeBackdropAndNavbar(false)}
@@ -121,10 +117,9 @@ const Navbar = ({
                   strokeWidth="2"
                   stroke="currentColor"
                   className={classNames('mr-2 flex-shrink-0 h-5 w-5', {
-                    'text-gray-400 group-hover:text-gray-600':
-                      !router.asPath.includes('/templates') ||
-                      router.asPath.includes('/templates/summarizer') ||
-                      router.asPath.includes('/templates/paraphraser'),
+                    'text-gray-400 group-hover:text-gray-600': !router.asPath.includes(
+                      '/templates',
+                    ),
                   })}
                 >
                   <path
@@ -141,16 +136,14 @@ const Navbar = ({
         <ul className="pb-1 px-3">
           <li>
             <Link
-              href="/templates/summarizer"
+              href="/paraphraser"
               className={classNames(
                 'w-full hover:bg-gray-50 rounded-md group flex items-center justify-between p-2 font-medium',
                 {
                   'text-gray-600 hover:text-gray-800': !router.asPath.includes(
-                    '/templates/summarizer',
+                    '/paraphraser',
                   ),
-                  'text-blue-700': router.asPath.includes(
-                    '/templates/summarizer',
-                  ),
+                  'text-blue-700': router.asPath.includes('/paraphraser'),
                 },
               )}
               onClick={() => removeBackdropAndNavbar(false)}
@@ -164,48 +157,7 @@ const Navbar = ({
                   stroke="currentColor"
                   className={classNames('mr-2 flex-shrink-0 h-5 w-5', {
                     'text-gray-400 group-hover:text-gray-600': !router.asPath.includes(
-                      '/templates/summarizer',
-                    ),
-                  })}
-                >
-                  <path
-                    fill="currentColor"
-                    xmlns="http://www.w3.org/2000/svg"
-                    d="M8.55 26.5q-1.05 0-1.8-.725T6 24q0-1.05.75-1.775.75-.725 1.8-.725 1 0 1.725.75Q11 23 11 24t-.725 1.75q-.725.75-1.725.75ZM8.5 14q-1.05 0-1.775-.725Q6 12.55 6 11.5q0-1.05.725-1.775Q7.45 9 8.5 9q1.05 0 1.775.725Q11 10.45 11 11.5q0 1.05-.725 1.775Q9.55 14 8.5 14Zm.05 25q-1.05 0-1.8-.725T6 36.55q0-1.05.75-1.8t1.8-.75q1 0 1.725.75.725.75.725 1.8 0 1-.725 1.725Q9.55 39 8.55 39Zm8.95-1q-.65 0-1.075-.425Q16 37.15 16 36.5q0-.65.425-1.075Q16.85 35 17.5 35h23q.65 0 1.075.425Q42 35.85 42 36.5q0 .65-.425 1.075Q41.15 38 40.5 38Zm0-12.5q-.65 0-1.075-.425Q16 24.65 16 24q0-.65.425-1.075.425-.425 1.075-.425h23q.65 0 1.075.425Q42 23.35 42 24q0 .65-.425 1.075-.425.425-1.075.425Zm0-12.5q-.65 0-1.075-.425Q16 12.15 16 11.5q0-.65.425-1.075Q16.85 10 17.5 10h23q.65 0 1.075.425Q42 10.85 42 11.5q0 .65-.425 1.075Q41.15 13 40.5 13Z"
-                  />
-                </svg>
-                Summarizer
-              </span>
-            </Link>
-          </li>
-        </ul>
-        <ul className="pb-1 px-3">
-          <li>
-            <Link
-              href="/templates/paraphraser"
-              className={classNames(
-                'w-full hover:bg-gray-50 rounded-md group flex items-center justify-between p-2 font-medium',
-                {
-                  'text-gray-600 hover:text-gray-800': !router.asPath.includes(
-                    '/templates/paraphraser',
-                  ),
-                  'text-blue-700': router.asPath.includes(
-                    '/templates/paraphraser',
-                  ),
-                },
-              )}
-              onClick={() => removeBackdropAndNavbar(false)}
-            >
-              <span className="flex items-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 48 48"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className={classNames('mr-2 flex-shrink-0 h-5 w-5', {
-                    'text-gray-400 group-hover:text-gray-600': !router.asPath.includes(
-                      '/templates/paraphraser',
+                      '/paraphraser',
                     ),
                   })}
                 >
@@ -216,6 +168,45 @@ const Navbar = ({
                   />
                 </svg>
                 Paraphraser
+              </span>
+            </Link>
+          </li>
+        </ul>
+        <ul className="pb-1 px-3">
+          <li>
+            <Link
+              href="/summarizer"
+              className={classNames(
+                'w-full hover:bg-gray-50 rounded-md group flex items-center justify-between p-2 font-medium',
+                {
+                  'text-gray-600 hover:text-gray-800': !router.asPath.includes(
+                    '/summarizer',
+                  ),
+                  'text-blue-700': router.asPath.includes('/summarizer'),
+                },
+              )}
+              onClick={() => removeBackdropAndNavbar(false)}
+            >
+              <span className="flex items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 48 48"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  className={classNames('mr-2 flex-shrink-0 h-5 w-5', {
+                    'text-gray-400 group-hover:text-gray-600': !router.asPath.includes(
+                      '/summarizer',
+                    ),
+                  })}
+                >
+                  <path
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                    d="M8.55 26.5q-1.05 0-1.8-.725T6 24q0-1.05.75-1.775.75-.725 1.8-.725 1 0 1.725.75Q11 23 11 24t-.725 1.75q-.725.75-1.725.75ZM8.5 14q-1.05 0-1.775-.725Q6 12.55 6 11.5q0-1.05.725-1.775Q7.45 9 8.5 9q1.05 0 1.775.725Q11 10.45 11 11.5q0 1.05-.725 1.775Q9.55 14 8.5 14Zm.05 25q-1.05 0-1.8-.725T6 36.55q0-1.05.75-1.8t1.8-.75q1 0 1.725.75.725.75.725 1.8 0 1-.725 1.725Q9.55 39 8.55 39Zm8.95-1q-.65 0-1.075-.425Q16 37.15 16 36.5q0-.65.425-1.075Q16.85 35 17.5 35h23q.65 0 1.075.425Q42 35.85 42 36.5q0 .65-.425 1.075Q41.15 38 40.5 38Zm0-12.5q-.65 0-1.075-.425Q16 24.65 16 24q0-.65.425-1.075.425-.425 1.075-.425h23q.65 0 1.075.425Q42 23.35 42 24q0 .65-.425 1.075-.425.425-1.075.425Zm0-12.5q-.65 0-1.075-.425Q16 12.15 16 11.5q0-.65.425-1.075Q16.85 10 17.5 10h23q.65 0 1.075.425Q42 10.85 42 11.5q0 .65-.425 1.075Q41.15 13 40.5 13Z"
+                  />
+                </svg>
+                Summarizer
               </span>
             </Link>
           </li>
