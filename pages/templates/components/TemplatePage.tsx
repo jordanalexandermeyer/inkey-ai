@@ -105,6 +105,17 @@ export enum SummaryMethod {
   BULLET_POINTS = 'bullet-points',
 }
 
+export enum PoemType {
+  FREE_VERSE = 'free-verse',
+  SONNET = 'sonnet',
+  ACROSTIC = 'acrostic',
+  LIMERICK = 'limerick',
+  HAIKU = 'haiku',
+  ODE = 'ode',
+  ELEGY = 'elegy',
+  BALLAD = 'ballad',
+}
+
 const TemplatePage = ({
   id,
   icon,
@@ -112,6 +123,7 @@ const TemplatePage = ({
   description,
   characterLimit = 500,
   inputRows = 4,
+  promptName = 'Prompt',
   promptPlaceholder,
   quotePlaceholder,
   supportExamplePrompt = true,
@@ -132,11 +144,13 @@ const TemplatePage = ({
   const [tone, setTone] = useState('professional')
   const [pointOfView, setPointOfView] = useState(PointOfView.THIRD)
   const [summaryMethod, setSummaryMethod] = useState(SummaryMethod.PARAGRAPH)
+  const [poemType, setPoemType] = useState(PoemType.FREE_VERSE)
   const textEditorReference: React.Ref<any> = useRef(null)
   const auth = getAuth()
   const [user] = useAuthState(auth)
 
   const isSummarizer = id == TemplateId.SUMMARIZER_ID
+  const isPoem = id == TemplateId.POEM_ID
 
   const getOutputs = async (prompt: string, userId: string) => {
     try {
@@ -154,6 +168,7 @@ const TemplatePage = ({
           ...(supportTone && { tone: tone }),
           ...(supportPointOfView && { point_of_view: pointOfView }),
           ...(isSummarizer && { summary_method: summaryMethod }),
+          ...(isPoem && { poem_type: poemType }),
         }),
         headers: {
           'Content-Type': 'application/json',
@@ -252,7 +267,7 @@ const TemplatePage = ({
                       <div className="flex justify-end items-center">
                         <div className="flex-grow mb-1 flex items-center">
                           <label className="text-sm font-medium dark:text-gray-300 text-gray-700">
-                            Prompt
+                            {promptName}
                           </label>
                         </div>
                         <div className="flex items-center justify-end px-3 py-2 text-xs text-gray-600">
@@ -290,6 +305,33 @@ const TemplatePage = ({
                       )}
                     </div>
                   </div>
+                  {isPoem && (
+                    <div>
+                      <label
+                        htmlFor="poem-type"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Poem type
+                      </label>
+                      <select
+                        id="poem-type"
+                        value={poemType}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        onChange={(event) => {
+                          const poemType = event.target.value as PoemType
+                          setPoemType(poemType)
+                        }}
+                      >
+                        {Object.values(PoemType).map((value, index) => {
+                          return (
+                            <option key={index} value={value}>
+                              {value[0].toUpperCase() + value.slice(1)}
+                            </option>
+                          )
+                        })}
+                      </select>
+                    </div>
+                  )}
                   {supportRequestedLength && (
                     <div>
                       <label

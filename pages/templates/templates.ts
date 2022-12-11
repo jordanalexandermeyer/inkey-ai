@@ -5,6 +5,7 @@ export interface Template {
   description: string
   characterLimit?: number
   inputRows?: number
+  promptName?: string
   promptPlaceholder: string
   quotePlaceholder?: string
   supportExamplePrompt?: boolean
@@ -34,6 +35,8 @@ export enum TemplateId {
   BLOG_ID = 'blog',
   PARAPHRASER_ID = 'paraphraser',
   SUMMARIZER_ID = 'summarizer',
+  POEM_ID = 'poem',
+  SPEECH_ID = 'speech',
 }
 
 export type TemplateMap = {
@@ -41,48 +44,32 @@ export type TemplateMap = {
 }
 
 export const templates: TemplateMap = {
-  [TemplateId.PARAPHRASER_ID]: {
-    id: TemplateId.PARAPHRASER_ID,
-    icon: '♻️',
-    title: 'Paraphraser',
-    description: 'This template takes in text and paraphrases it.',
-    characterLimit: 4000,
-    inputRows: 10,
-    promptPlaceholder:
-      'Inkey will rewrite your text. Start by writing or pasting something here and then press "Generate".',
-    supportExamplePrompt: false,
-    supportRequestedLength: false,
-    href: `/${TemplateId.PARAPHRASER_ID}`,
-    new: true,
-  },
-  [TemplateId.SUMMARIZER_ID]: {
-    id: TemplateId.SUMMARIZER_ID,
-    icon: '🛠️',
-    title: 'Summarizer',
+  [TemplateId.POEM_ID]: {
+    id: TemplateId.POEM_ID,
+    icon: '📜',
+    title: 'Poem',
     description:
-      'Condenses articles, papers, or documents down to the key points instantly.',
-    characterLimit: 4000,
-    inputRows: 10,
-    promptPlaceholder:
-      'Inkey will summarize your text. Start by writing or pasting something here and then press "Generate".',
-    supportExamplePrompt: false,
+      'A poem is a type of literature that uses artistic and imaginative language to express feelings and ideas in a compact and powerful way.',
+    promptName: 'Poem title',
+    promptPlaceholder: 'Trees',
+    supportExamplePrompt: true,
     supportRequestedLength: false,
     supportTone: false,
-    supportPointOfView: false,
-    href: `/${TemplateId.SUMMARIZER_ID}`,
+    href: `/templates/${TemplateId.POEM_ID}`,
     new: true,
   },
-  [TemplateId.BLOG_ID]: {
-    id: TemplateId.BLOG_ID,
-    icon: '💻',
-    title: 'Blog Post',
+  [TemplateId.SPEECH_ID]: {
+    id: TemplateId.SPEECH_ID,
+    icon: '🗣',
+    title: 'Speech',
     description:
-      'A blog post is an online article or entry that shares opinions, information, stories, and other media.',
-    promptPlaceholder: '5 Ways to Make Your Workplace More Productive',
-    quotePlaceholder:
-      '"The most productive workplaces are those that foster collaboration, innovation, and a sense of purpose." - Bill Gates',
-    supportQuotes: true,
-    href: `/templates/${TemplateId.BLOG_ID}`,
+      'A speech is a formal address that is delivered to an audience for the purpose of communicating information, ideas, or feelings.',
+    promptName: 'Speech title',
+    promptPlaceholder:
+      'Students should spend more time building friendships and less time working.',
+    supportRequestedLength: false,
+    supportPointOfView: false,
+    href: `/templates/${TemplateId.SPEECH_ID}`,
     new: true,
   },
   [TemplateId.GENERAL_ESSAY_ID]: {
@@ -162,7 +149,7 @@ export const templates: TemplateMap = {
   },
   [TemplateId.ARGUMENTATIVE_ESSAY_ID]: {
     id: TemplateId.ARGUMENTATIVE_ESSAY_ID,
-    icon: '🗣',
+    icon: '🤼‍♂️',
     title: 'Argumentative Essay',
     description:
       "An argumentative essay presents the writer's point of view on a particular issue and provides evidence and arguments to support that point of view.",
@@ -246,5 +233,49 @@ export const templates: TemplateMap = {
       'The American Academy of Dermatology declared ultraviolet radiation to be a known skin carcinogen.',
     supportQuotes: true,
     href: `/templates/${TemplateId.SCIENTIFIC_ESSAY_ID}`,
+  },
+  [TemplateId.PARAPHRASER_ID]: {
+    id: TemplateId.PARAPHRASER_ID,
+    icon: '♻️',
+    title: 'Paraphraser',
+    description: 'This template takes in text and paraphrases it.',
+    characterLimit: 4000,
+    inputRows: 10,
+    promptName: 'Text',
+    promptPlaceholder:
+      'Inkey will rewrite your text. Start by writing or pasting something here and then press "Generate".',
+    supportExamplePrompt: false,
+    supportRequestedLength: false,
+    href: `/${TemplateId.PARAPHRASER_ID}`,
+  },
+  [TemplateId.SUMMARIZER_ID]: {
+    id: TemplateId.SUMMARIZER_ID,
+    icon: '🛠️',
+    title: 'Summarizer',
+    description:
+      'Condenses articles, papers, or documents down to the key points instantly.',
+    characterLimit: 4000,
+    inputRows: 10,
+    promptName: 'Text',
+    promptPlaceholder:
+      'Inkey will summarize your text. Start by writing or pasting something here and then press "Generate".',
+    supportExamplePrompt: false,
+    supportRequestedLength: false,
+    supportTone: false,
+    supportPointOfView: false,
+    href: `/${TemplateId.SUMMARIZER_ID}`,
+  },
+  [TemplateId.BLOG_ID]: {
+    id: TemplateId.BLOG_ID,
+    icon: '💻',
+    title: 'Blog Post',
+    description:
+      'A blog post is an online article or entry that shares opinions, information, stories, and other media.',
+    promptName: 'Blog title',
+    promptPlaceholder: '5 Ways to Make Your Workplace More Productive',
+    quotePlaceholder:
+      '"The most productive workplaces are those that foster collaboration, innovation, and a sense of purpose." - Bill Gates',
+    supportQuotes: true,
+    href: `/templates/${TemplateId.BLOG_ID}`,
   },
 }
