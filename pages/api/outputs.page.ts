@@ -10,6 +10,7 @@ import {
 import initializeFirebaseApp from '../../lib/initializeFirebase'
 import {
   EssayLength,
+  PoemType,
   PointOfView,
   QuoteMap,
   SummaryMethod,
@@ -31,6 +32,7 @@ export default async function handler(request: Request, response: Response) {
     tone,
     point_of_view: pointOfView,
     summary_method: summaryMethod,
+    poem_type: poemType,
   }: {
     id: TemplateId
     userId: string
@@ -41,6 +43,7 @@ export default async function handler(request: Request, response: Response) {
     tone: string
     point_of_view: PointOfView
     summary_method: SummaryMethod
+    poem_type: PoemType
   } = await request.json()
 
   let openaiPrompt
@@ -123,6 +126,14 @@ export default async function handler(request: Request, response: Response) {
           openaiPrompt = `Summarize the following: "${prompt}".`
           break
       }
+      model = 'text-davinci-003'
+      break
+    case TemplateId.POEM_ID:
+      openaiPrompt = `Write a/an ${poemType} with the following title: "${prompt}".`
+      model = 'text-davinci-003'
+      break
+    case TemplateId.SPEECH_ID:
+      openaiPrompt = `Write a speech with the following title: "${prompt}".`
       model = 'text-davinci-003'
       break
     default:

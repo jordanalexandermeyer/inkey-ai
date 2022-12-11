@@ -18,6 +18,7 @@ const DynamicTemplatePage: NextPage = () => {
       description={pageData.description}
       characterLimit={pageData.characterLimit}
       inputRows={pageData.inputRows}
+      promptName={pageData.promptName}
       promptPlaceholder={pageData.promptPlaceholder}
       quotePlaceholder={pageData.quotePlaceholder}
       supportExamplePrompt={pageData.supportExamplePrompt}
