@@ -49,7 +49,7 @@ export const templates: TemplateMap = {
     characterLimit: 4000,
     inputRows: 10,
     promptPlaceholder:
-      'Ghostwritten will rewrite your text. Start by writing or pasting something here and then press "Generate".',
+      'Inkey will rewrite your text. Start by writing or pasting something here and then press "Generate".',
     supportExamplePrompt: false,
     supportRequestedLength: false,
     href: `/templates/${TemplateId.PARAPHRASER_ID}`,
@@ -64,7 +64,7 @@ export const templates: TemplateMap = {
     characterLimit: 4000,
     inputRows: 10,
     promptPlaceholder:
-      'Ghostwritten will summarize your text. Start by writing or pasting something here and then press "Generate".',
+      'Inkey will summarize your text. Start by writing or pasting something here and then press "Generate".',
     supportExamplePrompt: false,
     supportRequestedLength: false,
     supportTone: false,

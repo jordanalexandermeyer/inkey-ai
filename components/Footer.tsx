@@ -85,7 +85,7 @@ const Footer = () => {
           </a>
         </div>
         <p className="mt-8 text-sm text-center text-gray-400">
-          © 2022 Ghostwritten. All rights reserved.
+          © 2022 Inkey. All rights reserved.
         </p>
       </div>
     </footer>

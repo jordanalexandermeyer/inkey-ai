@@ -32,18 +32,18 @@ const Body = () => {
                 <div className="relative">
                   <div className="grid">
                     <div className="relative left-0 row-span-full col-span-full transition-all duration-150 transform visible opacity-100">
-                      <div className="flex flex-col items-start transition-all py-6 px-6 h-full md:pr-40 bg-purple-700">
+                      <div className="flex flex-col items-start transition-all py-6 px-6 h-full md:pr-40 bg-blue-700">
                         <div className="mb-2 md:mb-4">
                           <div className="inline-flex px-2 py-1 text-xs font-bold text-white uppercase bg-green-500 rounded-full md:px-3 md-text-sm">
                             Get started
                           </div>
                         </div>
                         <div className="text-lg font-semibold tracking-tight text-white md:text-2xl">
-                          Ghostwritten 101: Write a Persuasive Essay 📣
+                          Write a Persuasive Essay 📣
                         </div>
                         <p className="mt-1 mb-4 text-sm text-white text-opacity-80 md:text-lg md:mb-7">
-                          The best way to learn how to use Ghostwritten is by
-                          trying it out. Click the button below to write an A+
+                          The best way to learn what Inkey can do is by trying
+                          it out. Click the button below to write an A+
                           persuasive essay in 1 minute!
                         </p>
                         <Link
@@ -74,11 +74,11 @@ const Body = () => {
                     <div className="relative left-0 row-span-full col-span-full transition-all duration-150 transform visible opacity-100">
                       <div className="flex flex-col items-start transition-all py-6 px-6 h-full md:pr-40 ">
                         <div className="text-lg font-semibold tracking-tight md:text-2xl">
-                          Ghostwritten 102: Using Templates 🎭
+                          Use Templates 🎭
                         </div>
                         <p className="mt-1 mb-4 text-sm text-opacity-80 md:text-lg md:mb-7">
-                          Each template is something different that Ghostwritten
-                          can do. If there is anything we are missing, submit a
+                          Each template is something different that Inkey can
+                          do. If there is anything we are missing, submit a
                           feature request below to get a new template added!
                         </p>
                         <Link

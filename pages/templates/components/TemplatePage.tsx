@@ -677,4 +677,5 @@ const TemplatePage = ({
     </ProtectedPage>
   )
 }
+
 export default TemplatePage

@@ -7,7 +7,7 @@ const Page = ({ title, children }: { title: string; children: ReactNode }) => {
   return (
     <>
       <Head>
-        <title>{title} - Ghostwritten</title>
+        <title>{title} - Inkey</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       <Navigation />
