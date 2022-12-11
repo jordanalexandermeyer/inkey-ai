@@ -7,7 +7,7 @@ import Page from '../components/Page'
 const Home: NextPage = () => {
   return (
     <ProtectedPage>
-      <Page title="Dashboard">
+      <Page title="Dashboard - Inkey">
         <DashboardBody />
         {/* <Footer /> */}
       </Page>

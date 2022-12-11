@@ -6,7 +6,7 @@ import SettingsBody from './SettingsBody'
 const Documents: NextPage = () => {
   return (
     <ProtectedPage>
-      <Page title="Settings">
+      <Page title="Settings - Inkey">
         <SettingsBody />
       </Page>
     </ProtectedPage>
