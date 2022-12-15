@@ -11,18 +11,17 @@ const TemplatesBody = () => {
   )
 
   return (
-    <div className="lg:ml-56 mt-1 min-h-screen">
-      <article>
-        <div className="mx-auto px-4 sm:px-6 max-w-9xl">
-          <div className="flex-1">
-            <div className="pb-36">
-              <div className="flex flex-col items-center pt-6 pb-3 bg-inherit">
-                <div className="flex w-full items-center">
-                  <h2 className="flex-grow text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-                    Templates
-                  </h2>
-                  <div className="flex items-center justify-center max-w-xs md:min-w-[320px]">
-                    {/* <div className="flex items-center">
+    <div className="mt-1 min-h-screen">
+      <div className="mx-auto px-4 sm:px-6 max-w-9xl">
+        <div className="flex-1">
+          <div className="pb-36">
+            <div className="flex flex-col items-center pt-6 pb-3 bg-inherit">
+              <div className="flex w-full items-center">
+                <h2 className="flex-grow text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+                  Templates
+                </h2>
+                <div className="flex items-center justify-center max-w-xs md:min-w-[320px]">
+                  {/* <div className="flex items-center">
                     <div className="flex items-center">
                     <button
                     className="inline-flex items-center overflow-hidden ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2inline-flex justify-center transition-all duration-150 relative leading-5 font-medium shadow-sm focusRing text-center bg-transparent focus:ring-transparent rounded outline-none shadow-transparent"
@@ -41,44 +40,44 @@ const TemplatesBody = () => {
                     </div>
                   </div> */}
 
-                    <div className="flex flex-col flex-1">
-                      <div className="relative flex items-center">
-                        <div className="absolute inset-y-0 left-0 flex pointer-events-none">
-                          <kbd className="inline-flex items-center px-3 font-sans text-sm font-medium text-gray-400">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth="2"
-                              stroke="currentColor"
-                              aria-hidden="true"
-                              className="w-4 h-4"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                              ></path>
-                            </svg>
-                          </kbd>
-                        </div>
-                        <input
-                          id="filterTemplates"
-                          autoComplete="off"
-                          className="border focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 block w-full py-2 pr-3 text-gray-700 placeholder-gray-400 transition-shadow duration-150 ease-in-out bg-white border-gray-200 rounded-md shadow-sm outline-none resize-none focus:outline-none focus:ring-blue-700 focus:border-blue-700 text-sm pl-8"
-                          placeholder="Search..."
-                          type="search"
-                          value={searchText}
-                          onChange={(e) => {
-                            setSearchText(e.target.value)
-                          }}
-                        />
+                  <div className="flex flex-col flex-1">
+                    <div className="relative flex items-center">
+                      <div className="absolute inset-y-0 left-0 flex pointer-events-none">
+                        <kbd className="inline-flex items-center px-3 font-sans text-sm font-medium text-gray-400">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth="2"
+                            stroke="currentColor"
+                            aria-hidden="true"
+                            className="w-4 h-4"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                            ></path>
+                          </svg>
+                        </kbd>
                       </div>
+                      <input
+                        id="filterTemplates"
+                        autoComplete="off"
+                        className="border focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 block w-full py-2 pr-3 text-gray-700 placeholder-gray-400 transition-shadow duration-150 ease-in-out bg-white border-gray-200 rounded-md shadow-sm outline-none resize-none focus:outline-none focus:ring-blue-700 focus:border-blue-700 text-sm pl-8"
+                        placeholder="Search..."
+                        type="search"
+                        value={searchText}
+                        onChange={(e) => {
+                          setSearchText(e.target.value)
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
-                <div className="space-y-8 pt-8">
-                  {/* <div id="headlessui-radiogroup-5" role="radiogroup">
+              </div>
+              <div className="space-y-8 pt-8">
+                {/* <div id="headlessui-radiogroup-5" role="radiogroup">
                     {filters.map((filter, index) => {
                       return (
                         <TemplateFilter
@@ -98,26 +97,25 @@ const TemplatesBody = () => {
                       )
                     })}
                   </div> */}
-                  <div className="my-2 grid gap-5 mb-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {filtered.map((template, index) => {
-                      return (
-                        <TemplateCard
-                          key={index}
-                          icon={template.icon}
-                          title={template.title}
-                          description={template.description}
-                          href={template.href}
-                          newCard={template.new}
-                        />
-                      )
-                    })}
-                  </div>
+                <div className="my-2 grid gap-5 mb-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {filtered.map((template, index) => {
+                    return (
+                      <TemplateCard
+                        key={index}
+                        icon={template.icon}
+                        title={template.title}
+                        description={template.description}
+                        href={template.href}
+                        newCard={template.new}
+                      />
+                    )
+                  })}
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </article>
+      </div>
     </div>
   )
 }

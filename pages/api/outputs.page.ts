@@ -138,9 +138,9 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case 'ask-inkey':
-      openaiPrompt = `Respond to the following: "${prompt}"`
+      openaiPrompt = `You are Inkey, an AI writing assistant for students. Respond to the following: "${prompt}"`
       model = 'text-davinci-003'
-      temperature = 0
+      temperature = 0.2
       break
     default:
       return new Response(null, {
