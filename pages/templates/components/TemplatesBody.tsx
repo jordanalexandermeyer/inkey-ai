@@ -11,7 +11,7 @@ const TemplatesBody = () => {
   )
 
   return (
-    <div className="lg:ml-72 mt-1 min-h-screen">
+    <div className="lg:ml-56 mt-1 min-h-screen">
       <article>
         <div className="mx-auto px-4 sm:px-6 max-w-9xl">
           <div className="flex-1">

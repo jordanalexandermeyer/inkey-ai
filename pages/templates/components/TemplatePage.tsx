@@ -235,7 +235,7 @@ const TemplatePage = ({
   return (
     <ProtectedPage>
       <Page title={title + ' - Inkey'}>
-        <div className="relative lg:ml-72">
+        <div className="relative lg:ml-56">
           <div className="relative flex-1 w-full min-h-screen">
             <div className="overflow-y-auto xl:mb-0 xl:absolute xl:w-1/2 xl:inset-y-0 xl:left-0 xl:border-r xl:border-gray-200 bg-gray-50">
               <form

@@ -34,7 +34,7 @@ export default async function handler(request: Request, response: Response) {
     summary_method: summaryMethod,
     poem_type: poemType,
   }: {
-    id: TemplateId
+    id: TemplateId | string
     userId: string
     inputs: { prompt: string }
     references: boolean
@@ -48,6 +48,7 @@ export default async function handler(request: Request, response: Response) {
 
   let openaiPrompt
   let model
+  let temperature
 
   switch (id) {
     case TemplateId.GENERAL_ESSAY_ID:
@@ -136,6 +137,11 @@ export default async function handler(request: Request, response: Response) {
       openaiPrompt = `Write a speech with the following title: "${prompt}".`
       model = 'text-davinci-003'
       break
+    case 'ask-inkey':
+      openaiPrompt = `Respond to the following: "${prompt}"`
+      model = 'text-davinci-003'
+      temperature = 0
+      break
     default:
       return new Response(null, {
         status: 400,
@@ -182,7 +188,7 @@ export default async function handler(request: Request, response: Response) {
         stream: true,
         model: model,
         prompt: openaiPrompt,
-        temperature: 1,
+        temperature: temperature || 1,
         top_p: 0.9,
         max_tokens: 1500,
         user: userId || '',

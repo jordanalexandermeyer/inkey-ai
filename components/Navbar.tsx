@@ -8,11 +8,10 @@ const Navbar = ({
 }: {
   removeBackdropAndNavbar: CallableFunction
 }) => {
-  // the navbar id allows the browser to correctly render each logo svg
   const router = useRouter()
   const auth = getAuth()
   return (
-    <div className="flex flex-col flex-grow bg-white border-r border-gray-200 overflow-hidden w-72 pt-7">
+    <div className="flex flex-col flex-grow bg-white border-r border-gray-200 overflow-hidden w-56 pt-7">
       <div className="px-5">
         <a href="/" className="flex items-center">
           <svg
@@ -136,6 +135,70 @@ const Navbar = ({
         <ul className="pb-1 px-3">
           <li>
             <Link
+              href="/ask-inkey"
+              className={classNames(
+                'w-full hover:bg-gray-50 rounded-md group flex items-center justify-between p-2 font-medium',
+                {
+                  'text-gray-600 hover:text-gray-800': !router.asPath.includes(
+                    '/ask-inkey',
+                  ),
+                  'text-blue-700': router.asPath.includes('/ask-inkey'),
+                },
+              )}
+              onClick={() => removeBackdropAndNavbar(false)}
+            >
+              <span className="flex items-center whitespace-nowrap">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 390 475"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  className={classNames('mr-2 flex-shrink-0 h-5 w-5', {
+                    'text-gray-400 group-hover:text-gray-600': !router.asPath.includes(
+                      '/ask-inkey',
+                    ),
+                  })}
+                >
+                  <path
+                    d="M342.243 134.246C342.243 134.246 341.393 134.86 340.491 134.603C339.694 134.376 339.293 133.779 339.293 133.779C339.293 133.779 314.464 94.8552 298.724 73.9407C289.054 61.0904 258.357 26.9951 258.357 26.9951C258.357 26.9951 247.818 16.8587 250.283 15.686C254.8 13.5373 263.163 16.5246 267.103 18.4226C307.242 37.7572 390 79.0045 390 90.4129C390 105.879 342.243 134.246 342.243 134.246Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M47.7571 134.246C47.7571 134.246 48.6072 134.86 49.5089 134.603C50.3062 134.376 50.7069 133.779 50.7069 133.779C50.7069 133.779 75.5362 94.8552 91.2757 73.9407C100.946 61.0904 131.643 26.9951 131.643 26.9951C131.643 26.9951 142.182 16.8587 139.717 15.686C135.2 13.5373 126.837 16.5246 122.897 18.4226C82.7581 37.7572 0 79.0045 0 90.4129C0 105.879 47.7571 134.246 47.7571 134.246Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M59.0376 380.207V399.208L42.2848 406.283C22.7397 414.571 20.1904 416.794 20.1904 425.891C20.1904 436.2 27.3528 442.163 39.614 442.163C45.5625 442.062 48.5974 441.052 69.3565 432.258C87.6875 424.476 93.029 421.747 95.2142 419.018C97.7635 415.683 97.8849 414.874 97.8849 388.494C97.8849 388.494 98.0686 370.491 94.2218 365.687C90.3749 360.883 78.4613 361.306 78.4613 361.306C78.4613 361.306 67.2937 360.883 63.4469 365.687C59.6 370.491 59.0376 380.207 59.0376 380.207Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M331.173 380.129V399.13L347.926 406.205C367.471 414.493 370.021 416.716 370.021 425.813C370.021 436.122 362.858 442.085 350.597 442.085C344.649 441.984 341.614 440.974 320.855 432.18C302.524 424.398 297.182 421.669 294.997 418.94C292.448 415.605 292.326 414.796 292.326 388.417C292.326 388.417 292.142 370.414 295.989 365.609C299.836 360.805 311.75 361.228 311.75 361.228C311.75 361.228 322.917 360.805 326.764 365.609C330.611 370.414 331.173 380.129 331.173 380.129Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M136.737 389.816V418.318L118.042 434.085C102.503 447.022 99.1042 450.459 98.0116 453.996C94.0054 466.327 107.723 477.748 122.534 474.413C126.783 473.503 131.153 470.37 149.848 455.007C162.11 444.9 172.914 435.399 173.885 433.883C175.221 431.66 175.585 424.484 175.585 396.184C175.585 396.184 175.012 370.499 171.165 365.695C167.318 360.891 156.161 361.314 156.161 361.314C156.161 361.314 144.237 361.314 140.39 365.695C136.543 370.076 136.737 389.816 136.737 389.816Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M253.474 389.718V418.22L272.169 433.988C287.708 446.925 291.107 450.361 292.2 453.899C296.206 466.229 282.488 477.65 267.677 474.315C263.428 473.405 259.058 470.272 240.363 454.909C228.102 444.802 217.297 435.301 216.326 433.785C214.991 431.562 214.626 424.386 214.626 396.086C214.626 396.086 215.199 370.401 219.046 365.597C222.893 360.793 234.05 361.216 234.05 361.216C234.05 361.216 245.974 361.216 249.821 365.597C253.668 369.978 253.474 389.718 253.474 389.718Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M184.201 2.12252C177.524 5.45789 154.216 24.9647 143.168 36.3857C79.9831 101.764 41.3722 193.803 31.9168 301.059C30.3043 319.357 37.29 325.72 37.29 325.72C41.1366 329.884 45.7531 332.766 49.9847 334.368L50.0429 334.39C54.3006 336.001 63.5246 339.492 80.1399 339.501L194.762 339.6H309.648C309.648 339.6 329.523 339.655 340.038 334.688L340.135 334.642C345.647 332.038 348.908 330.498 352.732 326.04C356.579 321.557 359.279 314.043 358.041 301.059C357.212 292.365 356.2 283.324 355.129 275.419C340.804 167.677 295.523 76.8142 227.297 18.4961C208.966 2.72893 204.231 0 195.127 0C190.392 0 187.114 0.606438 184.201 2.12252ZM135.606 248.211C135.606 266.784 121.827 281.84 104.831 281.84C87.8343 281.84 74.0559 266.784 74.0559 248.211C74.0559 229.638 87.8343 214.582 104.831 214.582C121.827 214.582 135.606 229.638 135.606 248.211ZM285.628 281.84C302.624 281.84 316.403 266.784 316.403 248.211C316.403 229.638 302.624 214.582 285.628 214.582C268.631 214.582 254.853 229.638 254.853 248.211C254.853 266.784 268.631 281.84 285.628 281.84Z"
+                    fill="currentColor"
+                  />
+                </svg>
+                Ask Inkey
+              </span>
+            </Link>
+          </li>
+        </ul>
+        <ul className="pb-1 px-3">
+          <li>
+            <Link
               href="/paraphraser"
               className={classNames(
                 'w-full hover:bg-gray-50 rounded-md group flex items-center justify-between p-2 font-medium',
@@ -211,44 +274,43 @@ const Navbar = ({
             </Link>
           </li>
         </ul>
-        {/* <ul className="pb-1 px-3">
-          <li>
-            <Link
-              href="/documents"
-              className={classNames(
-                'w-full hover:bg-gray-50 rounded-md group flex items-center justify-between p-2 font-medium',
-                {
-                  'text-gray-600 hover:text-gray-800':
-                    router.pathname != '/documents',
-                  'text-blue-700': router.pathname === '/documents',
-                },
-              )}
-            >
-              <span className="flex items-center">
+      </nav>
+      {/* <div className="p-4">
+        <div>
+          <div className="border border-gray-200 p-4 rounded-b-lg bg-gray-50 rounded-t-lg">
+            <div className="flex justify-between">
+              <div className="flex text-base mb-3 items-center">
                 <svg
+                  className="h-6"
+                  viewBox="0 0 48 48"
+                  fill="currentColor"
                   xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  
-                  className={classNames('mr-2 flex-shrink-0 h-5 w-5', {
-                    'text-gray-400 group-hover:text-gray-600':
-                      router.pathname != '/documents',
-                  })}
                 >
                   <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                  ></path>
+                    xmlns="http://www.w3.org/2000/svg"
+                    d="M16.05 40q-1.2 0-2.1-.9-.9-.9-.9-2.1v-3.5q0-.65.425-1.075Q13.9 32 14.55 32h4.7v-6.35q-1.9.15-3.8-.525T12.05 23v-2.9h-2.5L4.4 14.95q-.6-.6-.6-1.35 0-.75.6-1.2 1.6-1.2 3.725-1.95T12.4 9.7q1.5 0 3.425.475 1.925.475 3.425 1.525V9.5q0-.65.425-1.075Q20.1 8 20.75 8H40.5q.65 0 1.075.425Q42 8.85 42 9.5v25.25q0 2.2-1.525 3.725T36.75 40Zm6.2-8H33q.65 0 1.075.425.425.425.425 1.075v1.25q0 1 .625 1.625T36.75 37q1 0 1.625-.625T39 34.75V11H22.25v2.85l11.4 11.4q.3.3.475.6t.175.7q0 .65-.425 1.075-.425.425-1.075.425-.4 0-.7-.175-.3-.175-.6-.475l-5.65-5.65-.85 1q-.65.75-1.3 1.15-.65.4-1.45.75ZM10.9 17.1h4.15v4.45q.85.55 1.675.825.825.275 1.675.275 1.25 0 2.55-.675 1.3-.675 1.9-1.375l.85-1-3.45-3.45q-1.6-1.6-3.6-2.525-2-.925-4.25-.925-1.35 0-2.45.325T7.7 13.9ZM16.05 37H32.2q-.3-.3-.5-.825-.2-.525-.2-1.175H16.05Zm0 0v-2 2Z"
+                  />
                 </svg>
-                Documents
-              </span>
-            </Link>
-          </li>
-        </ul> */}
-      </nav>
+                <span className="pl-2">Credits</span>
+              </div>
+              <div></div>
+            </div>
+            <div className="w-full relative pb-2">
+              <div className="absolute bg-gray-200 w-full rounded-full h-1"></div>
+              <div
+                className="absolute rounded-full transition-all h-1 bg-gradient-to-r from-purple-400 to-blue-400"
+                style={{ width: '50%' }}
+              ></div>
+            </div>
+            <div className="text-[10px] text-gray-500 font-bold pt-1 whitespace-nowrap">
+              0% of plan credits used
+            </div>
+            <div className="mt-3 text-blue-600 underline text-sm whitespace-nowrap">
+              <Link href="/templates">Start writing</Link>
+            </div>
+          </div>
+        </div>
+      </div> */}
       <div className="my-2 flex-2 flex flex-col relative space-y-1 pt-3">
         <ul className="pb-1 px-3">
           <li>

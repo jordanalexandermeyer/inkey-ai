@@ -24,7 +24,7 @@ const Body = () => {
   return (
     <>
       <Toaster />
-      <div className="lg:ml-72 mt-1 py-12 mb-36">
+      <div className="lg:ml-56 mt-1 py-12 mb-36">
         <article>
           <div className="mx-auto px-4 sm:px-6 max-w-4xl">
             <div className="relative mb-6 overflow-hidden border border-gray-200 rounded-md">

@@ -7,7 +7,7 @@ const SettingsBody = () => {
 
   return (
     <>
-      <div className="lg:ml-72 mt-1 pt-6">
+      <div className="lg:ml-56 mt-1 pt-6">
         <article>
           <div className="mx-auto px-4 sm:px-6 max-w-4xl">
             <div className="flex items-center justify-between mb-4">
