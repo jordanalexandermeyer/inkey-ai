@@ -250,11 +250,9 @@ const Home: NextPage = () => {
                       <button
                         className="w-full bg-gray-100 dark:bg-white/5 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-900"
                         onClick={() => {
-                          setPrompt(
-                            'How do I make an HTTP request in Pavascript?',
-                          )
+                          setPrompt('How do I make an HTTP request in Python?')
                           handleSubmit(
-                            'How do I make an HTTP request in Pavascript?',
+                            'How do I make an HTTP request in Python?',
                           )
                         }}
                       >
