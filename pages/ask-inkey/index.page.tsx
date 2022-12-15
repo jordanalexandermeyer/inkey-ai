@@ -83,11 +83,10 @@ const Home: NextPage = () => {
 
   const handleSubmit = async (prompt: string) => {
     setOutputs((outputs) => [...outputs, { agent: Agent.USER, text: prompt }])
-    const input = prompt
     setPrompt('')
     const toastId = toast.loading('✍️')
     setGenerateIsLoading(true)
-    await getOutput(input, user!.uid)
+    await getOutput(prompt, user!.uid)
     setGenerateIsLoading(false)
     toast.dismiss(toastId)
   }
@@ -196,6 +195,24 @@ const Home: NextPage = () => {
                           <div className="markdown prose break-words light">
                             <p>{output.text}</p>
                           </div>
+                        </div>
+                        <div className="text-gray-400 flex self-end lg:self-center justify-center mt-2 gap-4 lg:gap-1 lg:absolute lg:top-0 lg:translate-x-full lg:right-0 lg:mt-0 lg:pl-2">
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(output.text)
+                              toast.success('Copied to clipboard!')
+                            }}
+                            className="p-1 rounded-md hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200 disabled:dark:hover:text-gray-400"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 48 48"
+                              fill="currentColor"
+                              className="w-5 h-5 text-gray-500 hover:text-gray-300 mr-3"
+                            >
+                              <path d="M9 43.95q-1.2 0-2.1-.9-.9-.9-.9-2.1V10.8h3v30.15h23.7v3Zm6-6q-1.2 0-2.1-.9-.9-.9-.9-2.1v-28q0-1.2.9-2.1.9-.9 2.1-.9h22q1.2 0 2.1.9.9.9.9 2.1v28q0 1.2-.9 2.1-.9.9-2.1.9Zm0-3h22v-28H15v28Zm0 0v-28 28Z" />
+                            </svg>
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -324,7 +341,10 @@ const Home: NextPage = () => {
                         className="h-5 w-5"
                         viewBox="0 0 48 48"
                       >
-                        <path d="M20.9 41.7q-5.55-1.05-9.225-5.45T8 26.05q0-3.55 1.5-6.7Q11 16.2 13.75 14q.4-.3.95-.275.55.025.95.425.5.5.45 1.15-.05.65-.65 1.15-2.1 1.75-3.275 4.275Q11 23.25 11 26.05q0 4.7 2.9 8.175 2.9 3.475 7.35 4.475.55.1.925.55.375.45.375 1 0 .7-.5 1.125-.5.425-1.15.325Zm6.3 0q-.65.1-1.15-.325-.5-.425-.5-1.125 0-.55.375-1 .375-.45.925-.55 4.5-1 7.35-4.475 2.85-3.475 2.85-8.175 0-5.45-3.775-9.225Q29.5 13.05 24.05 13.05h-1L25 15q.4.4.4 1.05T25 17.1q-.45.45-1.1.45-.65 0-1.05-.45l-4.55-4.5q-.25-.25-.35-.5-.1-.25-.1-.55 0-.3.1-.55.1-.25.35-.5l4.55-4.55q.4-.4 1.05-.4t1.1.4q.4.45.4 1.1 0 .65-.4 1.05l-1.95 1.95h1q6.7 0 11.35 4.675 4.65 4.675 4.65 11.325 0 5.8-3.65 10.2-3.65 4.4-9.2 5.45Z" />
+                        <path
+                          xmlns="http://www.w3.org/2000/svg"
+                          d="M13.05 42q-1.2 0-2.1-.9-.9-.9-.9-2.1V10.5H9.5q-.65 0-1.075-.425Q8 9.65 8 9q0-.65.425-1.075Q8.85 7.5 9.5 7.5h7.9q0-.65.425-1.075Q18.25 6 18.9 6h10.2q.65 0 1.075.425.425.425.425 1.075h7.9q.65 0 1.075.425Q40 8.35 40 9q0 .65-.425 1.075-.425.425-1.075.425h-.55V39q0 1.2-.9 2.1-.9.9-2.1.9Zm0-31.5V39h21.9V10.5Zm5.3 22.7q0 .65.425 1.075.425.425 1.075.425.65 0 1.075-.425.425-.425.425-1.075V16.25q0-.65-.425-1.075-.425-.425-1.075-.425-.65 0-1.075.425-.425.425-.425 1.075Zm8.3 0q0 .65.425 1.075.425.425 1.075.425.65 0 1.075-.425.425-.425.425-1.075V16.25q0-.65-.425-1.075-.425-.425-1.075-.425-.65 0-1.075.425-.425.425-.425 1.075Zm-13.6-22.7V39 10.5Z"
+                        />{' '}
                       </svg>
                       Clear chat
                     </button>
