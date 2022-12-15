@@ -35,8 +35,8 @@ const Page = ({ title, children }: { title: string; children: ReactNode }) => {
         <meta name="application-name" content="Inkey" />
       </Head>
       <Navigation />
-      <Toaster />
-      {children}
+      <Toaster containerClassName="lg:ml-56" />
+      <div className="lg:ml-56">{children}</div>
     </>
   )
 }
