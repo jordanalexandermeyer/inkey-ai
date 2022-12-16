@@ -82,13 +82,26 @@ const Home: NextPage = () => {
     }
   }
 
+  const getPrompt = (outputs: Output[]) => {
+    let output = ''
+    for (let i = 0; i < outputs.length; i++) {
+      const text = outputs[i].text
+      output += text + '\n\n'
+    }
+
+    return output
+  }
+
   const handleSubmit = async (prompt: string) => {
     logEvent(`ask-inkey`)
-    setOutputs((outputs) => [...outputs, { agent: Agent.USER, text: prompt }])
+    let context: Output[] = [...outputs, { agent: Agent.USER, text: prompt }]
+    setOutputs((outputs) => {
+      return [...outputs, { agent: Agent.USER, text: prompt }]
+    })
     setPrompt('')
     const toastId = toast.loading('✍️')
     setGenerateIsLoading(true)
-    await getOutput(prompt, user!.uid)
+    await getOutput(getPrompt(context), user!.uid)
     setGenerateIsLoading(false)
     toast.dismiss(toastId)
   }
