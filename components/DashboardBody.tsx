@@ -37,22 +37,22 @@ const Body = () => {
                         </div>
                       </div>
                       <div className="text-lg font-semibold tracking-tight text-white md:text-2xl">
-                        Write a Persuasive Essay 📣
+                        Ask Inkey 🦑
                       </div>
                       <p className="mt-1 mb-4 text-sm text-white text-opacity-80 md:text-lg md:mb-7">
-                        The best way to learn what Inkey can do is by trying it
-                        out. Click the button below to write an A+ persuasive
-                        essay in 1 minute!
+                        You can ask Inkey to do just about anything and it will
+                        provide a thoughtful and intelligent response. Try it
+                        out!
                       </p>
                       <Link
+                        href={'/ask-inkey'}
                         className="flex flex-col w-full items-stretch md:items-start"
-                        href={'/templates/persuasive-essay'}
                       >
                         <button
-                          className="px-20 py-2 text-md overflow-hidden ease-in-out focus:outline-none focus:ring-offset-2 transition-all duration-150 relative rounded-lg focusRing space-x-2 font-bold text-white bg-white shadow-sm outline-none hover:bg-opacity-30 bg-opacity-20 ring-opacity-20 border-none focus:ring-0"
+                          className="px-16 py-2 text-md overflow-hidden ease-in-out focus:outline-none focus:ring-offset-2 transition-all duration-150 relative rounded-lg focusRing space-x-2 font-bold text-white bg-white shadow-sm outline-none hover:bg-opacity-30 bg-opacity-20 ring-opacity-20 border-none focus:ring-0"
                           type="button"
                         >
-                          Try it out!
+                          Ask a question
                         </button>
                       </Link>
                     </div>
@@ -107,22 +107,22 @@ const Body = () => {
                   <div className="relative left-0 row-span-full col-span-full transition-all duration-150 transform visible opacity-100">
                     <div className="flex flex-col items-start transition-all py-6 px-6 h-full md:pr-40 bg-blue-700">
                       <div className="text-lg font-semibold tracking-tight text-white md:text-2xl">
-                        Ask Inkey 🤔
+                        Write a Persuasive Essay 📣
                       </div>
                       <p className="mt-1 mb-4 text-sm text-white text-opacity-80 md:text-lg md:mb-7">
-                        You can ask Inkey to do just about anything and it will
-                        provide a thoughtful and intelligent response. Try it
-                        out!
+                        The best way to learn what Inkey can do is by trying it
+                        out. Click the button below to write an A+ persuasive
+                        essay in 1 minute!
                       </p>
                       <Link
-                        href={'/ask-inkey'}
                         className="flex flex-col w-full items-stretch md:items-start"
+                        href={'/templates/persuasive-essay'}
                       >
                         <button
-                          className="px-16 py-2 text-md overflow-hidden ease-in-out focus:outline-none focus:ring-offset-2 transition-all duration-150 relative rounded-lg focusRing space-x-2 font-bold text-white bg-white shadow-sm outline-none hover:bg-opacity-30 bg-opacity-20 ring-opacity-20 border-none focus:ring-0"
+                          className="px-20 py-2 text-md overflow-hidden ease-in-out focus:outline-none focus:ring-offset-2 transition-all duration-150 relative rounded-lg focusRing space-x-2 font-bold text-white bg-white shadow-sm outline-none hover:bg-opacity-30 bg-opacity-20 ring-opacity-20 border-none focus:ring-0"
                           type="button"
                         >
-                          Ask a question
+                          Try it out!
                         </button>
                       </Link>
                     </div>
