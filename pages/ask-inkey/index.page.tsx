@@ -194,7 +194,7 @@ const Home: NextPage = () => {
                       </div>
                       <div className="relative flex w-full flex-col lg:w-[calc(100%-115px)]">
                         <div className="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap">
-                          <div className="markdown prose break-words light">
+                          <div className="break-words">
                             <p>{output.text}</p>
                           </div>
                         </div>
@@ -204,13 +204,13 @@ const Home: NextPage = () => {
                               navigator.clipboard.writeText(output.text)
                               toast.success('Copied to clipboard!')
                             }}
-                            className="p-1 rounded-md hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200 disabled:dark:hover:text-gray-400"
+                            className="p-1 rounded-md hover:bg-gray-100 hover:text-gray-700"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               viewBox="0 0 48 48"
                               fill="currentColor"
-                              className="w-5 h-5 text-gray-500 hover:text-gray-300 mr-3"
+                              className="w-5 h-5 text-gray-500 hover:text-gray-300"
                             >
                               <path d="M9 43.95q-1.2 0-2.1-.9-.9-.9-.9-2.1V10.8h3v30.15h23.7v3Zm6-6q-1.2 0-2.1-.9-.9-.9-.9-2.1v-28q0-1.2.9-2.1.9-.9 2.1-.9h22q1.2 0 2.1.9.9.9.9 2.1v28q0 1.2-.9 2.1-.9.9-2.1.9Zm0-3h22v-28H15v28Zm0 0v-28 28Z" />
                             </svg>
