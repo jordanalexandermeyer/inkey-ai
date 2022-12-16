@@ -5,6 +5,7 @@ import { useState, useRef, KeyboardEvent, useEffect } from 'react'
 import { getAuth } from 'firebase/auth'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import toast from 'react-hot-toast'
+import { logEvent } from '@amplitude/analytics-browser'
 
 enum Agent {
   USER = 'user',
@@ -82,6 +83,7 @@ const Home: NextPage = () => {
   }
 
   const handleSubmit = async (prompt: string) => {
+    logEvent(`ask-inkey`)
     setOutputs((outputs) => [...outputs, { agent: Agent.USER, text: prompt }])
     setPrompt('')
     const toastId = toast.loading('✍️')
@@ -261,7 +263,7 @@ const Home: NextPage = () => {
                     />
                   </svg>
                   <h1 className="text-2xl font-semibold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-                    Ask Inkey
+                    Inkey AI
                   </h1>
                 </div>
 
