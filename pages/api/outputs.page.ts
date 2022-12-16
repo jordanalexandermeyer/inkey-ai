@@ -138,9 +138,9 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case 'ask-inkey':
-      openaiPrompt = `You are Inkey, an AI writing assistant for students. Respond to the following: "${prompt}"`
+      openaiPrompt = `You are Inkey, an AI writing assistant for students. \n\n${prompt}`
       model = 'text-davinci-003'
-      temperature = 0.2
+      temperature = 0.25
       break
     default:
       return new Response(null, {
@@ -190,7 +190,7 @@ export default async function handler(request: Request, response: Response) {
         prompt: openaiPrompt,
         temperature: temperature || 1,
         top_p: 0.9,
-        max_tokens: 1500,
+        max_tokens: 1000,
         user: userId || '',
       }),
       headers: {
@@ -233,6 +233,16 @@ export default async function handler(request: Request, response: Response) {
 
             // if chunk is last chunk, break
             if (fullChunk.slice(6) == '[DONE]') {
+              break
+            }
+
+            // if chat is too long, break (TODO: this probably isn't the best way to handle this)
+            if (fullChunk.slice(15).includes('error')) {
+              controller.enqueue(
+                encoder.encode(
+                  'The chat has reached its maximum length. Please "Clear chat" to continue chatting with Inkey.',
+                ),
+              )
               break
             }
 

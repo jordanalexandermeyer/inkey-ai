@@ -82,13 +82,26 @@ const Home: NextPage = () => {
     }
   }
 
+  const getPrompt = (outputs: Output[]) => {
+    let output = ''
+    for (let i = 0; i < outputs.length; i++) {
+      const text = outputs[i].text
+      output += text + '\n\n'
+    }
+
+    return output
+  }
+
   const handleSubmit = async (prompt: string) => {
     logEvent(`ask-inkey`)
-    setOutputs((outputs) => [...outputs, { agent: Agent.USER, text: prompt }])
+    let context: Output[] = [...outputs, { agent: Agent.USER, text: prompt }]
+    setOutputs((outputs) => {
+      return [...outputs, { agent: Agent.USER, text: prompt }]
+    })
     setPrompt('')
     const toastId = toast.loading('✍️')
     setGenerateIsLoading(true)
-    await getOutput(prompt, user!.uid)
+    await getOutput(getPrompt(context), user!.uid)
     setGenerateIsLoading(false)
     toast.dismiss(toastId)
   }
@@ -266,14 +279,13 @@ const Home: NextPage = () => {
                     Ask Inkey
                   </h1>
                 </div>
-
                 <div className="flex items-start text-center gap-3.5 pt-6">
                   <div className="flex flex-col gap-3.5 flex-1">
                     <div className="text-2xl">☀️</div>
                     <h2 className="text-lg">Examples</h2>
                     <ul className="flex flex-col gap-3.5">
                       <button
-                        className="w-full bg-gray-100 dark:bg-white/5 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-900"
+                        className="w-full bg-gray-100 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-900"
                         onClick={() => {
                           setPrompt('Explain quantum computing in simple terms')
                           handleSubmit(
@@ -284,7 +296,7 @@ const Home: NextPage = () => {
                         "Explain quantum computing in simple terms" →
                       </button>
                       <button
-                        className="w-full bg-gray-100 dark:bg-white/5 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-900"
+                        className="w-full bg-gray-100 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-900"
                         onClick={() => {
                           setPrompt(
                             "Got any creative ideas for a college student's date?",
@@ -297,7 +309,7 @@ const Home: NextPage = () => {
                         "Got any creative ideas for a college student's date?" →
                       </button>
                       <button
-                        className="w-full bg-gray-100 dark:bg-white/5 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-900"
+                        className="w-full bg-gray-100 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-900"
                         onClick={() => {
                           setPrompt('How do I make an HTTP request in Python?')
                           handleSubmit(
@@ -310,19 +322,32 @@ const Home: NextPage = () => {
                     </ul>
                   </div>
                   <div className="flex flex-col gap-3.5 flex-1">
+                    <div className="text-2xl">⚡️</div>
+                    <h2 className="text-lg font-normal">Capabilities</h2>
+                    <ul className="flex flex-col gap-3.5">
+                      <li className="w-full bg-gray-100 p-3 rounded-md">
+                        Remembers what you said earlier in the conversation
+                      </li>
+                      <li className="w-full bg-gray-100 p-3 rounded-md">
+                        Language translation, summarization, and text generation
+                      </li>
+                      <li className="w-full bg-gray-100 p-3 rounded-md">
+                        Trained to decline inappropriate requests
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="flex flex-col gap-3.5 flex-1">
                     <div className="text-2xl">☢️</div>
-
                     <h2 className="text-lg font-normal">Limitations</h2>
                     <ul className="flex flex-col gap-3.5">
-                      <li className="w-full bg-gray-100 dark:bg-white/5 p-3 rounded-md">
+                      <li className="w-full bg-gray-100 p-3 rounded-md">
                         May occasionally generate incorrect information
                       </li>
-                      <li className="w-full bg-gray-100 dark:bg-white/5 p-3 rounded-md">
-                        Does not remember what user said earlier in the
-                        conversation
+                      <li className="w-full bg-gray-100 p-3 rounded-md">
+                        Quotes and references may be incorrect
                       </li>
-                      <li className="w-full bg-gray-100 dark:bg-white/5 p-3 rounded-md">
-                        Limited knowledge of world and events after 2021
+                      <li className="w-full bg-gray-100 p-3 rounded-md">
+                        Grammar checks may be incorrect
                       </li>
                     </ul>
                   </div>
