@@ -236,7 +236,7 @@ const Home: NextPage = () => {
               }
             })}
             {outputs.length == 0 && (
-              <div className="w-full md:max-w-2xl lg:max-w-3xl md:h-full md:flex md:flex-col px-6 pt-6">
+              <div className="w-full md:max-w-2xl lg:max-w-3xl md:h-full md:flex md:flex-col px-6 pt-6 md:pt-0">
                 <div className="md:mt-[20vh] flex flex-col items-center gap-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
