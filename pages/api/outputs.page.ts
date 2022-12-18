@@ -21,6 +21,13 @@ export const config = {
   runtime: 'experimental-edge',
 }
 
+const isError = (chunk: string) => {
+  try {
+    if (JSON.parse(chunk).error) return true
+  } catch (e) {}
+  return false
+}
+
 export default async function handler(request: Request, response: Response) {
   const {
     id,
@@ -236,18 +243,16 @@ export default async function handler(request: Request, response: Response) {
               break
             }
 
-            // if chat is too long, break (TODO: this probably isn't the best way to handle this)
-            if (fullChunk.slice(15).includes('error')) {
-              controller.enqueue(
-                encoder.encode(
-                  'The chat has reached its maximum length. Please "Clear chat" to continue chatting with Inkey.',
-                ),
-              )
-              break
-            }
-
             // if chunk is data, parse it and append it to output
             try {
+              if (isError(fullChunk)) {
+                controller.enqueue(
+                  encoder.encode(
+                    'The chat has reached its maximum length. Please "Clear chat" to continue chatting with Inkey.',
+                  ),
+                )
+                break
+              }
               const parsedData = JSON.parse(fullChunk.slice(6))
               const text = parsedData.choices[0].text
               if (text == '\n' && chunkNumber < 2) continue // beginning response usually has 2 new lines
