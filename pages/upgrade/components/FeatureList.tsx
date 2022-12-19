@@ -4,7 +4,13 @@ export interface Feature {
   included: boolean
 }
 
-const IncludedFeature = ({ text, color }: { text: string; color: string }) => {
+export const IncludedFeature = ({
+  text,
+  color,
+}: {
+  text: string
+  color: string
+}) => {
   return (
     <li className="flex space-x-3">
       <svg
@@ -15,9 +21,9 @@ const IncludedFeature = ({ text, color }: { text: string; color: string }) => {
       >
         <title>Check icon</title>
         <path
-          fill-rule="evenodd"
+          fillRule="evenodd"
           d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-          clip-rule="evenodd"
+          clipRule="evenodd"
         ></path>
       </svg>
       <span className="text-base text-left font-normal leading-tight text-gray-500">
@@ -27,7 +33,13 @@ const IncludedFeature = ({ text, color }: { text: string; color: string }) => {
   )
 }
 
-const ExcludedFeature = ({ text, color }: { text: string; color: string }) => {
+export const ExcludedFeature = ({
+  text,
+  color,
+}: {
+  text: string
+  color: string
+}) => {
   return (
     <li className="flex space-x-3 line-through decoration-gray-500">
       <svg
@@ -38,9 +50,9 @@ const ExcludedFeature = ({ text, color }: { text: string; color: string }) => {
       >
         <title>Check icon</title>
         <path
-          fill-rule="evenodd"
+          fillRule="evenodd"
           d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-          clip-rule="evenodd"
+          clipRule="evenodd"
         ></path>
       </svg>
       <span className="text-base text-left font-normal leading-tight text-gray-500">
@@ -52,12 +64,24 @@ const ExcludedFeature = ({ text, color }: { text: string; color: string }) => {
 
 const FeatureList = ({ features }: { features: Array<Feature> }) => {
   return (
-    <ul role="list" className="space-y-5 pb-8">
-      {features.map((feature) => {
+    <ul role="list" className="space-y-5">
+      {features.map((feature, index) => {
         if (feature.included)
-          return <IncludedFeature text={feature.text} color={feature.color} />
+          return (
+            <IncludedFeature
+              key={index}
+              text={feature.text}
+              color={feature.color}
+            />
+          )
         else
-          return <ExcludedFeature text={feature.text} color={feature.color} />
+          return (
+            <ExcludedFeature
+              key={index}
+              text={feature.text}
+              color={feature.color}
+            />
+          )
       })}
     </ul>
   )
