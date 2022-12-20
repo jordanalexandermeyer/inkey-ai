@@ -206,7 +206,7 @@ const UpgradePage: NextPage = () => {
       collection(db, 'customers', user!.uid, 'checkout_sessions'),
       {
         price: ultimateStripePrice,
-        success_url: getURL() + 'settings',
+        success_url: getURL() + 'upgrade/success',
         cancel_url: getURL() + 'upgrade',
       },
     )
