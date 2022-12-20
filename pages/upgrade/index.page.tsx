@@ -6,9 +6,11 @@ import {
   getFirestore,
   onSnapshot,
 } from 'firebase/firestore'
+import { getFunctions, httpsCallable } from 'firebase/functions'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
+import { Role } from 'types'
 import { getURL } from 'utils/helpers'
 import { useUser } from 'utils/useUser'
 import Page from '../../components/Page'
@@ -72,10 +74,10 @@ export const basicFeatures: Feature[] = [
   { included: true, text: '1,000 words/month', color: 'gray-400' },
   {
     included: true,
-    text: '5,000 characters in the paraphraser',
+    text: '1,000 characters in the paraphraser',
     color: 'gray-400',
   },
-  { included: true, text: '5,000 characters in summarizer', color: 'gray-400' },
+  { included: true, text: '1,000 characters in summarizer', color: 'gray-400' },
   { included: true, text: 'Shorter template generations', color: 'gray-400' },
 ]
 
@@ -83,12 +85,12 @@ export const premiumFeatures: Feature[] = [
   { included: true, text: '25,000 words/month', color: 'green-500' },
   {
     included: true,
-    text: '10,000 characters in the paraphraser',
+    text: '15,000 characters in the paraphraser',
     color: 'green-500',
   },
   {
     included: true,
-    text: '10,000 characters in summarizer',
+    text: '15,000 characters in summarizer',
     color: 'green-500',
   },
   { included: true, text: 'Longer template generations', color: 'green-500' },
@@ -135,15 +137,20 @@ const roundToTwoDecimals = (input: number) => {
   return Math.round(input * 100) / 100
 }
 
-const PremiumPage: NextPage = () => {
+const UpgradePage: NextPage = () => {
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod | string>(
     BillingPeriod.ANNUALLY,
   )
   const router = useRouter()
-  const { user, subscription } = useUser()
   const db = getFirestore()
-  const [subToPremiumLoading, setSubToPremiumLoading] = useState(false)
-  const [subToUltimateLoading, setSubToUltimateLoading] = useState(false)
+  const functions = getFunctions()
+  const [premiumLoading, setPremiumLoading] = useState(false)
+  const [ultimateLoading, setUltimateLoading] = useState(false)
+  const { user, subscription, isLoading: isUserLoading } = useUser()
+
+  const isBasic = !subscription
+  const isPremium = subscription?.role == Role.PREMIUM
+  const isUltimate = subscription?.role == Role.ULTIMATE
 
   const basicPrice = roundToTwoDecimals(
     prices[billingPeriod as keyof typeof prices][Product.BASIC].price / 12,
@@ -161,12 +168,12 @@ const PremiumPage: NextPage = () => {
     prices[billingPeriod as keyof typeof prices][Product.ULTIMATE].stripePrice
 
   const handlePremiumButtonClick = async () => {
-    setSubToPremiumLoading(true)
+    setPremiumLoading(true)
     const docRef = await addDoc(
       collection(db, 'customers', user!.uid, 'checkout_sessions'),
       {
         price: premiumStripePrice,
-        success_url: getURL() + 'settings',
+        success_url: getURL() + 'upgrade/success',
         cancel_url: getURL() + 'upgrade',
       },
     )
@@ -174,14 +181,27 @@ const PremiumPage: NextPage = () => {
     onSnapshot(docRef, (doc) => {
       const data = doc.data()
       if (data?.url) {
-        setSubToPremiumLoading(false)
+        setPremiumLoading(false)
         router.push(data.url)
       }
     })
   }
 
+  const handleSwitchToPremiumClick = async () => {
+    setPremiumLoading(true)
+    const createPortalLink = httpsCallable(functions, 'createPortalLink')
+    const { data }: { data: any } = await createPortalLink({
+      returnUrl: getURL() + 'upgrade',
+    })
+    setPremiumLoading(false)
+    router.push(
+      data.url +
+        `/subscriptions/${subscription?.id}/preview/${premiumStripePrice}`,
+    )
+  }
+
   const handleUltimateButtonClick = async () => {
-    setSubToUltimateLoading(true)
+    setUltimateLoading(true)
     const docRef = await addDoc(
       collection(db, 'customers', user!.uid, 'checkout_sessions'),
       {
@@ -194,10 +214,23 @@ const PremiumPage: NextPage = () => {
     onSnapshot(docRef, (doc) => {
       const data = doc.data()
       if (data?.url) {
-        setSubToUltimateLoading(false)
+        setUltimateLoading(false)
         router.push(data.url)
       }
     })
+  }
+
+  const handleSwitchToUltimateClick = async () => {
+    setUltimateLoading(true)
+    const createPortalLink = httpsCallable(functions, 'createPortalLink')
+    const { data }: { data: any } = await createPortalLink({
+      returnUrl: getURL() + 'upgrade',
+    })
+    setUltimateLoading(false)
+    router.push(
+      data.url +
+        `/subscriptions/${subscription?.id}/preview/${ultimateStripePrice}`,
+    )
   }
 
   return (
@@ -236,31 +269,7 @@ const PremiumPage: NextPage = () => {
               </div>
             </div>
           </div>
-          <div className="max-w-md mx-auto flex flex-col gap-10 md:grid md:max-w-7xl md:grid-cols-2 lg:grid-cols-3 md:gap-5 md:space-y-0">
-            <div className="rounded-lg border border-gray-100 shadow lg:flex flex-col justify-between p-6 mx-auto max-w-sm text-center text-gray-900 bg-white hidden">
-              <h3 className="mb-4 text-2xl font-semibold">Basic</h3>
-              <p className="justify-self-stretch font-light text-gray-500 sm:text-lg">
-                Perfect for testing it out
-              </p>
-              <div className="flex justify-center items-baseline mt-6 mb-3">
-                <span className="mr-2 text-5xl font-extrabold">
-                  ${basicPrice}
-                </span>
-                <span className="text-gray-500">/month</span>
-              </div>
-              <p className="text-gray-600 mb-6 text-sm">
-                (${getBillFromProduct(Product.BASIC, billingPeriod)})
-              </p>
-              <div className="pb-8">
-                <FeatureList features={basicFeatures} />
-              </div>
-              <button
-                type="submit"
-                className="cursor-auto relative inline-flex items-center justify-center overflow-hidden font-semibold transition duration-100 ease-in-out rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center w-full space-x-2 sm:px-6 px-4 h-14 text-lg sm:text-lg leading-5 tracking-tight text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 shadow-sm hover:text-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:ring-offset-gray-900 active:bg-gray-50 active:text-gray-800"
-              >
-                <div>Current Plan</div>
-              </button>
-            </div>
+          <div className="max-w-md mx-auto flex flex-col gap-10 md:grid md:max-w-5xl md:grid-cols-2 md:gap-5 md:space-y-0">
             <div className="overflow-hidden rounded-lg ring-4 ring-blue-500 shadow-2xl flex flex-col justify-between p-6 mx-auto max-w-sm text-center text-gray-900 bg-white">
               <h3 className="mb-4 text-2xl font-semibold">Premium 💎</h3>
               <p className="font-light text-gray-500 sm:text-lg">
@@ -277,52 +286,60 @@ const PremiumPage: NextPage = () => {
               </p>
               <div className="pb-8">
                 <FeatureList features={premiumFeatures} />
-              </div>{' '}
-              <button
-                type="submit"
-                className="relative inline-flex items-center justify-center overflow-hidden font-semibold transition duration-100 ease-in-out rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center w-full space-x-2 sm:px-6 px-4 h-14 text-lg sm:text-lg leading-5 tracking-tight text-white bg-blue-600 shadow-sm hover:bg-blue-400 active:bg-blue-700"
-                onClick={() => {
-                  handlePremiumButtonClick()
-                }}
-              >
-                <div>Get Premium</div>
-                <svg
-                  className={classNames('w-5 h-5 text-white animate-spin', {
-                    hidden: !subToPremiumLoading,
-                  })}
-                  viewBox="0 0 100 101"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+              </div>
+              {!isPremium && (
+                <button
+                  type="submit"
+                  className="relative inline-flex items-center justify-center overflow-hidden font-semibold transition duration-100 ease-in-out rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center w-full space-x-2 sm:px-6 px-4 h-14 text-lg sm:text-lg leading-5 tracking-tight text-white bg-blue-600 shadow-sm hover:bg-blue-400 active:bg-blue-700"
+                  onClick={() => {
+                    if (isBasic) handlePremiumButtonClick()
+                    if (isUltimate) handleSwitchToPremiumClick()
+                  }}
                 >
-                  <path
-                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                    fill="#E5E7EB"
-                  />
-                  <path
-                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                    fill="currentColor"
-                  />
-                </svg>
-                <svg
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={classNames('w-5 h-5 opacity-50', {
-                    hidden: subToPremiumLoading,
-                  })}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M17 8l4 4m0 0l-4 4m4-4H3"
-                  ></path>
-                </svg>
-              </button>
+                  <div>Get Premium</div>
+                  <svg
+                    className={classNames('w-5 h-5 text-white animate-spin', {
+                      hidden: !premiumLoading,
+                    })}
+                    viewBox="0 0 100 101"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                      fill="#E5E7EB"
+                    />
+                    <path
+                      d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  <svg
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={classNames('w-5 h-5 opacity-50', {
+                      hidden: premiumLoading,
+                    })}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    ></path>
+                  </svg>
+                </button>
+              )}
+              {isPremium && (
+                <div className="relative inline-flex items-center justify-center overflow-hidden font-semibold border border-gray-300 rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center w-full space-x-2 sm:px-6 px-4 h-14 text-lg sm:text-lg leading-5 tracking-tight text-gray-900 shadow-sm">
+                  <div>Current Plan</div>
+                </div>
+              )}
             </div>
             <div className="overflow-hidden rounded-lg ring-4 ring-purple-500 shadow-2xl flex flex-col justify-between p-6 mx-auto max-w-sm text-center text-gray-900 bg-white">
-              <h3 className="mb-4 text-2xl font-semibold">Ultimate 🦾</h3>
+              <h3 className="mb-4 text-2xl font-semibold">Ultimate 👑</h3>
               <p className="font-light text-gray-500 sm:text-lg">
                 For power users
               </p>
@@ -337,49 +354,57 @@ const PremiumPage: NextPage = () => {
               </p>
               <div className="pb-8">
                 <FeatureList features={ultimateFeatures} />
-              </div>{' '}
-              <button
-                type="submit"
-                className="relative inline-flex items-center justify-center overflow-hidden font-semibold transition duration-100 ease-in-out rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center w-full space-x-2 sm:px-6 px-4 h-14 text-lg sm:text-lg leading-5 tracking-tight text-white bg-gradient-to-br from-purple-600 to-blue-600 shadow-sm hover:bg-purple-400 active:bg-purple-700"
-                onClick={() => {
-                  handleUltimateButtonClick()
-                }}
-              >
-                <div>Get Ultimate</div>
-                <svg
-                  className={classNames('w-5 h-5 text-white animate-spin', {
-                    hidden: !subToUltimateLoading,
-                  })}
-                  viewBox="0 0 100 101"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+              </div>
+              {!isUltimate && (
+                <button
+                  type="submit"
+                  className="relative inline-flex items-center justify-center overflow-hidden font-semibold transition duration-100 ease-in-out rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center w-full space-x-2 sm:px-6 px-4 h-14 text-lg sm:text-lg leading-5 tracking-tight text-white bg-blue-600 shadow-sm hover:bg-blue-400 active:bg-blue-700"
+                  onClick={() => {
+                    if (isBasic) handleUltimateButtonClick()
+                    if (isPremium) handleSwitchToUltimateClick()
+                  }}
                 >
-                  <path
-                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                    fill="#E5E7EB"
-                  />
-                  <path
-                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                    fill="currentColor"
-                  />
-                </svg>
-                <svg
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={classNames('w-5 h-5 opacity-50', {
-                    hidden: subToUltimateLoading,
-                  })}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M17 8l4 4m0 0l-4 4m4-4H3"
-                  ></path>
-                </svg>
-              </button>
+                  <div>Get Ultimate</div>
+                  <svg
+                    className={classNames('w-5 h-5 text-white animate-spin', {
+                      hidden: !ultimateLoading,
+                    })}
+                    viewBox="0 0 100 101"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                      fill="#E5E7EB"
+                    />
+                    <path
+                      d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  <svg
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={classNames('w-5 h-5 opacity-50', {
+                      hidden: ultimateLoading,
+                    })}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    ></path>
+                  </svg>
+                </button>
+              )}
+              {isUltimate && (
+                <div className="relative inline-flex items-center justify-center overflow-hidden font-semibold border border-gray-300 rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center w-full space-x-2 sm:px-6 px-4 h-14 text-lg sm:text-lg leading-5 tracking-tight text-gray-900 shadow-sm">
+                  <div>Current Plan</div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -388,4 +413,4 @@ const PremiumPage: NextPage = () => {
   )
 }
 
-export default PremiumPage
+export default UpgradePage

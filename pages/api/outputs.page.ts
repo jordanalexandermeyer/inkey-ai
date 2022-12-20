@@ -4,7 +4,6 @@ import {
   getDoc,
   getFirestore,
   increment,
-  setDoc,
   updateDoc,
 } from 'firebase/firestore'
 import initializeFirebaseApp from '../../lib/initializeFirebase'
@@ -145,7 +144,7 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case 'ask-inkey':
-      openaiPrompt = `You are Inkey, an AI writing assistant for students. \n\n${prompt}`
+      openaiPrompt = `You are Inkey, an AI writing assistant for students. Reply to the following prompt: "${prompt}".`
       model = 'text-davinci-003'
       temperature = 0.25
       break
@@ -266,7 +265,7 @@ export default async function handler(request: Request, response: Response) {
             }
           }
         },
-        async flush(controller) {
+        async flush() {
           await updateUserWordsGenerated(userId, output.split(' ').length)
         },
       }),
@@ -289,16 +288,15 @@ async function updateUserWordsGenerated(
   numberOfWordsGenerated: number,
 ) {
   const db = getFirestore()
-  const counterRef = doc(db, 'counters', userId)
-  const counterSnap = await getDoc(counterRef)
+  const docRef = doc(db, 'usage_details', userId)
+  const docSnapshot = await getDoc(docRef)
 
-  if (counterSnap.exists()) {
-    await updateDoc(counterRef, {
-      words_generated: increment(numberOfWordsGenerated),
+  if (docSnapshot.exists()) {
+    await updateDoc(docRef, {
+      monthly_usage: increment(numberOfWordsGenerated),
+      total_usage: increment(numberOfWordsGenerated),
     })
   } else {
-    await setDoc(counterRef, {
-      words_generated: numberOfWordsGenerated,
-    })
+    console.log("Error: document doesn't exist for user: ", userId)
   }
 }

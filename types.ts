@@ -47,6 +47,7 @@ export interface Price {
 export interface PriceWithProduct extends Price {}
 
 export interface Subscription {
+  id: string
   status?: Stripe.Subscription.Status
   metadata?: Stripe.Metadata
   quantity?: number
@@ -66,4 +67,11 @@ export interface Subscription {
 export enum Role {
   PREMIUM = 'premium',
   ULTIMATE = 'ultimate',
+}
+
+export interface UsageDetails {
+  monthly_allowance: number
+  monthly_usage: number
+  total_usage: number
+  bonus_allowance: number
 }

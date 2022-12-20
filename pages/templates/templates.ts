@@ -239,7 +239,7 @@ export const templates: TemplateMap = {
     icon: '♻️',
     title: 'Paraphraser',
     description: 'This template takes in text and paraphrases it.',
-    characterLimit: 4000,
+    characterLimit: 15000,
     inputRows: 10,
     promptName: 'Text',
     promptPlaceholder:
@@ -254,7 +254,7 @@ export const templates: TemplateMap = {
     title: 'Summarizer',
     description:
       'Condenses articles, papers, or documents down to the key points instantly.',
-    characterLimit: 4000,
+    characterLimit: 15000,
     inputRows: 10,
     promptName: 'Text',
     promptPlaceholder:

@@ -1,8 +1,6 @@
 import classNames from 'classnames'
 import React, { useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import { getAuth } from 'firebase/auth'
-import { useAuthState } from 'react-firebase-hooks/auth'
 import ProtectedPage from '../../../components/ProtectedPage'
 import Output from './Output'
 import OutputEmptyState from './OutputEmptyState'
@@ -10,6 +8,8 @@ import Page from '../../../components/Page'
 import ReactTooltip from 'react-tooltip'
 import { Template, TemplateId } from '../templates'
 import { logEvent } from '@amplitude/analytics-browser'
+import { useUser } from 'utils/useUser'
+import UpgradeModal from 'components/UpgradeModal'
 
 export interface Output {
   text: string
@@ -146,8 +146,8 @@ const TemplatePage = ({
   const [summaryMethod, setSummaryMethod] = useState(SummaryMethod.PARAGRAPH)
   const [poemType, setPoemType] = useState(PoemType.FREE_VERSE)
   const textEditorReference: React.Ref<any> = useRef(null)
-  const auth = getAuth()
-  const [user] = useAuthState(auth)
+  const { user, usageDetails, subscription } = useUser()
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
 
   const isSummarizer = id == TemplateId.SUMMARIZER_ID
   const isPoem = id == TemplateId.POEM_ID
@@ -235,6 +235,9 @@ const TemplatePage = ({
   return (
     <ProtectedPage>
       <Page title={title + ' - Inkey'}>
+        {showUpgradeModal && (
+          <UpgradeModal setShowUpgradeModal={setShowUpgradeModal} />
+        )}
         <div className="relative flex-1 w-full min-h-screen">
           <div className="overflow-y-auto xl:mb-0 xl:absolute xl:w-1/2 xl:inset-y-0 xl:left-0 xl:border-r xl:border-gray-200 bg-gray-50">
             <form
@@ -342,15 +345,19 @@ const TemplatePage = ({
                       value={requestedLength}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       onChange={(event) => {
-                        const length = event.target.value as EssayLength
-                        setRequestedLength(length)
+                        if (!subscription?.role) {
+                          setRequestedLength(EssayLength.SHORT)
+                        } else {
+                          const length = event.target.value as EssayLength
+                          setRequestedLength(length)
+                        }
                       }}
                     >
                       <option value={EssayLength.SHORT}>
                         Short (~250 words)
                       </option>
                       <option value={EssayLength.LONG}>
-                        Long (~500 words)
+                        Long (~500 words){!subscription?.role && ' 💎 Premium'}
                       </option>
                     </select>
                   </div>
@@ -641,6 +648,15 @@ const TemplatePage = ({
                       )}
                       disabled={disabled()}
                       onClick={() => {
+                        if (
+                          usageDetails &&
+                          usageDetails?.monthly_usage >
+                            usageDetails?.monthly_allowance +
+                              usageDetails.bonus_allowance
+                        ) {
+                          setShowUpgradeModal(true)
+                          return
+                        }
                         logEvent(`generate-${id}`)
                         handleGenerate()
                       }}

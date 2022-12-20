@@ -1,20 +1,24 @@
 import { getAuth, User } from 'firebase/auth'
 import {
   collection,
+  doc,
+  getDoc,
   getDocs,
   getFirestore,
+  onSnapshot,
   query,
+  setDoc,
   where,
 } from 'firebase/firestore'
 import { useEffect, useState, createContext, useContext } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 
-import { Role, UserDetails } from 'types'
+import { Role, UsageDetails } from 'types'
 import { Subscription } from 'types'
 
 type UserContextType = {
   user: User | null | undefined
-  userDetails: UserDetails | null
+  usageDetails: UsageDetails | null
   isLoading: boolean
   subscription: Subscription | null
 }
@@ -30,7 +34,7 @@ export const MyUserContextProvider = (props: Props) => {
   const db = getFirestore()
   const [user, isLoadingUser, error] = useAuthState(auth)
   const [isLoadingData, setIsLoadingData] = useState(false)
-  const [userDetails, setUserDetails] = useState<UserDetails | null>(null)
+  const [usageDetails, setUsageDetails] = useState<UsageDetails | null>(null)
   const [subscription, setSubscription] = useState<Subscription | null>(null)
 
   const getSubscription = async (): Promise<Subscription | null> => {
@@ -44,32 +48,76 @@ export const MyUserContextProvider = (props: Props) => {
     const querySnapshot = await getDocs(q)
     let subscriptionPlaceholder = null
     querySnapshot.forEach((doc) => {
-      const subscription = doc.data() as Subscription
-      subscriptionPlaceholder = subscription
+      const subscription = doc.data()
+      const id = doc.id
+      subscriptionPlaceholder = { id, ...subscription }
     })
 
     return subscriptionPlaceholder
   }
 
+  const getUsageDetails = async (): Promise<UsageDetails> => {
+    const docRef = doc(db, 'usage_details', user!.uid)
+    const docSnap = await getDoc(docRef)
+    if (docSnap.exists()) {
+      return docSnap.data() as UsageDetails
+    } else {
+      const newUsageDetails = {
+        monthly_allowance: 1000,
+        monthly_usage: 0,
+        total_usage: 0,
+        bonus_allowance: 0,
+      }
+
+      await setDoc(docRef, newUsageDetails)
+
+      return newUsageDetails
+    }
+  }
+
   useEffect(() => {
-    const attachSubscriptions = async () => {
-      if (user && !isLoadingData && !subscription) {
+    const unsub =
+      user &&
+      onSnapshot(doc(db, 'usage_details', user?.uid), (doc) => {
+        setUsageDetails(doc.data() as UsageDetails)
+      })
+
+    if (unsub) return unsub
+  }, [user, isLoadingUser])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (user && !isLoadingData && !subscription && !usageDetails) {
         setIsLoadingData(true)
-        const subscription = await getSubscription()
-        setSubscription(subscription)
+        const results = await Promise.allSettled([
+          getSubscription(),
+          getUsageDetails(),
+        ])
+
+        const subscriptionPromise = results[0]
+        const usageDetailsPromise = results[1]
+
+        if (subscriptionPromise.status === 'fulfilled') {
+          setSubscription(subscriptionPromise.value)
+        }
+
+        if (usageDetailsPromise.status === 'fulfilled') {
+          setUsageDetails(usageDetailsPromise.value)
+        }
+
         setIsLoadingData(false)
-      } else if (!user && !isLoadingUser) {
-        setUserDetails(null)
+      } else if (!user && !isLoadingUser && !isLoadingData) {
+        setUsageDetails(null)
         setSubscription(null)
       }
     }
 
-    attachSubscriptions()
+    fetchData()
   }, [user, isLoadingUser])
 
   const value = {
     user,
-    userDetails,
+    usageDetails,
     isLoading: isLoadingUser || isLoadingData,
     subscription,
   }

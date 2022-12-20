@@ -2,6 +2,8 @@ import classNames from 'classnames'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { getAuth, signOut } from 'firebase/auth'
+import { useUser } from 'utils/useUser'
+import { Role } from 'types'
 
 const Navbar = ({
   removeBackdropAndNavbar,
@@ -10,6 +12,12 @@ const Navbar = ({
 }) => {
   const router = useRouter()
   const auth = getAuth()
+  const { subscription, isLoading } = useUser()
+
+  const isBasic = !subscription
+  const isPremium = subscription?.role == Role.PREMIUM
+  const isUltimate = subscription?.role == Role.ULTIMATE
+
   return (
     <div className="flex flex-col flex-grow bg-white border-r border-gray-200 overflow-hidden w-56 pt-7">
       <div className="px-5">
@@ -278,6 +286,7 @@ const Navbar = ({
           </li>
         </ul>
         <ul className="border-t border-gray-200"></ul>
+
         <ul className="">
           <li>
             <Link
@@ -285,22 +294,55 @@ const Navbar = ({
               className="w-full text-blue-700 hover:bg-gray-100 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-md group flex items-center justify-between p-2 font-medium"
               onClick={() => removeBackdropAndNavbar()}
             >
-              <span className="flex items-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="#285FDD" // change to currentColor to remove blue
-                  viewBox="0 0 48 48"
-                  strokeWidth="2"
-                  stroke="#285FDD" // change to currentColor to remove blue
-                  className="mr-2 flex-shrink-0 h-5 w-5"
-                >
-                  <path
+              {isBasic && (
+                <span className="flex items-center">
+                  <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    d="M13.05 23.05q-.45-.45-.45-1.05 0-.6.45-1.05l9.9-9.9q.25-.25.5-.35.25-.1.55-.1.3 0 .55.1.25.1.5.35l9.9 9.9q.45.45.45 1.05 0 .6-.45 1.05-.45.45-1.05.45-.6 0-1.05-.45L24 14.2l-8.85 8.85q-.45.45-1.05.45-.6 0-1.05-.45Zm0 12.65q-.45-.45-.45-1.05 0-.6.45-1.05l9.9-9.9q.25-.25.5-.35.25-.1.55-.1.3 0 .55.1.25.1.5.35l9.9 9.9q.45.45.45 1.05 0 .6-.45 1.05-.45.45-1.05.45-.6 0-1.05-.45L24 26.85l-8.85 8.85q-.45.45-1.05.45-.6 0-1.05-.45Z"
-                  />
-                </svg>
-                Upgrade
-              </span>
+                    fill="currentColor"
+                    viewBox="0 0 48 48"
+                    strokeWidth="2"
+                    stroke="currentColor"
+                    className="mr-2 flex-shrink-0 h-5 w-5"
+                  >
+                    <path
+                      xmlns="http://www.w3.org/2000/svg"
+                      d="M13.05 23.05q-.45-.45-.45-1.05 0-.6.45-1.05l9.9-9.9q.25-.25.5-.35.25-.1.55-.1.3 0 .55.1.25.1.5.35l9.9 9.9q.45.45.45 1.05 0 .6-.45 1.05-.45.45-1.05.45-.6 0-1.05-.45L24 14.2l-8.85 8.85q-.45.45-1.05.45-.6 0-1.05-.45Zm0 12.65q-.45-.45-.45-1.05 0-.6.45-1.05l9.9-9.9q.25-.25.5-.35.25-.1.55-.1.3 0 .55.1.25.1.5.35l9.9 9.9q.45.45.45 1.05 0 .6-.45 1.05-.45.45-1.05.45-.6 0-1.05-.45L24 26.85l-8.85 8.85q-.45.45-1.05.45-.6 0-1.05-.45Z"
+                    />
+                  </svg>
+                  Upgrade
+                </span>
+              )}
+              {isPremium && (
+                <span className="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 48 48"
+                    strokeWidth="2"
+                    stroke="currentColor"
+                    className="mr-2 flex-shrink-0 h-5 w-5 text-blue-700"
+                  >
+                    <path
+                      xmlns="http://www.w3.org/2000/svg"
+                      d="M24 40.3q-.65 0-1.25-.25t-1.05-.8L5.25 19.5q-.55-.7-.65-1.575-.1-.875.3-1.675l4.25-8.6q.4-.75 1.125-1.2Q11 6 11.85 6h24.3q.85 0 1.575.45t1.125 1.2l4.25 8.6q.4.8.3 1.675-.1.875-.65 1.575L26.3 39.25q-.45.55-1.05.8-.6.25-1.25.25Zm-6.1-23.8h12.2L26.35 9h-4.7Zm4.6 19.05V19.5H9.15Zm3 0L38.85 19.5H25.5Zm7.95-19.05h6.3L35.95 9H29.7Zm-25.2 0h6.3L18.3 9h-6.25Z"
+                    />
+                  </svg>
+                  Premium
+                </span>
+              )}
+              {isUltimate && (
+                <span className="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    className="mr-2 flex-shrink-0 h-5 w-5 text-blue-700"
+                  >
+                    <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5m14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1Z" />
+                  </svg>
+                  Ultimate
+                </span>
+              )}
             </Link>
           </li>
         </ul>

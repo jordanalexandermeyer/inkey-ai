@@ -2,10 +2,10 @@ import type { NextPage } from 'next'
 import ProtectedPage from '../../components/ProtectedPage'
 import Page from '../../components/Page'
 import { useState, useRef, KeyboardEvent, useEffect } from 'react'
-import { getAuth } from 'firebase/auth'
-import { useAuthState } from 'react-firebase-hooks/auth'
 import toast from 'react-hot-toast'
 import { logEvent } from '@amplitude/analytics-browser'
+import { useUser } from 'utils/useUser'
+import UpgradeModal from 'components/UpgradeModal'
 
 enum Agent {
   USER = 'user',
@@ -21,10 +21,10 @@ const Home: NextPage = () => {
   const [prompt, setPrompt] = useState('')
   const [generateIsLoading, setGenerateIsLoading] = useState(false)
   const [outputs, setOutputs] = useState<Output[]>([])
-  const auth = getAuth()
-  const [user] = useAuthState(auth)
   const formRef = useRef<any>(null)
   const messageElementRef = useRef<any>(null)
+  const { user, usageDetails } = useUser()
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
 
   const scrollToBottom = () => {
     messageElementRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -93,6 +93,14 @@ const Home: NextPage = () => {
   }
 
   const handleSubmit = async (prompt: string) => {
+    if (
+      usageDetails &&
+      usageDetails?.monthly_usage >
+        usageDetails?.monthly_allowance + usageDetails.bonus_allowance
+    ) {
+      setShowUpgradeModal(true)
+      return
+    }
     logEvent(`ask-inkey`)
     let context: Output[] = [...outputs, { agent: Agent.USER, text: prompt }]
     setOutputs((outputs) => {
@@ -124,6 +132,9 @@ const Home: NextPage = () => {
   return (
     <ProtectedPage>
       <Page title={'Ask Inkey - Inkey'}>
+        {showUpgradeModal && (
+          <UpgradeModal setShowUpgradeModal={setShowUpgradeModal} />
+        )}
         <div className="pb-16 lg:pb-0">
           <div className="flex flex-col items-center text-sm h-full">
             {outputs.map((output, index) => {
