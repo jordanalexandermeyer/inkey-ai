@@ -152,8 +152,8 @@ const UpgradePage: NextPage = () => {
             <div className="text-center mb-1.5">
               <span>Billing: </span>
               <span>
-                <strong className="text-purple-600">Save 58%</strong> with
-                annual{' '}
+                <strong className="text-purple-600">Save 50%</strong> with
+                annual
               </span>
             </div>
             <div className="flex items-center justify-center mb-8 space-x-3">
