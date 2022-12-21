@@ -65,6 +65,38 @@ export const tones = {
   zealous: 'actively and passionately devoted to something',
 }
 
+export const languages = {
+  Bulgarian: 'Bulgarian 🇧🇬',
+  Chinese: 'Chinese 🇨🇳',
+  Czech: 'Czech 🇨🇿',
+  Danish: 'Danish 🇩🇰',
+  Dutch: 'Dutch 🇳🇱',
+  English: 'English 🇺🇸',
+  'English (British)': 'English (British) 🇬🇧',
+  Estonian: 'Estonian 🇪🇪',
+  Finnish: 'Finnish 🇫🇮',
+  French: 'French 🇫🇷',
+  German: 'German 🇩🇪',
+  Greek: 'Greek 🇬🇷',
+  Hungarian: 'Hungarian 🇭🇺',
+  Indonesian: 'Indonesian 🇮🇩',
+  Italian: 'Italian 🇮🇹',
+  Japanese: 'Japanese 🇯🇵',
+  Latvian: 'Latvian 🇱🇻',
+  Lithuanian: 'Lithuanian 🇱🇹',
+  Polish: 'Polish 🇵🇱',
+  Portuguese: 'Portuguese 🇵🇹',
+  'Portuguese (Brazilian)': 'Portuguese (Brazilian) 🇧🇷',
+  Romanian: 'Romanian 🇷🇴',
+  Russian: 'Russian 🇷🇺',
+  Slovak: 'Slovak 🇸🇰',
+  Slovenian: 'Slovenian 🇸🇮',
+  Spanish: 'Spanish 🇪🇸',
+  Swedish: 'Swedish 🇸🇪',
+  Turkish: 'Turkish 🇹🇷',
+  Ukrainian: 'Ukrainian 🇺🇦',
+}
+
 export const filters: FilterMap = {
   [FilterType.ESSAYS]: { text: 'Essays', selected: false },
   [FilterType.WRITING_TOOLS]: { text: 'Writing tools', selected: false },

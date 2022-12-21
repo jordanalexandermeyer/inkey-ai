@@ -22,8 +22,6 @@ const Navbar = ({
     100,
   )
 
-  // add in the lower of 100 and this
-
   return (
     <div className="flex flex-col flex-grow bg-white border-r border-gray-200 overflow-x-hidden w-56 pt-7">
       <div className="px-5">

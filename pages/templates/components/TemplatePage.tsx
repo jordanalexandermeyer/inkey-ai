@@ -17,7 +17,7 @@ import {
   QuoteMap,
   SummaryMethod,
 } from 'types'
-import { tones } from './constants'
+import { languages, tones } from './constants'
 
 const TemplatePage = ({
   id,
@@ -35,6 +35,7 @@ const TemplatePage = ({
   supportRequestedLength = true,
   supportTone = true,
   supportPointOfView = true,
+  supportLanguages = true,
 }: Template) => {
   const [prompt, setPrompt] = useState('')
   const [output, setOutput] = useState('')
@@ -45,6 +46,7 @@ const TemplatePage = ({
   const [generateReferences, setGenerateReferences] = useState(false)
   const [requestedLength, setRequestedLength] = useState(EssayLength.SHORT)
   const [tone, setTone] = useState('professional')
+  const [language, setLanguage] = useState('English')
   const [pointOfView, setPointOfView] = useState(PointOfView.THIRD)
   const [summaryMethod, setSummaryMethod] = useState(SummaryMethod.PARAGRAPH)
   const [poemType, setPoemType] = useState(PoemType.FREE_VERSE)
@@ -66,6 +68,7 @@ const TemplatePage = ({
           ...(supportRequestedLength && { length: requestedLength }),
           ...(supportTone && { tone: tone }),
           ...(supportPointOfView && { point_of_view: pointOfView }),
+          ...(supportLanguages && { language: language }),
           ...(id == TemplateId.SUMMARIZER_ID && {
             summary_method: summaryMethod,
           }),
@@ -346,6 +349,32 @@ const TemplatePage = ({
                         return (
                           <option key={index} value={value}>
                             {value[0].toUpperCase() + value.slice(1)}
+                          </option>
+                        )
+                      })}
+                    </select>
+                  </div>
+                )}
+                {supportLanguages && (
+                  <div>
+                    <label
+                      htmlFor="language"
+                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      Language
+                    </label>
+                    <select
+                      id="language"
+                      value={language}
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      onChange={(event) => {
+                        setLanguage(event.target.value)
+                      }}
+                    >
+                      {Object.keys(languages).map((key, index) => {
+                        return (
+                          <option key={index} value={key}>
+                            {languages[key as keyof typeof languages]}
                           </option>
                         )
                       })}

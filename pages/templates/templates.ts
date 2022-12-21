@@ -16,6 +16,7 @@ export interface Template {
   supportReferences?: boolean
   supportRequestedLength?: boolean
   supportPointOfView?: boolean
+  supportLanguages?: boolean
   href: string
   new?: boolean
   attribute: FilterType
@@ -40,6 +41,8 @@ export enum TemplateId {
   SUMMARIZER_ID = 'summarizer',
   POEM_ID = 'poem',
   SPEECH_ID = 'speech',
+  TRANSLATOR = 'translator',
+  STORY = 'story',
 }
 
 export type TemplateMap = {
@@ -47,6 +50,41 @@ export type TemplateMap = {
 }
 
 export const templates: TemplateMap = {
+  [TemplateId.TRANSLATOR]: {
+    id: TemplateId.TRANSLATOR,
+    icon: '💱',
+    title: 'Translator',
+    description: 'A tool that converts text from one language to another.',
+    promptName: 'Text',
+    promptPlaceholder: 'Enter text here and choose a language to translate.',
+    supportExamplePrompt: false,
+    supportRequestedLength: false,
+    supportTone: false,
+    supportPointOfView: false,
+    supportLanguages: true,
+    characterLimit: 15000,
+    inputRows: 10,
+    href: `/templates/${TemplateId.TRANSLATOR}`,
+    attribute: FilterType.WRITING_TOOLS,
+    new: true,
+  },
+  [TemplateId.STORY]: {
+    id: TemplateId.STORY,
+    icon: '📖',
+    title: 'Story',
+    description:
+      'A narrative that conveys a sequence of events to entertain or inform an audience.',
+    promptName: 'Story title',
+    promptPlaceholder: 'How Santa Saved the World',
+    supportExamplePrompt: true,
+    supportRequestedLength: false,
+    supportTone: true,
+    supportPointOfView: true,
+    supportLanguages: true,
+    href: `/templates/${TemplateId.STORY}`,
+    attribute: FilterType.OTHER,
+    new: true,
+  },
   [TemplateId.POEM_ID]: {
     id: TemplateId.POEM_ID,
     icon: '📜',
@@ -59,7 +97,6 @@ export const templates: TemplateMap = {
     supportRequestedLength: false,
     supportTone: false,
     href: `/templates/${TemplateId.POEM_ID}`,
-    new: true,
     attribute: FilterType.OTHER,
   },
   [TemplateId.SPEECH_ID]: {
@@ -71,11 +108,10 @@ export const templates: TemplateMap = {
     promptName: 'Speech title',
     promptPlaceholder:
       'Students should spend more time building friendships and less time working.',
-    supportRequestedLength: false,
+    supportRequestedLength: true,
     supportPointOfView: false,
     supportQuotes: true,
     href: `/templates/${TemplateId.SPEECH_ID}`,
-    new: true,
     attribute: FilterType.OTHER,
   },
   [TemplateId.GENERAL_ESSAY_ID]: {

@@ -39,6 +39,7 @@ export default async function handler(request: Request, response: Response) {
     point_of_view: pointOfView,
     summary_method: summaryMethod,
     poem_type: poemType,
+    language,
   }: {
     id: TemplateId | string
     userId: string
@@ -50,6 +51,7 @@ export default async function handler(request: Request, response: Response) {
     point_of_view: PointOfView
     summary_method: SummaryMethod
     poem_type: PoemType
+    language: string
   } = await request.json()
 
   let openaiPrompt
@@ -148,6 +150,14 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       temperature = 0.25
       break
+    case TemplateId.TRANSLATOR:
+      openaiPrompt = `Translate the following into ${language}: "${prompt}".`
+      model = 'text-davinci-003'
+      break
+    case TemplateId.STORY:
+      openaiPrompt = `Write a story with the following title: "${prompt}".`
+      model = 'text-davinci-003'
+      break
     default:
       return new Response(null, {
         status: 400,
@@ -185,6 +195,10 @@ export default async function handler(request: Request, response: Response) {
 
   if (pointOfView) {
     openaiPrompt += ` Use ${pointOfView} person point of view.`
+  }
+
+  if (language && id != TemplateId.TRANSLATOR) {
+    openaiPrompt += ` Write in ${language}.`
   }
 
   try {
