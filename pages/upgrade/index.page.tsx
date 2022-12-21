@@ -190,7 +190,7 @@ const UpgradePage: NextPage = () => {
               <div className="pb-8">
                 <FeatureList features={premiumFeatures} />
               </div>
-              {subscription?.role == Role.PREMIUM && (
+              {subscription?.role != Role.PREMIUM && (
                 <button
                   type="submit"
                   className="relative inline-flex items-center justify-center overflow-hidden font-semibold transition duration-100 ease-in-out rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center w-full space-x-2 sm:px-6 px-4 h-14 text-lg sm:text-lg leading-5 tracking-tight text-white bg-blue-600 shadow-sm hover:bg-blue-400 active:bg-blue-700"
@@ -260,7 +260,7 @@ const UpgradePage: NextPage = () => {
               <div className="pb-8">
                 <FeatureList features={ultimateFeatures} />
               </div>
-              {subscription?.role == Role.ULTIMATE && (
+              {subscription?.role != Role.ULTIMATE && (
                 <button
                   type="submit"
                   className="relative inline-flex items-center justify-center overflow-hidden font-semibold transition duration-100 ease-in-out rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center w-full space-x-2 sm:px-6 px-4 h-14 text-lg sm:text-lg leading-5 tracking-tight text-white bg-blue-600 shadow-sm hover:bg-blue-400 active:bg-blue-700"
