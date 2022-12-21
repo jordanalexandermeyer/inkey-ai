@@ -1,3 +1,5 @@
+import { FilterType } from 'types'
+
 export interface Template {
   id: TemplateId
   icon: string
@@ -14,8 +16,10 @@ export interface Template {
   supportReferences?: boolean
   supportRequestedLength?: boolean
   supportPointOfView?: boolean
+  supportLanguages?: boolean
   href: string
   new?: boolean
+  attribute: FilterType
 }
 
 export enum TemplateId {
@@ -37,6 +41,8 @@ export enum TemplateId {
   SUMMARIZER_ID = 'summarizer',
   POEM_ID = 'poem',
   SPEECH_ID = 'speech',
+  TRANSLATOR = 'translator',
+  STORY = 'story',
 }
 
 export type TemplateMap = {
@@ -44,6 +50,42 @@ export type TemplateMap = {
 }
 
 export const templates: TemplateMap = {
+  [TemplateId.TRANSLATOR]: {
+    id: TemplateId.TRANSLATOR,
+    icon: '💱',
+    title: 'Translator',
+    description: 'A tool that converts text from one language to another.',
+    promptName: 'Text',
+    promptPlaceholder: 'Enter text here and choose a language to translate.',
+    supportExamplePrompt: false,
+    supportRequestedLength: false,
+    supportTone: false,
+    supportPointOfView: false,
+    supportLanguages: true,
+    characterLimit: 15000,
+    inputRows: 10,
+    href: `/templates/${TemplateId.TRANSLATOR}`,
+    attribute: FilterType.WRITING_TOOLS,
+    new: true,
+  },
+  [TemplateId.STORY]: {
+    id: TemplateId.STORY,
+    icon: '📖',
+    title: 'Story',
+    description:
+      'A narrative that conveys a sequence of events to entertain or inform an audience.',
+    promptName: 'Story title',
+    promptPlaceholder: 'How Santa Saved the World',
+    supportExamplePrompt: true,
+    supportRequestedLength: false,
+    supportQuotes: true,
+    supportTone: true,
+    supportPointOfView: true,
+    supportLanguages: true,
+    href: `/templates/${TemplateId.STORY}`,
+    attribute: FilterType.OTHER,
+    new: true,
+  },
   [TemplateId.POEM_ID]: {
     id: TemplateId.POEM_ID,
     icon: '📜',
@@ -56,7 +98,7 @@ export const templates: TemplateMap = {
     supportRequestedLength: false,
     supportTone: false,
     href: `/templates/${TemplateId.POEM_ID}`,
-    new: true,
+    attribute: FilterType.OTHER,
   },
   [TemplateId.SPEECH_ID]: {
     id: TemplateId.SPEECH_ID,
@@ -67,10 +109,11 @@ export const templates: TemplateMap = {
     promptName: 'Speech title',
     promptPlaceholder:
       'Students should spend more time building friendships and less time working.',
-    supportRequestedLength: false,
+    supportRequestedLength: true,
     supportPointOfView: false,
+    supportQuotes: true,
     href: `/templates/${TemplateId.SPEECH_ID}`,
-    new: true,
+    attribute: FilterType.OTHER,
   },
   [TemplateId.GENERAL_ESSAY_ID]: {
     id: TemplateId.GENERAL_ESSAY_ID,
@@ -83,6 +126,7 @@ export const templates: TemplateMap = {
       '"That\'s one small step for man, one giant leap for mankind." - Neil Armstrong',
     supportQuotes: true,
     href: `/templates/${TemplateId.GENERAL_ESSAY_ID}`,
+    attribute: FilterType.ESSAYS,
   },
   [TemplateId.THESIS_ID]: {
     id: TemplateId.THESIS_ID,
@@ -95,6 +139,7 @@ export const templates: TemplateMap = {
     supportTone: false,
     supportPointOfView: false,
     href: `/templates/${TemplateId.THESIS_ID}`,
+    attribute: FilterType.ESSAYS,
   },
   [TemplateId.COLLEGE_APP_ESSAY_ID]: {
     id: TemplateId.COLLEGE_APP_ESSAY_ID,
@@ -107,6 +152,7 @@ export const templates: TemplateMap = {
     quotePlaceholder: 'My father said, "You can\'t live here anymore."',
     supportQuotes: true,
     href: `/templates/${TemplateId.COLLEGE_APP_ESSAY_ID}`,
+    attribute: FilterType.ESSAYS,
   },
   [TemplateId.PERSUASIVE_ESSAY_ID]: {
     id: TemplateId.PERSUASIVE_ESSAY_ID,
@@ -120,6 +166,7 @@ export const templates: TemplateMap = {
       'According to Elon Musk, "Remote work is no longer acceptable."',
     supportQuotes: true,
     href: `/templates/${TemplateId.PERSUASIVE_ESSAY_ID}`,
+    attribute: FilterType.ESSAYS,
   },
   [TemplateId.EXPOSITORY_ESSAY_ID]: {
     id: TemplateId.EXPOSITORY_ESSAY_ID,
@@ -133,6 +180,7 @@ export const templates: TemplateMap = {
       '"iPhone is a revolutionary and magical product that is literally five years ahead of any other mobile phone," - Steve Jobs',
     supportQuotes: true,
     href: `/templates/${TemplateId.EXPOSITORY_ESSAY_ID}`,
+    attribute: FilterType.ESSAYS,
   },
   [TemplateId.COMPARE_CONTRAST_ESSAY_ID]: {
     id: TemplateId.COMPARE_CONTRAST_ESSAY_ID,
@@ -146,6 +194,7 @@ export const templates: TemplateMap = {
       '"Ralph wept for the end of innocence, the darkness of man\'s heart, and the fall through the air of the true, wise friend called Piggy." - William Golding',
     supportQuotes: true,
     href: `/templates/${TemplateId.COMPARE_CONTRAST_ESSAY_ID}`,
+    attribute: FilterType.ESSAYS,
   },
   [TemplateId.ARGUMENTATIVE_ESSAY_ID]: {
     id: TemplateId.ARGUMENTATIVE_ESSAY_ID,
@@ -159,6 +208,7 @@ export const templates: TemplateMap = {
       '"You have a lifetime to work, but children are only young once." - Polish proverb',
     supportQuotes: true,
     href: `/templates/${TemplateId.ARGUMENTATIVE_ESSAY_ID}`,
+    attribute: FilterType.ESSAYS,
   },
   [TemplateId.CAUSE_EFFECT_ESSAY_ID]: {
     id: TemplateId.CAUSE_EFFECT_ESSAY_ID,
@@ -172,10 +222,11 @@ export const templates: TemplateMap = {
       '"This is the moment when we must come together to save this planet. Let us resolve that we will not leave our children a world where the oceans rise and famine spreads and terrible storms devastate our lands." - Barack Obama',
     supportQuotes: true,
     href: `/templates/${TemplateId.CAUSE_EFFECT_ESSAY_ID}`,
+    attribute: FilterType.ESSAYS,
   },
   [TemplateId.NARRATIVE_ESSAY_ID]: {
     id: TemplateId.NARRATIVE_ESSAY_ID,
-    icon: '📖',
+    icon: '🙊',
     title: 'Narrative Essay',
     description:
       'A narrative essay tells a story or relates a personal experience.',
@@ -184,6 +235,7 @@ export const templates: TemplateMap = {
     quotePlaceholder: '"Your aunt is going to live." - Doctor Jerry',
     supportQuotes: true,
     href: `/templates/${TemplateId.NARRATIVE_ESSAY_ID}`,
+    attribute: FilterType.ESSAYS,
   },
   [TemplateId.DEFINITION_ESSAY_ID]: {
     id: TemplateId.DEFINITION_ESSAY_ID,
@@ -196,6 +248,7 @@ export const templates: TemplateMap = {
       '"Time and health are two precious assets that we don\'t recognize and appreciate until they have been depleted." - Denis Waitley',
     supportQuotes: true,
     href: `/templates/${TemplateId.DEFINITION_ESSAY_ID}`,
+    attribute: FilterType.ESSAYS,
   },
   [TemplateId.DESCRIPTIVE_ESSAY_ID]: {
     id: TemplateId.DESCRIPTIVE_ESSAY_ID,
@@ -208,6 +261,7 @@ export const templates: TemplateMap = {
       '"This mysterious 3.141592..., which comes in at every door and window, and down every chimney, calling itself the circumference to a unit of diameter." - Augustus De Morgan',
     supportQuotes: true,
     href: `/templates/${TemplateId.DESCRIPTIVE_ESSAY_ID}`,
+    attribute: FilterType.ESSAYS,
   },
   [TemplateId.LITERARY_ESSAY_ID]: {
     id: TemplateId.LITERARY_ESSAY_ID,
@@ -221,6 +275,7 @@ export const templates: TemplateMap = {
       '"War is peace. Freedom is slavery. Ignorance is strength." - George Orwell',
     supportQuotes: true,
     href: `/templates/${TemplateId.LITERARY_ESSAY_ID}`,
+    attribute: FilterType.ESSAYS,
   },
   [TemplateId.SCIENTIFIC_ESSAY_ID]: {
     id: TemplateId.SCIENTIFIC_ESSAY_ID,
@@ -233,13 +288,14 @@ export const templates: TemplateMap = {
       'The American Academy of Dermatology declared ultraviolet radiation to be a known skin carcinogen.',
     supportQuotes: true,
     href: `/templates/${TemplateId.SCIENTIFIC_ESSAY_ID}`,
+    attribute: FilterType.ESSAYS,
   },
   [TemplateId.PARAPHRASER_ID]: {
     id: TemplateId.PARAPHRASER_ID,
     icon: '♻️',
     title: 'Paraphraser',
     description: 'This template takes in text and paraphrases it.',
-    characterLimit: 4000,
+    characterLimit: 15000,
     inputRows: 10,
     promptName: 'Text',
     promptPlaceholder:
@@ -247,6 +303,7 @@ export const templates: TemplateMap = {
     supportExamplePrompt: false,
     supportRequestedLength: false,
     href: `/${TemplateId.PARAPHRASER_ID}`,
+    attribute: FilterType.WRITING_TOOLS,
   },
   [TemplateId.SUMMARIZER_ID]: {
     id: TemplateId.SUMMARIZER_ID,
@@ -254,7 +311,7 @@ export const templates: TemplateMap = {
     title: 'Summarizer',
     description:
       'Condenses articles, papers, or documents down to the key points instantly.',
-    characterLimit: 4000,
+    characterLimit: 15000,
     inputRows: 10,
     promptName: 'Text',
     promptPlaceholder:
@@ -264,6 +321,7 @@ export const templates: TemplateMap = {
     supportTone: false,
     supportPointOfView: false,
     href: `/${TemplateId.SUMMARIZER_ID}`,
+    attribute: FilterType.WRITING_TOOLS,
   },
   [TemplateId.BLOG_ID]: {
     id: TemplateId.BLOG_ID,
@@ -277,5 +335,6 @@ export const templates: TemplateMap = {
       '"The most productive workplaces are those that foster collaboration, innovation, and a sense of purpose." - Bill Gates',
     supportQuotes: true,
     href: `/templates/${TemplateId.BLOG_ID}`,
+    attribute: FilterType.OTHER,
   },
 }

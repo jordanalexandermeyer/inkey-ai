@@ -2,6 +2,8 @@ import classNames from 'classnames'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { getAuth, signOut } from 'firebase/auth'
+import { useUser } from 'utils/useUser'
+import { Role } from 'types'
 
 const Navbar = ({
   removeBackdropAndNavbar,
@@ -10,8 +12,18 @@ const Navbar = ({
 }) => {
   const router = useRouter()
   const auth = getAuth()
+  const { subscription, usageDetails } = useUser()
+
+  const percentageOfCreditsUsed = Math.min(
+    Math.round(
+      (100 * (usageDetails?.monthly_usage || 0)) /
+        (usageDetails?.monthly_allowance || 1),
+    ),
+    100,
+  )
+
   return (
-    <div className="flex flex-col flex-grow bg-white border-r border-gray-200 overflow-hidden w-56 pt-7">
+    <div className="flex flex-col flex-grow bg-white border-r border-gray-200 overflow-x-hidden w-56 pt-7">
       <div className="px-5">
         <a href="/" className="flex items-center">
           <svg
@@ -56,8 +68,8 @@ const Navbar = ({
           </span>
         </a>
       </div>
-      <nav className="my-5 flex-1 flex flex-col relative space-y-1 pt-3">
-        <ul className="pb-1 px-3">
+      <nav className="my-5 flex-1 flex flex-col relative gap-2 pt-3 px-3">
+        <ul className="">
           <li>
             <Link
               href="/"
@@ -68,7 +80,7 @@ const Navbar = ({
                   'text-blue-700': router.pathname === '/',
                 },
               )}
-              onClick={() => removeBackdropAndNavbar(false)}
+              onClick={() => removeBackdropAndNavbar()}
             >
               <span className="flex items-center">
                 <svg
@@ -93,7 +105,7 @@ const Navbar = ({
             </Link>
           </li>
         </ul>
-        <ul className="pb-1 px-3">
+        <ul className="">
           <li>
             <Link
               href="/templates"
@@ -106,7 +118,7 @@ const Navbar = ({
                   'text-blue-700': router.asPath.includes('/templates'),
                 },
               )}
-              onClick={() => removeBackdropAndNavbar(false)}
+              onClick={() => removeBackdropAndNavbar()}
             >
               <span className="flex items-center">
                 <svg
@@ -132,7 +144,7 @@ const Navbar = ({
             </Link>
           </li>
         </ul>
-        <ul className="pb-1 px-3">
+        <ul className="">
           <li>
             <Link
               href="/ask-inkey"
@@ -145,7 +157,7 @@ const Navbar = ({
                   'text-blue-700': router.asPath.includes('/ask-inkey'),
                 },
               )}
-              onClick={() => removeBackdropAndNavbar(false)}
+              onClick={() => removeBackdropAndNavbar()}
             >
               <span className="flex items-center whitespace-nowrap">
                 <svg
@@ -199,7 +211,7 @@ const Navbar = ({
             </Link>
           </li>
         </ul>
-        <ul className="pb-1 px-3">
+        <ul className="">
           <li>
             <Link
               href="/paraphraser"
@@ -212,7 +224,7 @@ const Navbar = ({
                   'text-blue-700': router.asPath.includes('/paraphraser'),
                 },
               )}
-              onClick={() => removeBackdropAndNavbar(false)}
+              onClick={() => removeBackdropAndNavbar()}
             >
               <span className="flex items-center">
                 <svg
@@ -238,7 +250,7 @@ const Navbar = ({
             </Link>
           </li>
         </ul>
-        <ul className="pb-1 px-3">
+        <ul className="">
           <li>
             <Link
               href="/summarizer"
@@ -251,7 +263,7 @@ const Navbar = ({
                   'text-blue-700': router.asPath.includes('/summarizer'),
                 },
               )}
-              onClick={() => removeBackdropAndNavbar(false)}
+              onClick={() => removeBackdropAndNavbar()}
             >
               <span className="flex items-center">
                 <svg
@@ -277,8 +289,69 @@ const Navbar = ({
             </Link>
           </li>
         </ul>
+        <ul className="border-t border-gray-200"></ul>
+
+        <ul className="">
+          <li>
+            <Link
+              href="/upgrade"
+              className="w-full text-blue-700 hover:bg-gray-100 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-md group flex items-center justify-between p-2 font-medium"
+              onClick={() => removeBackdropAndNavbar()}
+            >
+              {!subscription && (
+                <span className="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 48 48"
+                    strokeWidth="2"
+                    stroke="currentColor"
+                    className="mr-2 flex-shrink-0 h-5 w-5"
+                  >
+                    <path
+                      xmlns="http://www.w3.org/2000/svg"
+                      d="M13.05 23.05q-.45-.45-.45-1.05 0-.6.45-1.05l9.9-9.9q.25-.25.5-.35.25-.1.55-.1.3 0 .55.1.25.1.5.35l9.9 9.9q.45.45.45 1.05 0 .6-.45 1.05-.45.45-1.05.45-.6 0-1.05-.45L24 14.2l-8.85 8.85q-.45.45-1.05.45-.6 0-1.05-.45Zm0 12.65q-.45-.45-.45-1.05 0-.6.45-1.05l9.9-9.9q.25-.25.5-.35.25-.1.55-.1.3 0 .55.1.25.1.5.35l9.9 9.9q.45.45.45 1.05 0 .6-.45 1.05-.45.45-1.05.45-.6 0-1.05-.45L24 26.85l-8.85 8.85q-.45.45-1.05.45-.6 0-1.05-.45Z"
+                    />
+                  </svg>
+                  Upgrade
+                </span>
+              )}
+              {subscription?.role == Role.PREMIUM && (
+                <span className="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 48 48"
+                    strokeWidth="2"
+                    stroke="currentColor"
+                    className="mr-2 flex-shrink-0 h-5 w-5 text-blue-700"
+                  >
+                    <path
+                      xmlns="http://www.w3.org/2000/svg"
+                      d="M24 40.3q-.65 0-1.25-.25t-1.05-.8L5.25 19.5q-.55-.7-.65-1.575-.1-.875.3-1.675l4.25-8.6q.4-.75 1.125-1.2Q11 6 11.85 6h24.3q.85 0 1.575.45t1.125 1.2l4.25 8.6q.4.8.3 1.675-.1.875-.65 1.575L26.3 39.25q-.45.55-1.05.8-.6.25-1.25.25Zm-6.1-23.8h12.2L26.35 9h-4.7Zm4.6 19.05V19.5H9.15Zm3 0L38.85 19.5H25.5Zm7.95-19.05h6.3L35.95 9H29.7Zm-25.2 0h6.3L18.3 9h-6.25Z"
+                    />
+                  </svg>
+                  Premium
+                </span>
+              )}
+              {subscription?.role == Role.ULTIMATE && (
+                <span className="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    className="mr-2 flex-shrink-0 h-5 w-5 text-blue-700"
+                  >
+                    <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5m14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1Z" />
+                  </svg>
+                  Ultimate
+                </span>
+              )}
+            </Link>
+          </li>
+        </ul>
       </nav>
-      {/* <div className="p-4">
+      <div className="p-4 mb-2">
         <div>
           <div className="border border-gray-200 p-4 rounded-b-lg bg-gray-50 rounded-t-lg">
             <div className="flex justify-between">
@@ -302,19 +375,21 @@ const Navbar = ({
               <div className="absolute bg-gray-200 w-full rounded-full h-1"></div>
               <div
                 className="absolute rounded-full transition-all h-1 bg-gradient-to-r from-purple-400 to-blue-400"
-                style={{ width: '50%' }}
+                style={{
+                  width: `${percentageOfCreditsUsed}%`,
+                }}
               ></div>
             </div>
             <div className="text-[10px] text-gray-500 font-bold pt-1 whitespace-nowrap">
-              0% of plan credits used
+              {percentageOfCreditsUsed}% of plan credits used
             </div>
             <div className="mt-3 text-blue-600 underline text-sm whitespace-nowrap">
               <Link href="/templates">Start writing</Link>
             </div>
           </div>
         </div>
-      </div> */}
-      <div className="my-2 flex-2 flex flex-col relative space-y-1 pt-3">
+      </div>
+      <nav className="my-2 flex-2 flex flex-col relative space-y-1">
         <ul className="pb-1 px-3">
           <li>
             <Link
@@ -327,7 +402,7 @@ const Navbar = ({
                   'text-blue-700': router.pathname === '/settings',
                 },
               )}
-              onClick={() => removeBackdropAndNavbar(false)}
+              onClick={() => removeBackdropAndNavbar()}
             >
               <span className="flex items-center">
                 <svg
@@ -378,7 +453,7 @@ const Navbar = ({
             </button>
           </li>
         </ul>
-      </div>
+      </nav>
     </div>
   )
 }

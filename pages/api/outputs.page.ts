@@ -4,21 +4,27 @@ import {
   getDoc,
   getFirestore,
   increment,
-  setDoc,
   updateDoc,
 } from 'firebase/firestore'
-import initializeFirebaseApp from '../../lib/initializeFirebase'
 import {
   EssayLength,
   PoemType,
   PointOfView,
   QuoteMap,
   SummaryMethod,
-} from '../templates/components/TemplatePage'
+} from 'types'
+import initializeFirebaseApp from '../../utils/initializeFirebase'
 import { TemplateId } from '../templates/templates'
 
 export const config = {
   runtime: 'experimental-edge',
+}
+
+const isError = (chunk: string) => {
+  try {
+    if (JSON.parse(chunk).error) return true
+  } catch (e) {}
+  return false
 }
 
 export default async function handler(request: Request, response: Response) {
@@ -33,6 +39,7 @@ export default async function handler(request: Request, response: Response) {
     point_of_view: pointOfView,
     summary_method: summaryMethod,
     poem_type: poemType,
+    language,
   }: {
     id: TemplateId | string
     userId: string
@@ -44,6 +51,7 @@ export default async function handler(request: Request, response: Response) {
     point_of_view: PointOfView
     summary_method: SummaryMethod
     poem_type: PoemType
+    language: string
   } = await request.json()
 
   let openaiPrompt
@@ -108,23 +116,23 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case TemplateId.PARAPHRASER_ID:
-      openaiPrompt = `Rewrite the following using different words: "${prompt}".`
+      openaiPrompt = `Rewrite the following using different words:\n\n${prompt}`
       model = 'text-davinci-003'
       break
     case TemplateId.SUMMARIZER_ID:
       switch (summaryMethod) {
         // couldn't use SummaryMethod here because of edge runtime doesn't support the eval() function
         case 'bullet-points':
-          openaiPrompt = `Summarize the following with bullet points: "${prompt}".`
+          openaiPrompt = `Summarize the following with bullet points:\n\n${prompt}`
           break
         case 'TLDR':
-          openaiPrompt = `"${prompt}"\n\nTl;dr\n`
+          openaiPrompt = `${prompt}\n\nTl;dr\n`
           break
         case 'paragraph':
-          openaiPrompt = `Summarize the following: "${prompt}".`
+          openaiPrompt = `Summarize the following:\n\n${prompt}`
           break
         default:
-          openaiPrompt = `Summarize the following: "${prompt}".`
+          openaiPrompt = `Summarize the following:\n\n${prompt}`
           break
       }
       model = 'text-davinci-003'
@@ -138,9 +146,17 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case 'ask-inkey':
-      openaiPrompt = `You are Inkey, an AI writing assistant for students. \n\n${prompt}`
+      openaiPrompt = `You are Inkey, an AI writing assistant for students. Reply to the following prompt:\n\n${prompt}`
       model = 'text-davinci-003'
       temperature = 0.25
+      break
+    case TemplateId.TRANSLATOR:
+      openaiPrompt = `Translate the following into ${language}:\n\n${prompt}`
+      model = 'text-davinci-003'
+      break
+    case TemplateId.STORY:
+      openaiPrompt = `Write a story with the following title: "${prompt}".`
+      model = 'text-davinci-003'
       break
     default:
       return new Response(null, {
@@ -179,6 +195,10 @@ export default async function handler(request: Request, response: Response) {
 
   if (pointOfView) {
     openaiPrompt += ` Use ${pointOfView} person point of view.`
+  }
+
+  if (language && id != TemplateId.TRANSLATOR) {
+    openaiPrompt += ` Write in ${language}.`
   }
 
   try {
@@ -236,18 +256,16 @@ export default async function handler(request: Request, response: Response) {
               break
             }
 
-            // if chat is too long, break (TODO: this probably isn't the best way to handle this)
-            if (fullChunk.slice(15).includes('error')) {
-              controller.enqueue(
-                encoder.encode(
-                  'The chat has reached its maximum length. Please "Clear chat" to continue chatting with Inkey.',
-                ),
-              )
-              break
-            }
-
             // if chunk is data, parse it and append it to output
             try {
+              if (isError(fullChunk)) {
+                controller.enqueue(
+                  encoder.encode(
+                    'The chat has reached its maximum length. Please "Clear chat" to continue chatting with Inkey.',
+                  ),
+                )
+                break
+              }
               const parsedData = JSON.parse(fullChunk.slice(6))
               const text = parsedData.choices[0].text
               if (text == '\n' && chunkNumber < 2) continue // beginning response usually has 2 new lines
@@ -261,7 +279,7 @@ export default async function handler(request: Request, response: Response) {
             }
           }
         },
-        async flush(controller) {
+        async flush() {
           await updateUserWordsGenerated(userId, output.split(' ').length)
         },
       }),
@@ -284,16 +302,15 @@ async function updateUserWordsGenerated(
   numberOfWordsGenerated: number,
 ) {
   const db = getFirestore()
-  const counterRef = doc(db, 'counters', userId)
-  const counterSnap = await getDoc(counterRef)
+  const docRef = doc(db, 'usage_details', userId)
+  const docSnapshot = await getDoc(docRef)
 
-  if (counterSnap.exists()) {
-    await updateDoc(counterRef, {
-      words_generated: increment(numberOfWordsGenerated),
+  if (docSnapshot.exists()) {
+    await updateDoc(docRef, {
+      monthly_usage: increment(numberOfWordsGenerated),
+      total_usage: increment(numberOfWordsGenerated),
     })
   } else {
-    await setDoc(counterRef, {
-      words_generated: numberOfWordsGenerated,
-    })
+    console.log("Error: document doesn't exist for user: ", userId)
   }
 }

@@ -2,29 +2,20 @@ import type { NextPage } from 'next'
 import ProtectedPage from '../../components/ProtectedPage'
 import Page from '../../components/Page'
 import { useState, useRef, KeyboardEvent, useEffect } from 'react'
-import { getAuth } from 'firebase/auth'
-import { useAuthState } from 'react-firebase-hooks/auth'
 import toast from 'react-hot-toast'
 import { logEvent } from '@amplitude/analytics-browser'
-
-enum Agent {
-  USER = 'user',
-  INKEY = 'inkey',
-}
-
-interface Output {
-  agent: Agent
-  text: string
-}
+import { useUser } from 'utils/useUser'
+import UpgradeModal from 'components/UpgradeModal'
+import { Agent, Output } from 'types'
 
 const Home: NextPage = () => {
   const [prompt, setPrompt] = useState('')
   const [generateIsLoading, setGenerateIsLoading] = useState(false)
   const [outputs, setOutputs] = useState<Output[]>([])
-  const auth = getAuth()
-  const [user] = useAuthState(auth)
   const formRef = useRef<any>(null)
   const messageElementRef = useRef<any>(null)
+  const { user, usageDetails } = useUser()
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
 
   const scrollToBottom = () => {
     messageElementRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -93,6 +84,14 @@ const Home: NextPage = () => {
   }
 
   const handleSubmit = async (prompt: string) => {
+    if (
+      usageDetails &&
+      usageDetails?.monthly_usage >
+        usageDetails?.monthly_allowance + usageDetails.bonus_allowance
+    ) {
+      setShowUpgradeModal(true)
+      return
+    }
     logEvent(`ask-inkey`)
     let context: Output[] = [...outputs, { agent: Agent.USER, text: prompt }]
     setOutputs((outputs) => {
@@ -124,6 +123,9 @@ const Home: NextPage = () => {
   return (
     <ProtectedPage>
       <Page title={'Ask Inkey - Inkey'}>
+        {showUpgradeModal && (
+          <UpgradeModal setShowUpgradeModal={setShowUpgradeModal} />
+        )}
         <div className="pb-16 lg:pb-0">
           <div className="flex flex-col items-center text-sm h-full">
             {outputs.map((output, index) => {
@@ -236,7 +238,7 @@ const Home: NextPage = () => {
               }
             })}
             {outputs.length == 0 && (
-              <div className="w-full md:max-w-2xl lg:max-w-3xl md:h-full md:flex md:flex-col px-6 pt-6">
+              <div className="w-full md:max-w-2xl lg:max-w-3xl md:h-full md:flex md:flex-col px-6 pt-6 md:pt-0">
                 <div className="md:mt-[20vh] flex flex-col items-center gap-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
