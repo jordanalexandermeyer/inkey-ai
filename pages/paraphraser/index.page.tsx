@@ -26,6 +26,7 @@ const ParaphraserPage: NextPage = () => {
       supportRequestedLength={pageData.supportRequestedLength}
       supportPointOfView={pageData.supportPointOfView}
       href={pageData.href}
+      attribute={pageData.attribute}
     />
   )
 }
