@@ -116,23 +116,23 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case TemplateId.PARAPHRASER_ID:
-      openaiPrompt = `Rewrite the following using different words: "${prompt}".`
+      openaiPrompt = `Rewrite the following using different words:\n\n${prompt}`
       model = 'text-davinci-003'
       break
     case TemplateId.SUMMARIZER_ID:
       switch (summaryMethod) {
         // couldn't use SummaryMethod here because of edge runtime doesn't support the eval() function
         case 'bullet-points':
-          openaiPrompt = `Summarize the following with bullet points: "${prompt}".`
+          openaiPrompt = `Summarize the following with bullet points:\n\n${prompt}`
           break
         case 'TLDR':
-          openaiPrompt = `"${prompt}"\n\nTl;dr\n`
+          openaiPrompt = `${prompt}\n\nTl;dr\n`
           break
         case 'paragraph':
-          openaiPrompt = `Summarize the following: "${prompt}".`
+          openaiPrompt = `Summarize the following:\n\n${prompt}`
           break
         default:
-          openaiPrompt = `Summarize the following: "${prompt}".`
+          openaiPrompt = `Summarize the following:\n\n${prompt}`
           break
       }
       model = 'text-davinci-003'
@@ -146,12 +146,12 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case 'ask-inkey':
-      openaiPrompt = `You are Inkey, an AI writing assistant for students. Reply to the following prompt: "${prompt}".`
+      openaiPrompt = `You are Inkey, an AI writing assistant for students. Reply to the following prompt:\n\n${prompt}`
       model = 'text-davinci-003'
       temperature = 0.25
       break
     case TemplateId.TRANSLATOR:
-      openaiPrompt = `Translate the following into ${language}: "${prompt}".`
+      openaiPrompt = `Translate the following into ${language}:\n\n${prompt}`
       model = 'text-davinci-003'
       break
     case TemplateId.STORY:
