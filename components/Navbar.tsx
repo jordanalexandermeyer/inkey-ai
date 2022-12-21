@@ -14,15 +14,18 @@ const Navbar = ({
   const auth = getAuth()
   const { subscription, usageDetails } = useUser()
 
-  const percentageOfCreditsUsed = Math.round(
-    (100 * (usageDetails?.monthly_usage || 0)) /
-      (usageDetails?.monthly_allowance || 1),
+  const percentageOfCreditsUsed = Math.min(
+    Math.round(
+      (100 * (usageDetails?.monthly_usage || 0)) /
+        (usageDetails?.monthly_allowance || 1),
+    ),
+    100,
   )
 
   // add in the lower of 100 and this
 
   return (
-    <div className="flex flex-col flex-grow bg-white border-r border-gray-200 overflow-hidden w-56 pt-7">
+    <div className="flex flex-col flex-grow bg-white border-r border-gray-200 overflow-x-hidden w-56 pt-7">
       <div className="px-5">
         <a href="/" className="flex items-center">
           <svg
@@ -350,7 +353,7 @@ const Navbar = ({
           </li>
         </ul>
       </nav>
-      {/* <div className="p-4">
+      <div className="p-4 mb-2">
         <div>
           <div className="border border-gray-200 p-4 rounded-b-lg bg-gray-50 rounded-t-lg">
             <div className="flex justify-between">
@@ -387,8 +390,8 @@ const Navbar = ({
             </div>
           </div>
         </div>
-      </div> */}
-      <nav className="my-2 flex-2 flex flex-col relative space-y-1 pt-3">
+      </div>
+      <nav className="my-2 flex-2 flex flex-col relative space-y-1">
         <ul className="pb-1 px-3">
           <li>
             <Link
