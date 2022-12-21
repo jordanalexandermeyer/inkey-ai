@@ -81,7 +81,7 @@ const createCustomerRecord = async ({
     if (phone) (customerRecord as any).phone = phone;
     await admin
       .firestore()
-      .collection(config.customersCollectionPath)
+      .collection('customers')
       .doc(uid)
       .set(customerRecord, { merge: true });
     logs.customerCreated(customer.id, customer.livemode);
@@ -165,10 +165,7 @@ exports.createCheckoutSession = functions
           ? (
               await admin
                 .firestore()
-                .collection(
-                  config.stripeConfigCollectionPath ||
-                    config.productsCollectionPath
-                )
+                .collection(config.stripeConfigCollectionPath || 'products')
                 .doc('shipping_countries')
                 .get()
             ).data()?.['allowed_countries'] ?? []
@@ -337,11 +334,7 @@ export const createPortalLink = functions.https.onCall(
       const { returnUrl: return_url, locale = 'auto', configuration } = data;
       // Get stripe customer id
       const customer = (
-        await admin
-          .firestore()
-          .collection(config.customersCollectionPath)
-          .doc(uid)
-          .get()
+        await admin.firestore().collection('customers').doc(uid).get()
       ).data().stripeId;
       const params: Stripe.BillingPortal.SessionCreateParams = {
         customer,
@@ -388,10 +381,10 @@ const createProductRecord = async (product: Stripe.Product): Promise<void> => {
   };
   await admin
     .firestore()
-    .collection(config.productsCollectionPath)
+    .collection('products')
     .doc(product.id)
     .set(productData, { merge: true });
-  logs.firestoreDocCreated(config.productsCollectionPath, product.id);
+  logs.firestoreDocCreated('products', product.id);
 };
 
 /**
@@ -423,7 +416,7 @@ const insertPriceRecord = async (price: Stripe.Price): Promise<void> => {
   };
   const dbRef = admin
     .firestore()
-    .collection(config.productsCollectionPath)
+    .collection('products')
     .doc(price.product as string)
     .collection('prices');
   await dbRef.doc(price.id).set(priceData, { merge: true });
@@ -441,7 +434,7 @@ const insertTaxRateRecord = async (taxRate: Stripe.TaxRate): Promise<void> => {
   delete taxRateData.metadata;
   await admin
     .firestore()
-    .collection(config.productsCollectionPath)
+    .collection('products')
     .doc('tax_rates')
     .collection('tax_rates')
     .doc(taxRate.id)
@@ -471,7 +464,7 @@ const manageSubscriptionStatusChange = async (
   // Get customer's UID from Firestore
   const customersSnap = await admin
     .firestore()
-    .collection(config.customersCollectionPath)
+    .collection('customers')
     .where('stripeId', '==', customerId)
     .get();
   if (customersSnap.size !== 1) {
@@ -488,7 +481,7 @@ const manageSubscriptionStatusChange = async (
     prices.push(
       admin
         .firestore()
-        .collection(config.productsCollectionPath)
+        .collection('products')
         .doc((item.price.product as Stripe.Product).id)
         .collection('prices')
         .doc(item.price.id)
@@ -508,13 +501,10 @@ const manageSubscriptionStatusChange = async (
     stripeLink: `https://dashboard.stripe.com${
       subscription.livemode ? '' : '/test'
     }/subscriptions/${subscription.id}`,
-    product: admin
-      .firestore()
-      .collection(config.productsCollectionPath)
-      .doc(product.id),
+    product: admin.firestore().collection('products').doc(product.id),
     price: admin
       .firestore()
-      .collection(config.productsCollectionPath)
+      .collection('products')
       .doc(product.id)
       .collection('prices')
       .doc(price.id),
@@ -629,7 +619,7 @@ const insertInvoiceRecord = async (invoice: Stripe.Invoice) => {
   // Get customer's UID from Firestore
   const customersSnap = await admin
     .firestore()
-    .collection(config.customersCollectionPath)
+    .collection('customers')
     .where('stripeId', '==', invoice.customer)
     .get();
   if (customersSnap.size !== 1) {
@@ -648,7 +638,7 @@ const insertInvoiceRecord = async (invoice: Stripe.Invoice) => {
     prices.push(
       admin
         .firestore()
-        .collection(config.productsCollectionPath)
+        .collection('products')
         .doc(item.price.product as string)
         .collection('prices')
         .doc(item.price.id)
@@ -673,7 +663,7 @@ const insertPaymentRecord = async (
   // Get customer's UID from Firestore
   const customersSnap = await admin
     .firestore()
-    .collection(config.customersCollectionPath)
+    .collection('customers')
     .where('stripeId', '==', payment.customer)
     .get();
   if (customersSnap.size !== 1) {
@@ -688,7 +678,7 @@ const insertPaymentRecord = async (
       prices.push(
         admin
           .firestore()
-          .collection(config.productsCollectionPath)
+          .collection('products')
           .doc(item.price.product as string)
           .collection('prices')
           .doc(item.price.id)
@@ -808,7 +798,7 @@ export const handleWebhookEvents = functions.https.onRequest(
             if (checkoutSession.tax_id_collection?.enabled) {
               const customersSnap = await admin
                 .firestore()
-                .collection(config.customersCollectionPath)
+                .collection('customers')
                 .where('stripeId', '==', checkoutSession.customer as string)
                 .get();
               if (customersSnap.size === 1) {
@@ -867,17 +857,13 @@ export const handleWebhookEvents = functions.https.onRequest(
 
 const deleteProductOrPrice = async (pr: Stripe.Product | Stripe.Price) => {
   if (pr.object === 'product') {
-    await admin
-      .firestore()
-      .collection(config.productsCollectionPath)
-      .doc(pr.id)
-      .delete();
-    logs.firestoreDocDeleted(config.productsCollectionPath, pr.id);
+    await admin.firestore().collection('products').doc(pr.id).delete();
+    logs.firestoreDocDeleted('products', pr.id);
   }
   if (pr.object === 'price') {
     await admin
       .firestore()
-      .collection(config.productsCollectionPath)
+      .collection('products')
       .doc((pr as Stripe.Price).product as string)
       .collection('prices')
       .doc(pr.id)
@@ -906,7 +892,7 @@ const deleteStripeCustomer = async ({
     // Set all subscription records to canceled.
     const subscriptionsSnap = await admin
       .firestore()
-      .collection(config.customersCollectionPath)
+      .collection('customers')
       .doc(uid)
       .collection('subscriptions')
       .where('status', 'in', ['trialing', 'active'])
@@ -926,11 +912,7 @@ export const onUserDeleted = functions.auth.user().onDelete(async (user) => {
   if (!config.autoDeleteUsers) return;
   // Get the Stripe customer id.
   const customer = (
-    await admin
-      .firestore()
-      .collection(config.customersCollectionPath)
-      .doc(user.uid)
-      .get()
+    await admin.firestore().collection('customers').doc(user.uid).get()
   ).data();
   // If you use the `delete-user-data` extension it could be the case that the customer record is already deleted.
   // In that case, the `onCustomerDataDeleted` function below takes care of deleting the Stripe customer object.
