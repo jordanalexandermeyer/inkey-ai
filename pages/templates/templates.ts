@@ -78,6 +78,7 @@ export const templates: TemplateMap = {
     promptPlaceholder: 'How Santa Saved the World',
     supportExamplePrompt: true,
     supportRequestedLength: false,
+    supportQuotes: true,
     supportTone: true,
     supportPointOfView: true,
     supportLanguages: true,
