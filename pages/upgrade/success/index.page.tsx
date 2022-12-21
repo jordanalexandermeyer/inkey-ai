@@ -26,10 +26,11 @@ const SuccessPage: NextPage = () => {
                       Success!
                     </h3>
                     <p>
-                      Thank you for upgrading! We hope you enjoy using Inkey and
-                      find it helpful.
+                      Thank you for upgrading! I hope you enjoy using Inkey and
+                      find it helpful. If you need anything, feel free to email
+                      me at <b>jordan@inkey.ai</b>
                     </p>
-                    <p>Sincerely, The Inkey Team</p>
+                    <p>Sincerely, Jordan</p>
                   </div>
                 </div>
                 <button

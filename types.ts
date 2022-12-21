@@ -1,9 +1,4 @@
 import Stripe from 'stripe'
-export interface PageMeta {
-  title: string
-  description: string
-  cardImage: string
-}
 
 export interface Customer {
   stripe_customer_id?: string
@@ -19,15 +14,6 @@ export interface Product {
 
 export interface ProductWithPrice extends Product {
   prices?: Price[]
-}
-
-export interface UserDetails {
-  first_name: string
-  last_name: string
-  full_name?: string
-  avatar_url?: string
-  billing_address?: Stripe.Address
-  payment_method?: Stripe.PaymentMethod[Stripe.PaymentMethod.Type]
 }
 
 export interface Price {
@@ -65,6 +51,7 @@ export interface Subscription {
 }
 
 export enum Role {
+  BASIC = 'basic',
   PREMIUM = 'premium',
   ULTIMATE = 'ultimate',
 }
@@ -74,4 +61,77 @@ export interface UsageDetails {
   monthly_usage: number
   total_usage: number
   bonus_allowance: number
+}
+
+export enum BillingPeriod {
+  MONTHLY = 'monthly',
+  SEMI_ANNUALLY = 'semi-annually',
+  ANNUALLY = 'annually',
+}
+
+export interface Feature {
+  text: string
+  color: string
+  included: boolean
+}
+
+export enum Agent {
+  USER = 'user',
+  INKEY = 'inkey',
+}
+
+export interface Output {
+  agent: Agent
+  text: string
+}
+
+export enum EssayLength {
+  SHORT = 'short',
+  LONG = 'long',
+}
+
+export interface Quote {
+  value: string
+}
+
+export interface QuoteMap {
+  [key: string]: Quote
+}
+
+export enum PointOfView {
+  FIRST = 'first',
+  SECOND = 'second',
+  THIRD = 'third',
+}
+
+export enum SummaryMethod {
+  PARAGRAPH = 'paragraph',
+  TLDR = 'TLDR',
+  BULLET_POINTS = 'bullet-points',
+}
+
+export enum PoemType {
+  FREE_VERSE = 'free-verse',
+  SONNET = 'sonnet',
+  ACROSTIC = 'acrostic',
+  LIMERICK = 'limerick',
+  HAIKU = 'haiku',
+  ODE = 'ode',
+  ELEGY = 'elegy',
+  BALLAD = 'ballad',
+}
+
+export enum FilterType {
+  ESSAYS = 'essays',
+  WRITING_TOOLS = 'writing-tools',
+  OTHER = 'other',
+}
+
+export interface Filter {
+  text: string
+  selected: boolean
+}
+
+export interface FilterMap {
+  [key: string]: Filter
 }

@@ -6,16 +6,7 @@ import toast from 'react-hot-toast'
 import { logEvent } from '@amplitude/analytics-browser'
 import { useUser } from 'utils/useUser'
 import UpgradeModal from 'components/UpgradeModal'
-
-enum Agent {
-  USER = 'user',
-  INKEY = 'inkey',
-}
-
-interface Output {
-  agent: Agent
-  text: string
-}
+import { Agent, Output } from 'types'
 
 const Home: NextPage = () => {
   const [prompt, setPrompt] = useState('')

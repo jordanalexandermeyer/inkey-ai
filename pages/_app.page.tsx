@@ -2,8 +2,8 @@ initializeFirebaseApp()
 initializeAmplitude()
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import initializeFirebaseApp from '../lib/initializeFirebase'
-import initializeAmplitude from '../lib/initializeAmplitude'
+import initializeFirebaseApp from '../utils/initializeFirebase'
+import initializeAmplitude from '../utils/initializeAmplitude'
 import Script from 'next/script'
 import { MyUserContextProvider } from 'utils/useUser'
 

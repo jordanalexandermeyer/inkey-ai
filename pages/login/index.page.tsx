@@ -134,8 +134,7 @@ const Login: NextPage = () => {
                 </div>
               </div>
               <h2 className="mt-6 text-3xl text-center font-bold leading-9 tracking-tight text-gray-900">
-                {' '}
-                Sign in to your account{' '}
+                Sign in to your account
               </h2>
             </div>
             <div className="mt-8">
@@ -213,8 +212,7 @@ const Login: NextPage = () => {
                       htmlFor="email"
                       className="block text-sm font-medium leading-5 text-gray-700"
                     >
-                      {' '}
-                      Email address{' '}
+                      Email address
                     </label>
                     <div className="mt-1 rounded-md shadow-sm">
                       <input
@@ -236,14 +234,12 @@ const Login: NextPage = () => {
                         className="relative inline-flex items-center justify-center overflow-hidden font-semibold transition duration-100 ease-in-out rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 px-5 py-2 text-base leading-6 text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 shadow-sm hover:text-gray-500 dark:hover:text-white dark:hover:bg-gray-600 selectionRing dark:ring-offset-gray-900 active:bg-gray-50 active:text-gray-800 w-full"
                         disabled={isDisabled}
                       >
-                        {' '}
-                        Login with Email{' '}
+                        Login with Email
                       </button>
                     </span>
-                  </div>{' '}
+                  </div>
                   <p className="mt-6 text-sm text-center text-gray-400">
-                    {' '}
-                    Don't have an account yet?{' '}
+                    Don't have an account yet?
                     <Link href="/signup" className="text-blue-400">
                       Get started here
                     </Link>

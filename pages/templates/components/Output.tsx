@@ -2,17 +2,11 @@ import {
   GrammarlyEditorPlugin,
   GrammarlyButton,
 } from '@grammarly/editor-sdk-react'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 
-const Output = ({
-  toast,
-  text,
-  textEditorReference,
-}: {
-  text: string
-  toast: any
-  textEditorReference: any
-}) => {
+const Output = ({ toast, text }: { text: string; toast: any }) => {
+  const textEditorReference: React.Ref<any> = useRef(null)
+
   return (
     <div className="px-6 py-3">
       <div className="sticky top-14 z-10 flex justify-start border rounded-lg p-2 bg-white">

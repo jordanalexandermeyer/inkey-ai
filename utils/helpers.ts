@@ -19,3 +19,7 @@ export const toDateTime = (secs: number) => {
 export const capitalizeFirstLetter = (word: string) => {
   return word[0].toUpperCase() + word.slice(1)
 }
+
+export const roundToTwoDecimals = (input: number) => {
+  return Math.round(input * 100) / 100
+}

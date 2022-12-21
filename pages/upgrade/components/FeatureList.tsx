@@ -1,8 +1,4 @@
-export interface Feature {
-  text: string
-  color: string
-  included: boolean
-}
+import { Feature } from 'types'
 
 export const IncludedFeature = ({
   text,

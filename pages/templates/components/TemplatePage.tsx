@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import toast from 'react-hot-toast'
 import ProtectedPage from '../../../components/ProtectedPage'
 import Output from './Output'
@@ -10,111 +10,14 @@ import { Template, TemplateId } from '../templates'
 import { logEvent } from '@amplitude/analytics-browser'
 import { useUser } from 'utils/useUser'
 import UpgradeModal from 'components/UpgradeModal'
-
-export interface Output {
-  text: string
-}
-
-export enum EssayLength {
-  SHORT = 'short',
-  LONG = 'long',
-}
-
-export const tones = {
-  accusatory: 'implying blame or wrongdoing',
-  adoring: 'expressing admiration or affection',
-  angry: 'feeling or showing annoyance',
-  anxious: 'feeling worry or unease',
-  ashamed: 'feeling embarrassed or guilty',
-  blunt: 'direct and to the point, without beating around the bush',
-  bold: 'confident and daring',
-  boring: 'uninteresting and tedious',
-  brisk: 'active, fast, and energetic',
-  bubbly: 'cheerful and lively',
-  burlesque: 'absurd or mocking imitation of something',
-  calm: 'composed and unruffled',
-  candid: 'straightforward and honest',
-  casual: 'relaxed and unconcerned',
-  cheerful: 'happy and optimistic',
-  cliché:
-    "a phrase that's been used so often it has lost its original meaning or impact",
-  clinical: 'objective and detached, like a doctor or scientist',
-  conceited: 'having an excessively favorable opinion of oneself',
-  condescending: 'talking down to others in a patronizing way',
-  curious: 'eager to learn or know something',
-  depressed: 'feeling down or hopeless',
-  desperate: 'urgently needing or wanting something',
-  disturbed: 'marked by mental illness or instability',
-  dramatic: 'intense and confrontational',
-  eloquent: 'fluent and persuasive in speaking or writing',
-  emotional: 'easily displaying or influenced by emotions',
-  empathetic: 'able to understand and share the feelings of others',
-  empowering: 'making someone more confident and capable',
-  engaging: 'charming and attractive',
-  expectant: 'showing anticipation or excitement for something to happen',
-  familiar: 'well-known or commonly encountered',
-  friendly: 'kind and pleasant',
-  funny: 'causing amusement or laughter',
-  furious: 'extremely angry',
-  gentle: 'kind and considerate',
-  helpful: 'offering assistance or support',
-  hopeful: 'full of hope',
-  hopeless: 'without hope',
-  intimate: 'private or personal',
-  lively: 'active and energetic',
-  loving: 'showing deep concern or affection for someone or something',
-  mysterious: 'puzzling or inexplicable',
-  nervous: 'uneasy or anxious',
-  nonchalant: 'unconcerned and indifferent',
-  nostalgic: 'longing for past events or experiences',
-  paranoid: 'showing irrational fear or suspicion',
-  pedantic: 'overly concerned with minor details or rules',
-  pessimistic: 'expecting the worst possible outcome',
-  playful: 'lighthearted and humorous',
-  powerful: 'showing great strength or influence',
-  professional: 'qualified in a particular profession',
-  psychotic: 'experiencing a loss of contact with reality',
-  questioning: 'characterized by a desire to learn or understand',
-  reassuring: "removing someone's doubts or fears",
-  respectful: 'showing politeness or deference',
-  satiric: 'exposing or criticizing something through ridicule or humor',
-  scholarly: 'concerned with academic learning and research',
-  serious: 'demanding careful consideration',
-  vibrant: 'full of energy and enthusiasm',
-  witty: 'clever and humorous in a verbal exchange',
-  zealous: 'actively and passionately devoted to something',
-}
-
-export interface Quote {
-  value: string
-}
-
-export interface QuoteMap {
-  [key: string]: Quote
-}
-
-export enum PointOfView {
-  FIRST = 'first',
-  SECOND = 'second',
-  THIRD = 'third',
-}
-
-export enum SummaryMethod {
-  PARAGRAPH = 'paragraph',
-  TLDR = 'TLDR',
-  BULLET_POINTS = 'bullet-points',
-}
-
-export enum PoemType {
-  FREE_VERSE = 'free-verse',
-  SONNET = 'sonnet',
-  ACROSTIC = 'acrostic',
-  LIMERICK = 'limerick',
-  HAIKU = 'haiku',
-  ODE = 'ode',
-  ELEGY = 'elegy',
-  BALLAD = 'ballad',
-}
+import {
+  EssayLength,
+  PoemType,
+  PointOfView,
+  QuoteMap,
+  SummaryMethod,
+} from 'types'
+import { tones } from './constants'
 
 const TemplatePage = ({
   id,
@@ -145,14 +48,10 @@ const TemplatePage = ({
   const [pointOfView, setPointOfView] = useState(PointOfView.THIRD)
   const [summaryMethod, setSummaryMethod] = useState(SummaryMethod.PARAGRAPH)
   const [poemType, setPoemType] = useState(PoemType.FREE_VERSE)
-  const textEditorReference: React.Ref<any> = useRef(null)
   const { user, usageDetails, subscription } = useUser()
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
 
-  const isSummarizer = id == TemplateId.SUMMARIZER_ID
-  const isPoem = id == TemplateId.POEM_ID
-
-  const getOutputs = async (prompt: string, userId: string) => {
+  const getAndSetOutput = async (prompt: string, userId: string) => {
     try {
       const response = await fetch('/api/outputs', {
         method: 'post',
@@ -167,8 +66,10 @@ const TemplatePage = ({
           ...(supportRequestedLength && { length: requestedLength }),
           ...(supportTone && { tone: tone }),
           ...(supportPointOfView && { point_of_view: pointOfView }),
-          ...(isSummarizer && { summary_method: summaryMethod }),
-          ...(isPoem && { poem_type: poemType }),
+          ...(id == TemplateId.SUMMARIZER_ID && {
+            summary_method: summaryMethod,
+          }),
+          ...(id == TemplateId.POEM_ID && { poem_type: poemType }),
         }),
         headers: {
           'Content-Type': 'application/json',
@@ -198,12 +99,20 @@ const TemplatePage = ({
     }
   }
 
-  const handleGenerate = async () => {
+  const handleGenerateClick = async () => {
+    if (
+      usageDetails &&
+      usageDetails?.monthly_usage >
+        usageDetails?.monthly_allowance + usageDetails.bonus_allowance
+    ) {
+      setShowUpgradeModal(true)
+      return
+    }
+    logEvent(`generate-${id}`)
     const toastId = toast.loading('Hold tight! This could take a minute.')
     setGenerateIsLoading(true)
-    await getOutputs(prompt, user!.uid)
+    await getAndSetOutput(prompt, user!.uid)
     setGenerateIsLoading(false)
-    textEditorReference.current.focus()
     toast.dismiss(toastId)
   }
 
@@ -226,7 +135,7 @@ const TemplatePage = ({
     let isThereEmptyQuote = false
 
     for (const key in Object.keys(quotes)) {
-      if (quotes[key].value == '') isThereEmptyQuote = true
+      if (quotes[key].value.trim() == '') isThereEmptyQuote = true
     }
 
     return !prompt || isThereEmptyQuote || generateIsLoading
@@ -305,7 +214,7 @@ const TemplatePage = ({
                     )}
                   </div>
                 </div>
-                {isPoem && (
+                {id == TemplateId.POEM_ID && (
                   <div>
                     <label
                       htmlFor="poem-type"
@@ -416,7 +325,7 @@ const TemplatePage = ({
                     </select>
                   </div>
                 )}
-                {isSummarizer && (
+                {id == TemplateId.SUMMARIZER_ID && (
                   <div>
                     <label
                       htmlFor="summary-method"
@@ -457,7 +366,7 @@ const TemplatePage = ({
                         viewBox="0 0 48 48"
                         fill="grey"
                         className="w-5"
-                        data-tip="Add real quotes to have them included in the generated essay."
+                        data-tip="Add real quotes to have them included in the generated output."
                         data-type="info"
                       >
                         <path
@@ -647,19 +556,7 @@ const TemplatePage = ({
                         },
                       )}
                       disabled={disabled()}
-                      onClick={() => {
-                        if (
-                          usageDetails &&
-                          usageDetails?.monthly_usage >
-                            usageDetails?.monthly_allowance +
-                              usageDetails.bonus_allowance
-                        ) {
-                          setShowUpgradeModal(true)
-                          return
-                        }
-                        logEvent(`generate-${id}`)
-                        handleGenerate()
-                      }}
+                      onClick={handleGenerateClick}
                     >
                       <div
                         className={classNames({
@@ -716,11 +613,7 @@ const TemplatePage = ({
                 </div>
               </div>
               {output.length > 0 ? (
-                <Output
-                  toast={toast}
-                  text={output}
-                  textEditorReference={textEditorReference}
-                />
+                <Output toast={toast} text={output} />
               ) : (
                 <OutputEmptyState />
               )}

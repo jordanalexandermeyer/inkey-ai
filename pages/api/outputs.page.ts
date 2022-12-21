@@ -6,14 +6,14 @@ import {
   increment,
   updateDoc,
 } from 'firebase/firestore'
-import initializeFirebaseApp from '../../lib/initializeFirebase'
 import {
   EssayLength,
   PoemType,
   PointOfView,
   QuoteMap,
   SummaryMethod,
-} from '../templates/components/TemplatePage'
+} from 'types'
+import initializeFirebaseApp from '../../utils/initializeFirebase'
 import { TemplateId } from '../templates/templates'
 
 export const config = {

@@ -10,131 +10,41 @@ import { getFunctions, httpsCallable } from 'firebase/functions'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import { Role } from 'types'
-import { getURL } from 'utils/helpers'
+import { Role, BillingPeriod } from 'types'
+import { getURL, roundToTwoDecimals } from 'utils/helpers'
 import { useUser } from 'utils/useUser'
 import Page from '../../components/Page'
-import FeatureList, { Feature } from './components/FeatureList'
+import FeatureList from './components/FeatureList'
+import {
+  premiumFeatures,
+  prices,
+  ultimateFeatures,
+} from './components/constants'
 
-enum BillingPeriod {
-  MONTHLY = 'monthly',
-  SEMI_ANNUALLY = 'semi-annually',
-  ANNUALLY = 'annually',
-}
-
-enum Product {
-  BASIC = 'basic',
-  PREMIUM = 'premium',
-  ULTIMATE = 'ultimate',
-}
-
-const prices = {
-  [BillingPeriod.MONTHLY]: {
-    [Product.BASIC]: {
-      price: 0,
-    },
-    [Product.PREMIUM]: {
-      price: 239.4,
-      stripePrice: process.env.NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_MONTHLY,
-    },
-    [Product.ULTIMATE]: {
-      price: 479.4,
-      stripePrice: process.env.NEXT_PUBLIC_STRIPE_PRICE_ULTIMATE_MONTHLY,
-    },
-  },
-  [BillingPeriod.SEMI_ANNUALLY]: {
-    [Product.BASIC]: {
-      price: 0,
-    },
-    [Product.PREMIUM]: {
-      price: 159.9,
-      stripePrice: process.env.NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_SEMI_ANNUALLY,
-    },
-    [Product.ULTIMATE]: {
-      price: 319.9,
-      stripePrice: process.env.NEXT_PUBLIC_STRIPE_PRICE_ULTIMATE_SEMI_ANNUALLY,
-    },
-  },
-  [BillingPeriod.ANNUALLY]: {
-    [Product.BASIC]: {
-      price: 0,
-    },
-    [Product.PREMIUM]: {
-      price: 99.95,
-      stripePrice: process.env.NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_ANNUALLY,
-    },
-    [Product.ULTIMATE]: {
-      price: 199.95,
-      stripePrice: process.env.NEXT_PUBLIC_STRIPE_PRICE_ULTIMATE_ANNUALLY,
-    },
-  },
-}
-
-export const basicFeatures: Feature[] = [
-  { included: true, text: '1,000 words/month', color: 'gray-400' },
-  {
-    included: true,
-    text: '1,000 characters in the paraphraser',
-    color: 'gray-400',
-  },
-  { included: true, text: '1,000 characters in summarizer', color: 'gray-400' },
-  { included: true, text: 'Shorter template generations', color: 'gray-400' },
-]
-
-export const premiumFeatures: Feature[] = [
-  { included: true, text: '25,000 words/month', color: 'green-500' },
-  {
-    included: true,
-    text: '15,000 characters in the paraphraser',
-    color: 'green-500',
-  },
-  {
-    included: true,
-    text: '15,000 characters in summarizer',
-    color: 'green-500',
-  },
-  { included: true, text: 'Longer template generations', color: 'green-500' },
-]
-
-export const ultimateFeatures: Feature[] = [
-  { included: true, text: '100,000 words/month', color: 'green-500' },
-  {
-    included: true,
-    text: '15,000 characters in the paraphraser',
-    color: 'green-500',
-  },
-  {
-    included: true,
-    text: '15,000 characters in summarizer',
-    color: 'green-500',
-  },
-  { included: true, text: 'Longer template generations', color: 'green-500' },
-]
-
-const getBillFromProduct = (
-  product: Product,
+const getBillFromRole = (
+  product: Role,
   billingPeriod: BillingPeriod | string,
 ) => {
   if (billingPeriod == BillingPeriod.ANNUALLY)
     return (
+      '$' +
       roundToTwoDecimals(prices[BillingPeriod.ANNUALLY][product].price) +
       ' billed every 12 months'
     )
   else if (billingPeriod == BillingPeriod.SEMI_ANNUALLY)
     return (
+      '$' +
       roundToTwoDecimals(
         prices[BillingPeriod.SEMI_ANNUALLY][product].price / 2,
-      ) + ' billed every 6 months'
+      ) +
+      ' billed every 6 months'
     )
   else
     return (
+      '$' +
       roundToTwoDecimals(prices[BillingPeriod.MONTHLY][product].price / 12) +
       ' billed every month'
     )
-}
-
-const roundToTwoDecimals = (input: number) => {
-  return Math.round(input * 100) / 100
 }
 
 const UpgradePage: NextPage = () => {
@@ -148,24 +58,17 @@ const UpgradePage: NextPage = () => {
   const [ultimateLoading, setUltimateLoading] = useState(false)
   const { user, subscription, isLoading: isUserLoading } = useUser()
 
-  const isBasic = !subscription
-  const isPremium = subscription?.role == Role.PREMIUM
-  const isUltimate = subscription?.role == Role.ULTIMATE
-
-  const basicPrice = roundToTwoDecimals(
-    prices[billingPeriod as keyof typeof prices][Product.BASIC].price / 12,
-  )
   const premiumPrice = roundToTwoDecimals(
-    prices[billingPeriod as keyof typeof prices][Product.PREMIUM].price / 12,
+    prices[billingPeriod as keyof typeof prices][Role.PREMIUM].price / 12,
   )
   const ultimatePrice = roundToTwoDecimals(
-    prices[billingPeriod as keyof typeof prices][Product.ULTIMATE].price / 12,
+    prices[billingPeriod as keyof typeof prices][Role.ULTIMATE].price / 12,
   )
 
   const premiumStripePrice =
-    prices[billingPeriod as keyof typeof prices][Product.PREMIUM].stripePrice
+    prices[billingPeriod as keyof typeof prices][Role.PREMIUM].stripePrice
   const ultimateStripePrice =
-    prices[billingPeriod as keyof typeof prices][Product.ULTIMATE].stripePrice
+    prices[billingPeriod as keyof typeof prices][Role.ULTIMATE].stripePrice
 
   const handlePremiumButtonClick = async () => {
     setPremiumLoading(true)
@@ -282,18 +185,20 @@ const UpgradePage: NextPage = () => {
                 <span className="text-gray-500">/month</span>
               </div>
               <p className="text-gray-600 mb-6 text-sm">
-                (${getBillFromProduct(Product.PREMIUM, billingPeriod)})
+                {getBillFromRole(Role.PREMIUM, billingPeriod)}
               </p>
               <div className="pb-8">
                 <FeatureList features={premiumFeatures} />
               </div>
-              {!isPremium && (
+              {subscription?.role == Role.PREMIUM && (
                 <button
                   type="submit"
                   className="relative inline-flex items-center justify-center overflow-hidden font-semibold transition duration-100 ease-in-out rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center w-full space-x-2 sm:px-6 px-4 h-14 text-lg sm:text-lg leading-5 tracking-tight text-white bg-blue-600 shadow-sm hover:bg-blue-400 active:bg-blue-700"
+                  disabled={premiumLoading}
                   onClick={() => {
-                    if (isBasic) handlePremiumButtonClick()
-                    if (isUltimate) handleSwitchToPremiumClick()
+                    if (!subscription) handlePremiumButtonClick()
+                    if (subscription?.role == Role.ULTIMATE)
+                      handleSwitchToPremiumClick()
                   }}
                 >
                   <div>Get Premium</div>
@@ -332,7 +237,7 @@ const UpgradePage: NextPage = () => {
                   </svg>
                 </button>
               )}
-              {isPremium && (
+              {subscription?.role == Role.PREMIUM && (
                 <div className="relative inline-flex items-center justify-center overflow-hidden font-semibold border border-gray-300 rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center w-full space-x-2 sm:px-6 px-4 h-14 text-lg sm:text-lg leading-5 tracking-tight text-gray-900 shadow-sm">
                   <div>Current Plan</div>
                 </div>
@@ -350,18 +255,20 @@ const UpgradePage: NextPage = () => {
                 <span className="text-gray-500">/month</span>
               </div>
               <p className="text-gray-600 mb-6 text-sm">
-                (${getBillFromProduct(Product.ULTIMATE, billingPeriod)})
+                {getBillFromRole(Role.ULTIMATE, billingPeriod)}
               </p>
               <div className="pb-8">
                 <FeatureList features={ultimateFeatures} />
               </div>
-              {!isUltimate && (
+              {subscription?.role == Role.ULTIMATE && (
                 <button
                   type="submit"
                   className="relative inline-flex items-center justify-center overflow-hidden font-semibold transition duration-100 ease-in-out rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center w-full space-x-2 sm:px-6 px-4 h-14 text-lg sm:text-lg leading-5 tracking-tight text-white bg-blue-600 shadow-sm hover:bg-blue-400 active:bg-blue-700"
+                  disabled={ultimateLoading}
                   onClick={() => {
-                    if (isBasic) handleUltimateButtonClick()
-                    if (isPremium) handleSwitchToUltimateClick()
+                    if (!subscription) handleUltimateButtonClick()
+                    if (subscription?.role == Role.PREMIUM)
+                      handleSwitchToUltimateClick()
                   }}
                 >
                   <div>Get Ultimate</div>
@@ -400,7 +307,7 @@ const UpgradePage: NextPage = () => {
                   </svg>
                 </button>
               )}
-              {isUltimate && (
+              {subscription?.role == Role.ULTIMATE && (
                 <div className="relative inline-flex items-center justify-center overflow-hidden font-semibold border border-gray-300 rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center w-full space-x-2 sm:px-6 px-4 h-14 text-lg sm:text-lg leading-5 tracking-tight text-gray-900 shadow-sm">
                   <div>Current Plan</div>
                 </div>
