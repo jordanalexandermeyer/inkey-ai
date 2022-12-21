@@ -12,11 +12,14 @@ const Navbar = ({
 }) => {
   const router = useRouter()
   const auth = getAuth()
-  const { subscription, isLoading } = useUser()
+  const { subscription, usageDetails } = useUser()
 
-  const isBasic = !subscription
-  const isPremium = subscription?.role == Role.PREMIUM
-  const isUltimate = subscription?.role == Role.ULTIMATE
+  const percentageOfCreditsUsed = Math.round(
+    (100 * (usageDetails?.monthly_usage || 0)) /
+      (usageDetails?.monthly_allowance || 1),
+  )
+
+  // add in the lower of 100 and this
 
   return (
     <div className="flex flex-col flex-grow bg-white border-r border-gray-200 overflow-hidden w-56 pt-7">
@@ -294,7 +297,7 @@ const Navbar = ({
               className="w-full text-blue-700 hover:bg-gray-100 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-md group flex items-center justify-between p-2 font-medium"
               onClick={() => removeBackdropAndNavbar()}
             >
-              {isBasic && (
+              {!subscription && (
                 <span className="flex items-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -312,7 +315,7 @@ const Navbar = ({
                   Upgrade
                 </span>
               )}
-              {isPremium && (
+              {subscription?.role == Role.PREMIUM && (
                 <span className="flex items-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -330,7 +333,7 @@ const Navbar = ({
                   Premium
                 </span>
               )}
-              {isUltimate && (
+              {subscription?.role == Role.ULTIMATE && (
                 <span className="flex items-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -371,11 +374,13 @@ const Navbar = ({
               <div className="absolute bg-gray-200 w-full rounded-full h-1"></div>
               <div
                 className="absolute rounded-full transition-all h-1 bg-gradient-to-r from-purple-400 to-blue-400"
-                style={{ width: '50%' }}
+                style={{
+                  width: `${percentageOfCreditsUsed}%`,
+                }}
               ></div>
             </div>
             <div className="text-[10px] text-gray-500 font-bold pt-1 whitespace-nowrap">
-              0% of plan credits used
+              {percentageOfCreditsUsed}% of plan credits used
             </div>
             <div className="mt-3 text-blue-600 underline text-sm whitespace-nowrap">
               <Link href="/templates">Start writing</Link>
