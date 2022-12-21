@@ -67,7 +67,8 @@ export const tones = {
 
 export const languages = {
   Bulgarian: 'Bulgarian 🇧🇬',
-  Chinese: 'Chinese 🇨🇳',
+  'Chinese (Simplified)': 'Chinese 🇨🇳 (Simplified)',
+  'Chinese (Traditional)': 'Chinese 🇨🇳 (Traditional)',
   Czech: 'Czech 🇨🇿',
   Danish: 'Danish 🇩🇰',
   Dutch: 'Dutch 🇳🇱',
