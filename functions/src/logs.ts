@@ -84,6 +84,12 @@ export function firestoreDocDeleted(collection: string, docId: string) {
   );
 }
 
+export function firestoreDocUpdated(collection: string, docId: string) {
+  logger.log(
+    `⬆️🔥📄 Updated doc [${docId}] from collection [${collection}] in Firestore.`
+  );
+}
+
 export function userCustomClaimSet(
   uid: string,
   claimKey: string,

@@ -560,13 +560,15 @@ const manageSubscriptionStatusChange = async (
         await admin
           .auth()
           .setCustomUserClaims(uid, { ...customClaims, stripeRole: role });
-        // set customer allowance here according to role?
+        // set customer allowance
+        await updateUsageDetails(uid, role);
       } else {
         logs.userCustomClaimSet(uid, 'stripeRole', 'null');
         await admin
           .auth()
           .setCustomUserClaims(uid, { ...customClaims, stripeRole: null });
-        // set customer allowance to basic?
+        // set customer allowance to basic
+        await updateUsageDetails(uid, 'basic');
       }
     } catch (error) {
       // User has been deleted, simply return.
@@ -583,6 +585,41 @@ const manageSubscriptionStatusChange = async (
   }
 
   return;
+};
+
+const updateUsageDetails = async (uid: string, role: string) => {
+  const usageDetailsSnap = await admin
+    .firestore()
+    .collection('usage_details')
+    .doc(uid)
+    .get();
+  if (!usageDetailsSnap.exists) {
+    throw new Error('User not found!');
+  }
+
+  switch (role) {
+    case 'premium':
+      await usageDetailsSnap.ref.set(
+        { monthly_allowance: 25000 },
+        { merge: true }
+      );
+      break;
+    case 'ultimate':
+      await usageDetailsSnap.ref.set(
+        { monthly_allowance: 100000 },
+        { merge: true }
+      );
+      break;
+    case 'basic':
+      await usageDetailsSnap.ref.set(
+        { monthly_allowance: 1000 },
+        { merge: true }
+      );
+      break;
+    default:
+      throw new Error('Unexpected role!');
+  }
+  logs.firestoreDocUpdated('usage_details', usageDetailsSnap.id);
 };
 
 /**
