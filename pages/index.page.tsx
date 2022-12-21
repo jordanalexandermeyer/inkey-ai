@@ -43,9 +43,9 @@ const Home: NextPage = () => {
                             Ask Inkey 🦑
                           </div>
                           <p className="mt-1 mb-4 text-sm text-white text-opacity-80 md:text-lg md:mb-7">
-                            You can ask Inkey to do just about anything and it
-                            will provide a thoughtful and intelligent response.
-                            Try it out!
+                            You can ask Inkey to do just about anything. Writing
+                            essays, answering coding questions, translating — it
+                            does it all!
                           </p>
                           <Link
                             href={'/ask-inkey'}
