@@ -35,6 +35,7 @@ const TemplatePage = ({
   supportRequestedLength = true,
   supportTone = true,
   supportPointOfView = true,
+  attribute,
 }: Template) => {
   const [prompt, setPrompt] = useState('')
   const [output, setOutput] = useState('')
