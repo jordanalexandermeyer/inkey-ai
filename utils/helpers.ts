@@ -21,5 +21,5 @@ export const capitalizeFirstLetter = (word: string) => {
 }
 
 export const roundToTwoDecimals = (input: number) => {
-  return Math.round(input * 100) / 100
+  return Math.floor(input * 100) / 100
 }

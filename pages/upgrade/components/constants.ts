@@ -6,11 +6,11 @@ export const prices = {
       price: 0,
     },
     [Role.PREMIUM]: {
-      price: 239.4,
+      price: 119.4,
       stripePrice: process.env.NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_MONTHLY,
     },
     [Role.ULTIMATE]: {
-      price: 479.4,
+      price: 239.4,
       stripePrice: process.env.NEXT_PUBLIC_STRIPE_PRICE_ULTIMATE_MONTHLY,
     },
   },
@@ -19,11 +19,11 @@ export const prices = {
       price: 0,
     },
     [Role.PREMIUM]: {
-      price: 159.9,
+      price: 89.9,
       stripePrice: process.env.NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_SEMI_ANNUALLY,
     },
     [Role.ULTIMATE]: {
-      price: 319.9,
+      price: 179.9,
       stripePrice: process.env.NEXT_PUBLIC_STRIPE_PRICE_ULTIMATE_SEMI_ANNUALLY,
     },
   },
@@ -32,11 +32,11 @@ export const prices = {
       price: 0,
     },
     [Role.PREMIUM]: {
-      price: 99.95,
+      price: 59.95,
       stripePrice: process.env.NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_ANNUALLY,
     },
     [Role.ULTIMATE]: {
-      price: 199.95,
+      price: 119.95,
       stripePrice: process.env.NEXT_PUBLIC_STRIPE_PRICE_ULTIMATE_ANNUALLY,
     },
   },
