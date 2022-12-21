@@ -226,7 +226,7 @@ export const templates: TemplateMap = {
   },
   [TemplateId.NARRATIVE_ESSAY_ID]: {
     id: TemplateId.NARRATIVE_ESSAY_ID,
-    icon: '📖',
+    icon: '🙊',
     title: 'Narrative Essay',
     description:
       'A narrative essay tells a story or relates a personal experience.',
