@@ -122,8 +122,11 @@ export enum PoemType {
 }
 
 export enum FilterType {
-  ESSAYS = 'essays',
+  WHOLE_ESSAYS = 'whole-essays',
+  ESSAY_PARTS = 'essay-parts',
   WRITING_TOOLS = 'writing-tools',
+  JOB_TOOLS = 'job-tools',
+  CLASS_TOOLS = 'class-tools',
   OTHER = 'other',
 }
 

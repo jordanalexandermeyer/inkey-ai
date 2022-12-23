@@ -22,13 +22,14 @@ import { languages, tones } from './constants'
 const TemplatePage = ({
   id,
   icon,
+  svgIcon,
   title,
   description,
   characterLimit = 500,
   inputRows = 4,
   promptName = 'Prompt',
   promptPlaceholder,
-  quotePlaceholder,
+  quotePlaceholder = '"The true sign of intelligence is not knowledge but imagination." - Albert Einstein',
   supportExamplePrompt = true,
   supportQuotes = false,
   supportReferences = false,
@@ -162,7 +163,8 @@ const TemplatePage = ({
                 <div className="mr-6">
                   <div className="flex items-center justify-center w-10 h-10 text-gray-500">
                     <div className="text-3xl flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-xl ring-2 ring-offset-2 ring-gray-100 group-hover:ring-gray-200 group-focus:ring-gray-300 group-hover:bg-white">
-                      {icon}
+                      {icon && icon}
+                      {svgIcon && svgIcon}
                     </div>
                   </div>
                 </div>
@@ -466,61 +468,65 @@ const TemplatePage = ({
                       )
                     })}
                     <div className="flex justify-center">
-                      <button
-                        type="button"
-                        disabled={Object.keys(quotes).length > 3}
-                        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-1 text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                        onClick={() => {
-                          setQuotes((quotes) => {
-                            return {
-                              ...quotes,
-                              [String(Object.keys(quotes).length)]: {
-                                value: '',
-                              },
-                            }
-                          })
-                        }}
-                      >
-                        <svg
-                          aria-hidden="true"
-                          className="w-5 h-5"
-                          fill="currentColor"
-                          viewBox="0 0 48 48"
-                          xmlns="http://www.w3.org/2000/svg"
+                      {Object.keys(quotes).length < 4 && (
+                        <button
+                          type="button"
+                          disabled={Object.keys(quotes).length > 3}
+                          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-1 text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                          onClick={() => {
+                            setQuotes((quotes) => {
+                              return {
+                                ...quotes,
+                                [String(Object.keys(quotes).length)]: {
+                                  value: '',
+                                },
+                              }
+                            })
+                          }}
                         >
-                          <path
+                          <svg
+                            aria-hidden="true"
+                            className="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 48 48"
                             xmlns="http://www.w3.org/2000/svg"
-                            d="M22.5 38V25.5H10v-3h12.5V10h3v12.5H38v3H25.5V38Z"
-                          />
-                        </svg>
-                      </button>
-                      <button
-                        type="button"
-                        disabled={Object.keys(quotes).length < 2}
-                        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-1 text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                        onClick={() => {
-                          setQuotes((quotes) => {
-                            const newQuotes = quotes
-                            delete newQuotes[
-                              String(Object.keys(quotes).length - 1)
-                            ]
-                            return { ...newQuotes }
-                          })
-                        }}
-                      >
-                        <svg
-                          aria-hidden="true"
-                          className="w-5 h-5"
-                          fill="currentColor"
-                          viewBox="0 0 48 48"
-                          xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              xmlns="http://www.w3.org/2000/svg"
+                              d="M22.5 38V25.5H10v-3h12.5V10h3v12.5H38v3H25.5V38Z"
+                            />
+                          </svg>
+                        </button>
+                      )}
+                      {Object.keys(quotes).length > 1 && (
+                        <button
+                          type="button"
+                          disabled={Object.keys(quotes).length < 2}
+                          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-1 text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                          onClick={() => {
+                            setQuotes((quotes) => {
+                              const newQuotes = quotes
+                              delete newQuotes[
+                                String(Object.keys(quotes).length - 1)
+                              ]
+                              return { ...newQuotes }
+                            })
+                          }}
                         >
-                          <path
+                          <svg
+                            aria-hidden="true"
+                            className="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 48 48"
                             xmlns="http://www.w3.org/2000/svg"
-                            d="M10 25.5v-3h28v3Z"
-                          />
-                        </svg>
-                      </button>
+                          >
+                            <path
+                              xmlns="http://www.w3.org/2000/svg"
+                              d="M10 25.5v-3h28v3Z"
+                            />
+                          </svg>
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}
