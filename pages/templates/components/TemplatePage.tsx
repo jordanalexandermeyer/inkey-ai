@@ -9,8 +9,10 @@ import ReactTooltip from 'react-tooltip'
 import { Template, TemplateId } from '../templates'
 import { logEvent } from '@amplitude/analytics-browser'
 import { useUser } from 'utils/useUser'
+import { capitalizeFirstLetter } from 'utils/helpers'
 import UpgradeModal from 'components/UpgradeModal'
 import {
+  CodingLanguages,
   EssayLength,
   PoemType,
   PointOfView,
@@ -37,6 +39,7 @@ const TemplatePage = ({
   supportTone = true,
   supportPointOfView = true,
   supportLanguages = true,
+  supportCodingLanguages = false,
 }: Template) => {
   const [prompt, setPrompt] = useState('')
   const [output, setOutput] = useState('')
@@ -48,6 +51,7 @@ const TemplatePage = ({
   const [requestedLength, setRequestedLength] = useState(EssayLength.SHORT)
   const [tone, setTone] = useState('professional')
   const [language, setLanguage] = useState('English')
+  const [codingLanguage, setCodingLanguage] = useState(CodingLanguages.PYTHON)
   const [pointOfView, setPointOfView] = useState(PointOfView.THIRD)
   const [summaryMethod, setSummaryMethod] = useState(SummaryMethod.PARAGRAPH)
   const [poemType, setPoemType] = useState(PoemType.FREE_VERSE)
@@ -70,6 +74,7 @@ const TemplatePage = ({
           ...(supportTone && { tone: tone }),
           ...(supportPointOfView && { point_of_view: pointOfView }),
           ...(supportLanguages && { language: language }),
+          ...(supportCodingLanguages && { coding_language: codingLanguage }),
           ...(id == TemplateId.SUMMARIZER_ID && {
             summary_method: summaryMethod,
           }),
@@ -377,6 +382,38 @@ const TemplatePage = ({
                         return (
                           <option key={index} value={key}>
                             {languages[key as keyof typeof languages]}
+                          </option>
+                        )
+                      })}
+                    </select>
+                  </div>
+                )}
+                {supportCodingLanguages && (
+                  <div>
+                    <label
+                      htmlFor="coding-language"
+                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      Coding language
+                    </label>
+                    <select
+                      id="coding-language"
+                      value={codingLanguage}
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      onChange={(event) => {
+                        const codingLanguage = event.target
+                          .value as CodingLanguages
+                        setCodingLanguage(codingLanguage)
+                      }}
+                    >
+                      {Object.keys(CodingLanguages).map((key, index) => {
+                        return (
+                          <option key={index} value={key}>
+                            {capitalizeFirstLetter(
+                              CodingLanguages[
+                                key as keyof typeof CodingLanguages
+                              ],
+                            )}
                           </option>
                         )
                       })}

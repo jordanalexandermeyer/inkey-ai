@@ -19,6 +19,7 @@ export interface Template {
   supportRequestedLength?: boolean
   supportPointOfView?: boolean
   supportLanguages?: boolean
+  supportCodingLanguages?: boolean
   href: string
   new?: boolean
   attribute: FilterType
@@ -71,12 +72,12 @@ export enum TemplateId {
   RESUME_BULLET_POINTS_ID = 'resume-bullet-points',
 
   // Coding
-  // CODING_QUESTION_SOLVER_ID = 'coding-question-solver',
-  // FUNCTION_ID = 'function',
-  // CLASS_ID = 'class',
-  // SCRIPT_ID = 'script',
-  // REGEX_ID = 'regex',
-  // EXPLAIN_CODE_ID = 'explain-code',
+  CODING_QUESTION_SOLVER_ID = 'coding-question-solver',
+  FUNCTION_ID = 'function',
+  CLASS_ID = 'class',
+  SCRIPT_ID = 'script',
+  REGEX_ID = 'regex',
+  EXPLAIN_CODE_ID = 'explain-code',
 }
 
 export type TemplateMap = {
@@ -129,6 +130,72 @@ export const templates: TemplateMap = {
     supportPointOfView: false,
     href: `/templates/${TemplateId.COVER_LETTER_ID}`,
     attribute: FilterType.JOB_TOOLS,
+    new: true,
+  },
+  [TemplateId.CODING_QUESTION_SOLVER_ID]: {
+    id: TemplateId.CODING_QUESTION_SOLVER_ID,
+    icon: '🧑‍💻',
+    title: 'Coding Question Solver',
+    description:
+      'Paste a coding question here to have it solved in any language.',
+    promptName: 'Coding question',
+    promptPlaceholder: 'How do you determine if a string is a palindrome?',
+    supportExamplePrompt: true,
+    supportRequestedLength: false,
+    supportTone: false,
+    supportPointOfView: false,
+    supportLanguages: false,
+    supportCodingLanguages: true,
+    supportQuotes: false,
+    href: `/templates/${TemplateId.CODING_QUESTION_SOLVER_ID}`,
+    attribute: FilterType.CODING_TOOLS,
+    new: true,
+  },
+  [TemplateId.EXPLAIN_CODE_ID]: {
+    id: TemplateId.EXPLAIN_CODE_ID,
+    icon: '#',
+    title: 'Explain Code',
+    description:
+      'Enter a block of code to have it explained and have comments added.',
+    promptName: 'Code',
+    promptPlaceholder: `export const getTodoData = () => {
+      let msg=request.get(
+       'https://hello-cloudbase.service.base.com/todo-demo/v1.0/xxx',
+         {
+           "query": {
+             "account": { "$eq": "super" },
+           },
+         })
+       .then((response) => {
+         initialToContext = {
+           myTodo: response.data.map((item: any) => {
+             let { _id, title, completed }: ITodoItem = item;
+             let todoItme: ITodoItem = {
+               _id: _id,
+               title: title,
+               completed: completed
+             }
+             return todoItme
+           })
+         }
+         return  { msg: 'success', data: initialToContext.myTodo }
+       })
+       .catch((error) => {
+         return { msg: 'error', data: [] }
+       });
+     return msg
+   }`,
+    characterLimit: 15000,
+    inputRows: 10,
+    supportExamplePrompt: true,
+    supportRequestedLength: false,
+    supportTone: false,
+    supportPointOfView: false,
+    supportLanguages: true,
+    supportCodingLanguages: false,
+    supportQuotes: false,
+    href: `/templates/${TemplateId.EXPLAIN_CODE_ID}`,
+    attribute: FilterType.CODING_TOOLS,
     new: true,
   },
   [TemplateId.LINKEDIN_BIO_ID]: {
@@ -365,6 +432,84 @@ export const templates: TemplateMap = {
     supportLanguages: true,
     href: `/templates/${TemplateId.STORY_ID}`,
     attribute: FilterType.OTHER,
+    new: true,
+  },
+  [TemplateId.REGEX_ID]: {
+    id: TemplateId.REGEX_ID,
+    icon: '(.*)',
+    title: 'Regex',
+    description:
+      'Regular expressions (regex) are a way of describing patterns in text strings for searching, manipulating, and validating data.',
+    promptName: 'Regex explanation',
+    promptPlaceholder:
+      'Contains any character other than an i, asterisk, ampersand, 2, or at-sign',
+    supportExamplePrompt: true,
+    supportRequestedLength: false,
+    supportTone: false,
+    supportPointOfView: false,
+    supportLanguages: false,
+    supportCodingLanguages: false,
+    supportQuotes: false,
+    href: `/templates/${TemplateId.REGEX_ID}`,
+    attribute: FilterType.CODING_TOOLS,
+    new: true,
+  },
+  [TemplateId.SCRIPT_ID]: {
+    id: TemplateId.SCRIPT_ID,
+    icon: '<>',
+    title: 'Script',
+    description:
+      'A set of instructions that tells a computer how to perform a task.',
+    promptName: 'Script explanation',
+    promptPlaceholder:
+      'Iterate through a csv file and capitalize the second column',
+    supportExamplePrompt: true,
+    supportRequestedLength: false,
+    supportTone: false,
+    supportPointOfView: false,
+    supportLanguages: false,
+    supportCodingLanguages: true,
+    supportQuotes: false,
+    href: `/templates/${TemplateId.SCRIPT_ID}`,
+    attribute: FilterType.CODING_TOOLS,
+    new: true,
+  },
+  [TemplateId.CLASS_ID]: {
+    id: TemplateId.CLASS_ID,
+    icon: '{}',
+    title: 'Class',
+    description:
+      'A template that is used to create objects, define object data types, and methods.',
+    promptName: 'Class explanation',
+    promptPlaceholder:
+      'Ball with a diameter and color and getter/setter methods',
+    supportExamplePrompt: true,
+    supportRequestedLength: false,
+    supportTone: false,
+    supportPointOfView: false,
+    supportLanguages: false,
+    supportCodingLanguages: true,
+    supportQuotes: false,
+    href: `/templates/${TemplateId.CLASS_ID}`,
+    attribute: FilterType.CODING_TOOLS,
+    new: true,
+  },
+  [TemplateId.FUNCTION_ID]: {
+    id: TemplateId.FUNCTION_ID,
+    icon: '⚙️',
+    title: 'Function',
+    description: 'A block of code that performs a specific task.',
+    promptName: 'Function explanation',
+    promptPlaceholder: 'Iterate through a list and print each item.',
+    supportExamplePrompt: true,
+    supportRequestedLength: false,
+    supportTone: false,
+    supportPointOfView: false,
+    supportLanguages: false,
+    supportCodingLanguages: true,
+    supportQuotes: false,
+    href: `/templates/${TemplateId.FUNCTION_ID}`,
+    attribute: FilterType.CODING_TOOLS,
     new: true,
   },
   [TemplateId.COLLEGE_APP_ESSAY_ID]: {
