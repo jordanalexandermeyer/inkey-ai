@@ -99,7 +99,10 @@ export const languages = {
 }
 
 export const filters: FilterMap = {
-  [FilterType.ESSAYS]: { text: 'Essays', selected: false },
+  [FilterType.WHOLE_ESSAYS]: { text: 'Whole essays', selected: false },
+  [FilterType.ESSAY_PARTS]: { text: 'Essay parts', selected: false },
   [FilterType.WRITING_TOOLS]: { text: 'Writing tools', selected: false },
+  [FilterType.JOB_TOOLS]: { text: 'Job tools', selected: false },
+  [FilterType.CLASS_TOOLS]: { text: 'Class tools', selected: false },
   [FilterType.OTHER]: { text: 'Other', selected: false },
 }

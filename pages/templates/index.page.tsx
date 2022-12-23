@@ -19,6 +19,10 @@ const Templates: NextPage = () => {
   const onFilterClick = (key: FilterType | string, index: number) => {
     setFilterState((filterState) => {
       const copy = { ...filterState }
+      const copyKeys = Object.keys(copy)
+      for (let i = 0; i < copyKeys.length; i++) {
+        if (copyKeys[i] != key) copy[copyKeys[i]].selected = false
+      }
       copy[key].selected = !filterState[key].selected
       return copy
     })
@@ -95,7 +99,7 @@ const Templates: NextPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex w-full items start gap-2 mt-10 pb-4">
+                  <div className="flex flex-wrap w-full items start gap-2 mt-10 pb-4">
                     {Object.keys(filterState).map((key, index) => {
                       return (
                         <TemplateFilter
@@ -117,6 +121,7 @@ const Templates: NextPage = () => {
                           <TemplateCard
                             key={index}
                             icon={template.icon}
+                            svgIcon={template.svgIcon}
                             title={template.title}
                             description={template.description}
                             href={template.href}

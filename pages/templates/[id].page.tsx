@@ -14,6 +14,7 @@ const DynamicTemplatePage: NextPage = () => {
     <TemplatePage
       id={pageData.id}
       icon={pageData.icon}
+      svgIcon={pageData.svgIcon}
       title={pageData.title}
       description={pageData.description}
       characterLimit={pageData.characterLimit}

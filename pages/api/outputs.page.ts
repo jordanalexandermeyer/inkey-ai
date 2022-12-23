@@ -150,12 +150,40 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       temperature = 0.25
       break
-    case TemplateId.TRANSLATOR:
+    case TemplateId.TRANSLATOR_ID:
       openaiPrompt = `Translate the following into ${language}:\n\n${prompt}`
       model = 'text-davinci-003'
       break
-    case TemplateId.STORY:
+    case TemplateId.STORY_ID:
       openaiPrompt = `Write a story with the following title: "${prompt}".`
+      model = 'text-davinci-003'
+      break
+    case TemplateId.BODY_PARAGRAPH_ID:
+      openaiPrompt = `Write a paragraph expanding on the following idea:\n\n${prompt}`
+      model = 'text-davinci-003'
+      break
+    case TemplateId.INTRODUCTION_PARAGRAPH_ID:
+      openaiPrompt = `Write a long introduction paragraph for the following thesis:\n\n${prompt}`
+      model = 'text-davinci-003'
+      break
+    case TemplateId.CONCLUSION_PARAGRAPH_ID:
+      openaiPrompt = `Write a long conclusion paragraph for the following essay:\n\n${prompt}`
+      model = 'text-davinci-003'
+      break
+    case TemplateId.DISCUSSION_BOARD_RESPONSE_ID:
+      openaiPrompt = `Respond to the following discussion board post/s:\n\n${prompt}`
+      model = 'text-davinci-003'
+      break
+    case TemplateId.LINKEDIN_BIO_ID:
+      openaiPrompt = `Write a LinkedIn bio for someone with the following resume:\n\n${prompt}`
+      model = 'text-davinci-003'
+      break
+    case TemplateId.COVER_LETTER_ID:
+      openaiPrompt = `Write a cover letter for someone with the following resume:\n\n${prompt}`
+      model = 'text-davinci-003'
+      break
+    case TemplateId.RESUME_BULLET_POINTS_ID:
+      openaiPrompt = `Write resume bullet points for someone with the following experience:\n\n${prompt}`
       model = 'text-davinci-003'
       break
     default:
@@ -197,7 +225,7 @@ export default async function handler(request: Request, response: Response) {
     openaiPrompt += ` Use ${pointOfView} person point of view.`
   }
 
-  if (language && id != TemplateId.TRANSLATOR) {
+  if (language && id != TemplateId.TRANSLATOR_ID) {
     openaiPrompt += ` Write in ${language}.`
   }
 

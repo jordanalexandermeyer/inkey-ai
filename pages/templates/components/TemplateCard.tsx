@@ -1,15 +1,18 @@
 import Link from 'next/link'
+import { ReactElement } from 'react'
 
 const TemplateCard = ({
   title,
   description,
   icon,
+  svgIcon,
   href,
   newCard,
 }: {
   title: string
   description: string
-  icon: string
+  icon?: string
+  svgIcon?: ReactElement
   href: string
   newCard?: boolean
 }) => {
@@ -43,9 +46,8 @@ const TemplateCard = ({
           )}
           <div>
             <div className="flex items-center justify-center w-16 h-16 text-2xl rounded-full text-gray-600 mb-6 bg-gray-100/75">
-              <span className="text-3xl" role="img" aria-hidden="false">
-                {icon}
-              </span>
+              {icon && <span className="text-3xl">{icon}</span>}
+              {svgIcon && svgIcon}
             </div>
             <h3 className="mb-2 text-lg font-semibold text-gray-700">
               {title}
