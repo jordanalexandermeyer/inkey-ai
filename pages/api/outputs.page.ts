@@ -7,6 +7,7 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 import {
+  CodingLanguages,
   EssayLength,
   PoemType,
   PointOfView,
@@ -40,6 +41,7 @@ export default async function handler(request: Request, response: Response) {
     summary_method: summaryMethod,
     poem_type: poemType,
     language,
+    coding_language: codingLanguage,
   }: {
     id: TemplateId | string
     userId: string
@@ -52,6 +54,7 @@ export default async function handler(request: Request, response: Response) {
     summary_method: SummaryMethod
     poem_type: PoemType
     language: string
+    coding_language: CodingLanguages
   } = await request.json()
 
   let openaiPrompt
@@ -146,7 +149,7 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case 'ask-inkey':
-      openaiPrompt = `You are Inkey, an AI writing assistant for students. Reply to the following prompt:\n\n${prompt}`
+      openaiPrompt = `You are Inkey, an AI assistant for students. Reply to the following prompt:\n\n${prompt}`
       model = 'text-davinci-003'
       temperature = 0.25
       break
@@ -184,6 +187,31 @@ export default async function handler(request: Request, response: Response) {
       break
     case TemplateId.RESUME_BULLET_POINTS_ID:
       openaiPrompt = `Write resume bullet points for someone with the following experience:\n\n${prompt}`
+      model = 'text-davinci-003'
+      break
+    case TemplateId.CODING_QUESTION_SOLVER_ID:
+      openaiPrompt = `Answer the following coding question. Show an optimized version and an unoptimized version. Give big o notation for each solution. Explain your work.\n\n${prompt}`
+      temperature = 0.25
+      model = 'text-davinci-003'
+      break
+    case TemplateId.FUNCTION_ID:
+      openaiPrompt = `Write a function that does the following:\n\n${prompt}`
+      model = 'text-davinci-003'
+      break
+    case TemplateId.CLASS_ID:
+      openaiPrompt = `Write a class that represents the following:\n\n${prompt}`
+      model = 'text-davinci-003'
+      break
+    case TemplateId.SCRIPT_ID:
+      openaiPrompt = `Write a script that does the following:\n\n${prompt}`
+      model = 'text-davinci-003'
+      break
+    case TemplateId.REGEX_ID:
+      openaiPrompt = `Write a regular expression that matches the following:\n\n${prompt}`
+      model = 'text-davinci-003'
+      break
+    case TemplateId.EXPLAIN_CODE_ID:
+      openaiPrompt = `Rewrite the following code with comments explaining each line:\n\n${prompt}`
       model = 'text-davinci-003'
       break
     default:
@@ -227,6 +255,10 @@ export default async function handler(request: Request, response: Response) {
 
   if (language && id != TemplateId.TRANSLATOR_ID) {
     openaiPrompt += ` Write in ${language}.`
+  }
+
+  if (codingLanguage) {
+    openaiPrompt += ` Write in ${codingLanguage}.`
   }
 
   try {
@@ -308,7 +340,10 @@ export default async function handler(request: Request, response: Response) {
           }
         },
         async flush() {
-          await updateUserWordsGenerated(userId, output.split(' ').length)
+          await updateUserWordsGenerated(
+            userId,
+            Math.round(output.length / 4.5),
+          )
         },
       }),
     )

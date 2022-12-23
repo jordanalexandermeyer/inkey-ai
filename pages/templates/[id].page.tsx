@@ -28,6 +28,8 @@ const DynamicTemplatePage: NextPage = () => {
       supportReferences={pageData.supportReferences}
       supportRequestedLength={pageData.supportRequestedLength}
       supportPointOfView={pageData.supportPointOfView}
+      supportLanguages={pageData.supportLanguages}
+      supportCodingLanguages={pageData.supportCodingLanguages}
       href={pageData.href}
       attribute={pageData.attribute}
     />

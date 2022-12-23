@@ -127,6 +127,7 @@ export enum FilterType {
   WRITING_TOOLS = 'writing-tools',
   JOB_TOOLS = 'job-tools',
   CLASS_TOOLS = 'class-tools',
+  CODING_TOOLS = 'coding-tools',
   OTHER = 'other',
 }
 
@@ -137,4 +138,19 @@ export interface Filter {
 
 export interface FilterMap {
   [key: string]: Filter
+}
+
+export enum CodingLanguages {
+  PYTHON = 'python',
+  JAVASCRIPT = 'javascript',
+  TYPESCRIPT = 'typescript',
+  C_PLUS_PLUS = 'c++',
+  C_SHARP = 'c#',
+  GO = 'go',
+  PHP = 'php',
+  DART = 'dart',
+  JAVA = 'java',
+  SWIFT = 'swift',
+  R = 'r',
+  KOTLIN = 'kotlin',
 }
