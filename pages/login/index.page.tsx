@@ -55,6 +55,7 @@ const Login: NextPage = () => {
 
   useEffect(() => {
     if (user) {
+      // save referral code to user
       router.push('/')
     }
   }, [user])
@@ -239,7 +240,7 @@ const Login: NextPage = () => {
                     </span>
                   </div>
                   <p className="mt-6 text-sm text-center text-gray-400">
-                    Don't have an account yet?
+                    Don't have an account yet?{' '}
                     <Link href="/signup" className="text-blue-400">
                       Get started here
                     </Link>

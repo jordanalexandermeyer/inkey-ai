@@ -140,6 +140,8 @@ export const templates: TemplateMap = {
       'Paste a coding question here to have it solved in any language.',
     promptName: 'Coding question',
     promptPlaceholder: 'How do you determine if a string is a palindrome?',
+    characterLimit: 15000,
+    inputRows: 10,
     supportExamplePrompt: true,
     supportRequestedLength: false,
     supportTone: false,
