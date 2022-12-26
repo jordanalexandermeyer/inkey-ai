@@ -118,7 +118,7 @@ const TemplatePage = ({
       return
     }
     logEvent(`generate-${id}`)
-    const toastId = toast.loading('Hold tight! This could take a minute.')
+    const toastId = toast.loading('✍️')
     setGenerateIsLoading(true)
     await getAndSetOutput(prompt, user!.uid)
     setGenerateIsLoading(false)
