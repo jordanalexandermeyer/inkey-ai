@@ -31,8 +31,6 @@ const isError = (chunk: string) => {
   return false
 }
 
-const db = getFirestore()
-
 export default async function handler(request: Request, response: Response) {
   const {
     id,
@@ -62,10 +60,15 @@ export default async function handler(request: Request, response: Response) {
     coding_language: CodingLanguages
   } = await request.json()
 
+  console.log('Request received: ', userId)
+
+  const db = getFirestore()
+
   const usageDetailsDocRef = doc(db, 'usage_details', userId)
   const docSnapshot = await getDoc(usageDetailsDocRef)
 
   if (!docSnapshot.exists()) {
+    console.log(userId, ' does not exist')
     return new Response(null, {
       status: 401,
       statusText: 'Unauthorized',
@@ -79,6 +82,7 @@ export default async function handler(request: Request, response: Response) {
   } = docSnapshot.data() as UsageDetails
 
   if (monthlyUsage >= monthlyAllowance + bonusAllowance) {
+    console.log(userId, ' usage limit reached')
     return new Response(null, {
       status: 400,
       statusText: 'Usage limit reached',
@@ -290,6 +294,7 @@ export default async function handler(request: Request, response: Response) {
   }
 
   try {
+    console.log('Fetching completion for ', userId)
     const response = await fetch('https://api.openai.com/v1/completions', {
       method: 'POST',
       body: JSON.stringify({
@@ -368,6 +373,8 @@ export default async function handler(request: Request, response: Response) {
           }
         },
         async flush() {
+          console.log('Output fetched for ', userId)
+          console.log('Output: ', output)
           await updateUserWordsGenerated(
             usageDetailsDocRef,
             userId,
@@ -394,6 +401,7 @@ async function updateUserWordsGenerated(
   userId: string,
   numberOfWordsGenerated: number,
 ) {
+  console.log('Updating words generated for ', userId)
   const docSnapshot = await getDoc(usageDetailsDocRef)
 
   if (docSnapshot.exists()) {
