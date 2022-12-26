@@ -121,3 +121,12 @@ export function webhookHandlerError(error: Error, id: string, type: string) {
     error.message
   );
 }
+
+export const userBonusAllowanceIncreased = (
+  uid: string,
+  bonusAllowance: number
+) => {
+  logger.log(
+    ` ✅Successfully added ${bonusAllowance} to the bonus allowance of user ${uid}.`
+  );
+};

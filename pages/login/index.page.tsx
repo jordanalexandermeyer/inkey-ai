@@ -1,8 +1,4 @@
-import { NextPage } from 'next'
-import Head from 'next/head'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import classNames from 'classnames'
 import {
   getAuth,
   GoogleAuthProvider,
@@ -11,14 +7,18 @@ import {
   signInWithEmailLink,
   signInWithPopup,
 } from 'firebase/auth'
-import classNames from 'classnames'
+import { NextPage } from 'next'
+import Head from 'next/head'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import toast, { Toaster } from 'react-hot-toast'
 
 const Login: NextPage = () => {
   const router = useRouter()
   const auth = getAuth()
-  const [user, loading, error] = useAuthState(auth)
+  const [user, loading] = useAuthState(auth)
   const [email, setEmail] = useState('')
   const [isDisabled, setIsDisabled] = useState(false)
 
@@ -55,7 +55,6 @@ const Login: NextPage = () => {
 
   useEffect(() => {
     if (user) {
-      // save referral code to user
       router.push('/')
     }
   }, [user])

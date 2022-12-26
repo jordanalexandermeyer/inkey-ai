@@ -48,7 +48,7 @@ const Templates: NextPage = () => {
                       {/* <div className="flex items-center">
                         <div className="flex items-center">
                           <button
-                            className="inline-flex items-center overflow-hidden ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2inline-flex justify-center transition-all duration-150 relative leading-5 font-medium shadow-sm focusRing text-center bg-transparent focus:ring-transparent rounded outline-none shadow-transparent"
+                            className="inline-flex items-center overflow-hidden ease-in-out focus:outline-none focus:ring-2 justify-center transition-all duration-150 relative leading-5 font-medium shadow-sm focusRing text-center bg-transparent focus:ring-transparent rounded outline-none shadow-transparent"
                             type="button"
                           >
                             <svg

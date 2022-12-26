@@ -13,7 +13,7 @@ import {
 import { useEffect, useState, createContext, useContext } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 
-import { Role, UsageDetails } from 'types'
+import { UsageDetails } from 'types'
 import { Subscription } from 'types'
 
 type UserContextType = {
@@ -32,7 +32,7 @@ export interface Props {
 export const MyUserContextProvider = (props: Props) => {
   const auth = getAuth()
   const db = getFirestore()
-  const [user, isLoadingUser, error] = useAuthState(auth)
+  const [user, isLoadingUser] = useAuthState(auth)
   const [isLoadingData, setIsLoadingData] = useState(false)
   const [usageDetails, setUsageDetails] = useState<UsageDetails | null>(null)
   const [subscription, setSubscription] = useState<Subscription | null>(null)

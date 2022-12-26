@@ -17,7 +17,7 @@ export interface ProductWithPrice extends Product {
 }
 
 export interface Price {
-  product_id?: string /* foreign key to products.id */
+  product_id?: string
   active?: boolean
   description?: string
   unit_amount?: number
@@ -61,6 +61,19 @@ export interface UsageDetails {
   monthly_usage: number
   total_usage: number
   bonus_allowance: number
+}
+
+export interface ReferralCode {
+  id: string
+  provider: string
+  provider_bonus_allowance: number
+  recipient_bonus_allowance: number
+}
+
+export interface Referral {
+  provider: string
+  recipient: string
+  referral_code: ReferralCode
 }
 
 export enum BillingPeriod {

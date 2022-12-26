@@ -1,16 +1,18 @@
-import type { NextPage } from 'next'
-import ProtectedPage from '../components/ProtectedPage'
-import Page from '../components/Page'
 import { addDoc, collection, getFirestore } from 'firebase/firestore'
-import { useState } from 'react'
-import { useUser } from 'utils/useUser'
+import type { NextPage } from 'next'
 import Link from 'next/link'
+import { useState } from 'react'
 import { toast } from 'react-hot-toast'
+import { useReferral } from 'utils/useReferral'
+import { useUser } from 'utils/useUser'
+import Page from '../components/Page'
+import ProtectedPage from '../components/ProtectedPage'
 
 const Home: NextPage = () => {
   const db = getFirestore()
   const [feedback, setFeedback] = useState('')
   const { user } = useUser()
+  const { referralCode } = useReferral()
 
   const submitFeedback = async () => {
     await addDoc(collection(db, 'feedback'), {
@@ -28,123 +30,107 @@ const Home: NextPage = () => {
         <div className="mt-1 py-12 mb-36">
           <article>
             <div className="mx-auto px-4 sm:px-6 max-w-4xl">
-              <div className="relative mb-6 overflow-hidden border border-gray-200 rounded-md">
-                <div>
-                  <div className="relative">
-                    <div className="grid">
-                      <div className="relative left-0 row-span-full col-span-full transition-all duration-150 transform visible opacity-100">
-                        <div className="flex flex-col items-start transition-all py-6 px-6 h-full md:pr-40 bg-blue-700">
-                          <div className="mb-2 md:mb-4">
-                            <div className="inline-flex px-2 py-1 text-xs font-bold text-white uppercase bg-green-500 rounded-full md:px-3 md-text-sm">
-                              Get started
-                            </div>
-                          </div>
-                          <div className="text-lg font-semibold tracking-tight text-white md:text-2xl">
-                            Ask Inkey 🦑
-                          </div>
-                          <p className="mt-1 mb-4 text-sm text-white text-opacity-80 md:text-lg md:mb-7">
-                            You can ask Inkey to do just about anything. Writing
-                            essays, answering coding questions, translating — it
-                            does it all!
-                          </p>
-                          <Link
-                            href={'/ask-inkey'}
-                            className="flex flex-col w-full items-stretch md:items-start"
-                          >
-                            <button
-                              className="px-16 py-2 text-md overflow-hidden ease-in-out focus:outline-none focus:ring-offset-2 transition-all duration-150 relative rounded-lg focusRing space-x-2 font-bold text-white bg-white shadow-sm outline-none hover:bg-opacity-30 bg-opacity-20 ring-opacity-20 border-none focus:ring-0"
-                              type="button"
-                            >
-                              Ask a question
-                            </button>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
+              <div className="p-6 mb-6 border bg-blue-700 rounded-md shadow-lg">
+                <div className="mb-2 md:mb-4">
+                  <div className="inline-flex px-2 py-1 text-xs font-bold text-white uppercase bg-green-500 rounded-full md:px-3 md-text-sm">
+                    Get started
                   </div>
+                </div>
+                <div className="text-lg font-semibold tracking-tight text-white md:text-2xl">
+                  Ask Inkey 🦑
+                </div>
+                <p className="mt-1 mb-4 text-sm text-white text-opacity-80 md:text-lg md:mb-7">
+                  You can ask Inkey to do just about anything. Writing essays,
+                  answering coding questions, translating — it does it all!
+                </p>
+                <div className="flex flex-col w-full items-stretch md:items-start">
+                  <Link
+                    href={'/ask-inkey'}
+                    className="inline-flex items-center justify-center font-medium text-white bg-blue-500 hover:bg-opacity-80 px-5 py-2 text-md overflow-hidden ease-in-out focus:outline-none focus:ring-offset-2 transition-all duration-150 relative rounded-lg space-x-2 ring-opacity-20 border-none focus:ring-0"
+                  >
+                    Ask a question
+                  </Link>
                 </div>
               </div>
             </div>
           </article>
           <article>
             <div className="mx-auto px-4 sm:px-6 max-w-4xl">
-              <div className="relative mb-6 overflow-hidden border border-gray-200 rounded-md">
-                <div>
-                  <div className="relative">
-                    <div className="grid">
-                      <div className="relative left-0 row-span-full col-span-full transition-all duration-150 transform visible opacity-100">
-                        <div className="flex flex-col items-start transition-all py-6 px-6 h-full md:pr-40 ">
-                          <div className="text-lg font-semibold tracking-tight md:text-2xl">
-                            Use Templates 🎭
-                          </div>
-                          <p className="mt-1 mb-4 text-sm text-opacity-80 md:text-lg md:mb-7">
-                            Each template is something different that Inkey can
-                            do. If there is anything we are missing, submit a
-                            feature request below to get a new template added!
-                          </p>
-                          <Link
-                            className="flex flex-col w-full items-stretch md:items-start"
-                            href={'/templates'}
-                          >
-                            <button
-                              className="font-bold text-white bg-blue-500 hover:bg-opacity-30 px-16 py-2 text-md overflow-hidden ease-in-out focus:outline-none focus:ring-offset-2 transition-all duration-150 relative rounded-lg focusRing space-x-2 ring-opacity-20 border-none focus:ring-0"
-                              type="button"
-                            >
-                              See templates
-                            </button>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
+              <div className="p-6 mb-6 border border-gray-200 rounded-md shadow-lg">
+                <div className="mb-3 md:flex md:items-center md:space-x-3">
+                  <div className="text-lg font-semibold tracking-tight md:text-2xl">
+                    Use Templates 🎭
                   </div>
+                </div>
+                <p className="mt-1 mb-4 text-sm md:text-lg">
+                  Each template is something different that Inkey can do. If
+                  there is anything we are missing, submit a feature request
+                  below to get a new template added!
+                </p>
+                <div className="flex flex-col w-full items-stretch md:items-start">
+                  <Link
+                    href={'/templates'}
+                    className="inline-flex items-center justify-center font-medium text-white bg-blue-500 hover:bg-opacity-80 px-5 py-2 text-md overflow-hidden ease-in-out focus:outline-none focus:ring-2 transition-all duration-150 relative rounded-lg space-x-2 ring-opacity-20 border-none focus:ring-0"
+                  >
+                    See templates
+                  </Link>
                 </div>
               </div>
             </div>
           </article>
           <article>
             <div className="mx-auto px-4 sm:px-6 max-w-4xl">
-              <div className="relative mb-6 overflow-hidden border border-gray-200 rounded-md">
-                <div>
-                  <div className="relative">
-                    <div className="grid">
-                      <div className="relative left-0 row-span-full col-span-full transition-all duration-150 transform visible opacity-100">
-                        <div className="flex flex-col items-start transition-all py-6 px-6 h-full md:pr-40 bg-blue-700">
-                          <div className="text-lg font-semibold tracking-tight text-white md:text-2xl">
-                            Write a Persuasive Essay 📣
-                          </div>
-                          <p className="mt-1 mb-4 text-sm text-white text-opacity-80 md:text-lg md:mb-7">
-                            The best way to learn what Inkey can do is by trying
-                            it out. Click the button below to write an A+
-                            persuasive essay in 1 minute!
-                          </p>
-                          <Link
-                            className="flex flex-col w-full items-stretch md:items-start"
-                            href={'/templates/persuasive-essay'}
-                          >
-                            <button
-                              className="px-20 py-2 text-md overflow-hidden ease-in-out focus:outline-none focus:ring-offset-2 transition-all duration-150 relative rounded-lg focusRing space-x-2 font-bold text-white bg-white shadow-sm outline-none hover:bg-opacity-30 bg-opacity-20 ring-opacity-20 border-none focus:ring-0"
-                              type="button"
-                            >
-                              Try it out!
-                            </button>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
+              <div className="p-6 mb-6 border border-gray-200 rounded-md shadow-lg">
+                <div className="mb-3 md:flex md:items-center md:space-x-3">
+                  <div className="text-lg font-semibold tracking-tight md:text-2xl">
+                    Refer your friends 🎁
                   </div>
+                  <div className="inline-block px-3 py-1 text-sm font-medium leading-4 text-green-600 border border-green-200 rounded-full bg-green-50">
+                    Give 5000 words → Get 5000 words!
+                  </div>
+                </div>
+                <p className="mt-1 mb-4 text-sm md:text-lg">
+                  For each new account that signs up with your link you and your
+                  friend each get 5000 free words. Bonus words are credited on
+                  sign up.
+                </p>
+                <div className="flex flex-col w-full items-stretch md:items-start">
+                  <button
+                    className="inline-flex items-center overflow-hidden ease-in-out outline-none focus:outline-none focus:ring-2 justify-center transition-all duration-150 relative font-medium rounded-lg text-gray-700 bg-white border border-black-300 shadow-sm hover:text-gray-500 active:bg-gray-50 active:text-gray-800 px-5 py-2 text-base leading-6"
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        'https://www.inkey.ai?referral_code=' +
+                          referralCode?.id,
+                      )
+                      toast.success('Copied to clipboard!')
+                    }}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 48 48"
+                        fill="currentColor"
+                        className="h-4 w-4 opacity-60"
+                      >
+                        <path d="M9 43.95q-1.2 0-2.1-.9-.9-.9-.9-2.1V10.8h3v30.15h23.7v3Zm6-6q-1.2 0-2.1-.9-.9-.9-.9-2.1v-28q0-1.2.9-2.1.9-.9 2.1-.9h22q1.2 0 2.1.9.9.9.9 2.1v28q0 1.2-.9 2.1-.9.9-2.1.9Zm0-3h22v-28H15v28Zm0 0v-28 28Z" />
+                      </svg>
+                      <div>Copy share link</div>
+                    </div>
+                  </button>
                 </div>
               </div>
             </div>
           </article>
           <article>
             <div className="mx-auto px-4 sm:px-6 max-w-4xl">
-              <div className="p-6 mb-6 border border-gray-200 rounded-md">
+              <div className="p-6 mb-6 border border-gray-200 rounded-md shadow-lg">
                 <div className="mb-3 md:flex md:items-center md:space-x-3">
                   <div className="text-lg font-semibold tracking-tight md:text-2xl">
                     What do you want us to build? 👷
                   </div>
                   <div className="inline-block px-3 py-1 text-sm font-medium leading-4 text-green-600 border border-green-200 rounded-full bg-green-50">
-                    Give feedback → Get 5000 free words!
+                    Give feedback → Get 5000 words!
                   </div>
                 </div>
                 <p className="mt-1 mb-4 text-sm md:text-lg">
@@ -164,7 +150,7 @@ const Home: NextPage = () => {
                 </div>
                 <div className="flex flex-col w-full items-stretch md:items-start">
                   <button
-                    className="px-16 py-2 text-md overflow-hidden ease-in-out focus:outline-none focus:ring-offset-2 transition-all duration-150 relative rounded-lg focusRing space-x-2 font-medium text-gray-700 bg-white border border-black-300 shadow-sm hover:text-gray-500 selectionRing active:bg-gray-50 active:text-gray-800 mt-4"
+                    className="inline-flex items-center overflow-hidden ease-in-out outline-none focus:outline-none focus:ring-2 justify-center transition-all duration-150 relative font-medium rounded-lg text-gray-700 bg-white border border-black-300 shadow-sm hover:text-gray-500 selectionRing active:bg-gray-50 active:text-gray-800 px-5 py-2 text-base leading-6 mt-3"
                     type="button"
                     disabled={feedback.length == 0}
                     onClick={() => {

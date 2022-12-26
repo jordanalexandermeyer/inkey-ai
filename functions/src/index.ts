@@ -24,6 +24,8 @@ import {
   Subscription,
   CustomerData,
   TaxRate,
+  Referral,
+  ReferralCode,
 } from './interfaces';
 import * as logs from './logs';
 import config from './config';
@@ -941,6 +943,18 @@ export const onUserDeleted = functions.auth.user().onDelete(async (user) => {
   }
 });
 
+const creditUserBonusAllowance = async (uid: string, allowance: number) => {
+  await admin
+    .firestore()
+    .collection('usage_details')
+    .doc(uid)
+    .update({
+      bonus_allowance: admin.firestore.FieldValue.increment(allowance),
+    });
+
+  logs.userBonusAllowanceIncreased(uid, allowance);
+};
+
 /*
  * The `onCustomerDataDeleted` deletes their customer object in Stripe which immediately cancels all their subscriptions.
  */
@@ -950,4 +964,37 @@ export const onCustomerDataDeleted = functions.firestore
     if (!config.autoDeleteUsers) return;
     const { stripeId } = snap.data();
     await deleteStripeCustomer({ uid: context.params.uid, stripeId });
+  });
+
+/*
+ * The `creditReferralBonus` is triggered when a referral is created and credits the parties involved with their referral bonuses.
+ */
+exports.creditReferralBonus = functions.firestore
+  .document('/referrals/{id}')
+  .onCreate(async (snap, context) => {
+    logs.firestoreDocCreated('referrals', snap.id);
+    const { provider, recipient, referral_code } = snap.data() as Referral;
+    if (
+      // make sure user isn't using their own referral code
+      provider != recipient &&
+      // make sure user hasn't already been referred
+      !(
+        await admin
+          .firestore()
+          .collection('referrals')
+          .where('recipient', '==', recipient)
+          .get()
+      ).empty
+    ) {
+      const referralCodeSnapshot = await referral_code.get();
+      const referralCodeData = referralCodeSnapshot.data() as ReferralCode;
+      await creditUserBonusAllowance(
+        provider,
+        referralCodeData.provider_bonus_allowance
+      );
+      await creditUserBonusAllowance(
+        recipient,
+        referralCodeData.recipient_bonus_allowance
+      );
+    }
   });
