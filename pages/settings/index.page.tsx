@@ -79,13 +79,7 @@ const Documents: NextPage = () => {
                       <h2 className="sm:mb-6 sm:text-lg font-semibold text-gray-900">
                         Usage
                       </h2>
-                      <p>
-                        {Math.min(
-                          usageDetails?.monthly_usage || 0,
-                          usageDetails?.monthly_allowance || 0,
-                        )}{' '}
-                        words
-                      </p>
+                      <p>{usageDetails?.monthly_usage || 0} words</p>
                     </div>
                     <div className="flex flex-row sm:flex-col justify-between items-center sm:items-start">
                       <h2 className="sm:mb-6 sm:text-lg font-semibold text-gray-900">

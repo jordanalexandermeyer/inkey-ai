@@ -15,6 +15,7 @@
  */
 
 import Stripe from 'stripe';
+import * as admin from 'firebase-admin';
 
 export interface CustomerData {
   metadata: {
@@ -172,4 +173,18 @@ export interface Subscription {
    * If the subscription has a trial, the end of that trial.
    */
   trial_end: FirebaseFirestore.Timestamp | null;
+}
+
+export interface ReferralCode {
+  provider: string;
+  provider_bonus_allowance: number;
+  recipient_bonus_allowance: number;
+}
+
+export interface Referral {
+  provider: string;
+  recipient: string;
+  referral_code: admin.firestore.DocumentReference<
+    admin.firestore.DocumentData
+  >;
 }

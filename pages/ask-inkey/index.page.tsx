@@ -86,7 +86,7 @@ const Home: NextPage = () => {
   const handleSubmit = async (prompt: string) => {
     if (
       usageDetails &&
-      usageDetails?.monthly_usage >
+      usageDetails?.monthly_usage >=
         usageDetails?.monthly_allowance + usageDetails.bonus_allowance
     ) {
       setShowUpgradeModal(true)
