@@ -23,6 +23,8 @@ export const config = {
   runtime: 'edge',
 }
 
+initializeFirebaseApp()
+
 export default async function handler(request: Request, response: Response) {
   const {
     id,
@@ -51,12 +53,6 @@ export default async function handler(request: Request, response: Response) {
     language: string
     coding_language: CodingLanguages
   } = await request.json()
-
-  initializeFirebaseApp()
-  const db = getFirestore()
-
-  const usageDetailsDocRef = doc(db, 'usage_details', userId)
-  const docSnapshot = await getDoc(usageDetailsDocRef)
 
   // if (!docSnapshot.exists()) {
   //   console.error('User', userId, 'does not exist')
@@ -364,11 +360,10 @@ export default async function handler(request: Request, response: Response) {
         async flush() {
           console.log('Output fetched for', userId)
           console.log('Output:', output)
-          // await updateUserWordsGenerated(
-          //   usageDetailsDocRef,
-          //   userId,
-          //   Math.round(output.length / 4.5),
-          // )
+          await updateUserWordsGenerated(
+            userId,
+            Math.round(output.length / 4.5),
+          )
         },
       }),
     )
@@ -393,11 +388,13 @@ const isError = (chunk: string) => {
 }
 
 async function updateUserWordsGenerated(
-  usageDetailsDocRef: DocumentReference<DocumentData>,
   userId: string,
   numberOfWordsGenerated: number,
 ) {
   console.log('Updating words generated for ', userId)
+
+  const db = getFirestore()
+  const usageDetailsDocRef = doc(db, 'usage_details', userId)
   const docSnapshot = await getDoc(usageDetailsDocRef)
 
   if (docSnapshot.exists()) {
