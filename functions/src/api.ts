@@ -11,88 +11,18 @@ import {
   UsageDetails,
 } from './interfaces';
 import config from './config';
+import cors from 'cors';
+import express, { Request, Response } from 'express';
+import { pipeline, Transform } from 'node:stream';
+import { promisify } from 'node:util';
+import fetch from 'node-fetch';
 
-const isError = (chunk: string) => {
-  try {
-    if (JSON.parse(chunk).error) return true;
-  } catch (e) {}
-  return false;
-};
+const app = express();
 
-async function updateUserWordsGenerated(
-  userId: string,
-  numberOfWordsGenerated: number
-) {
-  console.log('Updating words generated for ', userId);
+// Automatically allow cross-origin requests
+app.use(cors({ origin: true }));
 
-  const db = admin.firestore();
-  const docRef = db.collection('usage_details').doc(userId);
-  const docSnapshot = await docRef.get();
-
-  if (docSnapshot.exists) {
-    const {
-      monthly_allowance: monthlyAllowance,
-      monthly_usage: monthlyUsage,
-      bonus_allowance: bonusAllowance,
-    } = docSnapshot.data() as UsageDetails;
-
-    // case: monthly usage < allowance
-    // add to monthly usage (if > allowance, set equal to allowance)
-    if (monthlyUsage < monthlyAllowance) {
-      if (monthlyUsage + numberOfWordsGenerated > monthlyAllowance) {
-        await docRef.update({
-          monthly_usage: monthlyAllowance,
-          total_usage: admin.firestore.FieldValue.increment(
-            numberOfWordsGenerated
-          ),
-        });
-      } else {
-        await docRef.update({
-          monthly_usage: admin.firestore.FieldValue.increment(
-            numberOfWordsGenerated
-          ),
-          total_usage: admin.firestore.FieldValue.increment(
-            numberOfWordsGenerated
-          ),
-        });
-      }
-    } else {
-      // case: monthly usage > allowance
-      // double check to make sure bonus allowance is not 0, then subtract from bonus allowance (if > bonus allowance, set bonus allowance to 0)
-      if (bonusAllowance <= 0) {
-        console.log(
-          'Error: user should not have been able to call this: ',
-          userId
-        );
-      } else {
-        if (numberOfWordsGenerated > bonusAllowance) {
-          await docRef.update({
-            bonus_allowance: 0,
-            total_usage: admin.firestore.FieldValue.increment(
-              numberOfWordsGenerated
-            ),
-          });
-        } else {
-          await docRef.update({
-            bonus_allowance: admin.firestore.FieldValue.increment(
-              -1 * numberOfWordsGenerated
-            ),
-            total_usage: admin.firestore.FieldValue.increment(
-              numberOfWordsGenerated
-            ),
-          });
-        }
-      }
-    }
-  } else {
-    console.log("Error: document doesn't exist for user: ", userId);
-  }
-}
-
-export const generateOutput = functions.https.onRequest(async (req, resp) => {
-  console.log(req.method);
-  resp.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-
+app.post('/', async (req: Request, resp: Response) => {
   const {
     id,
     userId,
@@ -121,13 +51,13 @@ export const generateOutput = functions.https.onRequest(async (req, resp) => {
     coding_language: CodingLanguages;
   } = req.body;
 
-  console.log('Request received: ', userId);
+  console.log('Request received:', JSON.stringify(req.body));
 
   const db = admin.firestore();
   const docSnapshot = await db.collection('usage_details').doc(userId).get();
 
   if (!docSnapshot.exists) {
-    console.log(userId, ' does not exist');
+    console.error('User', userId, 'does not exist');
     resp.status(401).json({ message: 'Unauthorized' });
     return;
   }
@@ -139,7 +69,7 @@ export const generateOutput = functions.https.onRequest(async (req, resp) => {
   } = docSnapshot.data() as UsageDetails;
 
   if (monthlyUsage >= monthlyAllowance + bonusAllowance) {
-    console.log(userId, ' usage limit reached');
+    console.error(userId, 'usage limit reached');
     resp.status(400).json({ message: 'Usage limit reached' });
     return;
   }
@@ -346,7 +276,7 @@ export const generateOutput = functions.https.onRequest(async (req, resp) => {
   }
 
   try {
-    console.log('Fetching completion for ', userId);
+    console.log('Fetching completion for user', userId);
     const response = await fetch('https://api.openai.com/v1/completions', {
       method: 'POST',
       body: JSON.stringify({
@@ -364,83 +294,144 @@ export const generateOutput = functions.https.onRequest(async (req, resp) => {
       },
     });
 
-    const stream = response.body;
-
     const encoder = new TextEncoder();
-    const decoder = new TextDecoder();
 
     let chunkNumber = 0;
     let output = '';
     let incompleteChunk = '';
 
-    const transformedResponse = stream!.pipeThrough(
-      new TransformStream({
-        start(controller) {},
-        transform(chunk, controller) {
-          // get chunk in string format
-          const textChunk = decoder.decode(chunk);
+    for await (const chunk of response.body) {
+      // get chunk in string format
+      const textChunk = chunk.toString();
 
-          // separate chunks into lines of data
-          const listOfChunks = textChunk.split('\n\n');
-
-          // iterate through chunks
-          for (let i = 0; i < listOfChunks.length; i++) {
-            // if string is empty, continue
-            if (!listOfChunks[i]) continue;
-
-            let fullChunk = listOfChunks[i];
-
-            // if incompleteChunk not empty, append it to front of chunk then clear incompleteChunk
-            if (incompleteChunk) {
-              fullChunk = incompleteChunk + listOfChunks[i];
-              incompleteChunk = '';
-            }
-
-            // if chunk is last chunk, break
-            if (fullChunk.slice(6) == '[DONE]') {
-              break;
-            }
-
-            // if chunk is data, parse it and append it to output
-            try {
-              if (isError(fullChunk)) {
-                controller.enqueue(
-                  encoder.encode(
-                    'The chat has reached its maximum length. Please "Clear chat" to continue chatting with Inkey.'
-                  )
-                );
-                break;
-              }
-              const parsedData = JSON.parse(fullChunk.slice(6));
-              const text = parsedData.choices[0].text;
-              if (text == '\n' && chunkNumber < 2) continue; // beginning response usually has 2 new lines
-              controller.enqueue(encoder.encode(text));
-              resp.write(encoder.encode(text));
-              output += text;
-              chunkNumber++;
-            } catch (error) {
-              // if chunk is incomplete, store it in incompleteChunk and continue
-              incompleteChunk = fullChunk;
-              continue;
-            }
+      // separate chunks into lines of data
+      const listOfChunks = textChunk.split('\n\n');
+      // iterate through chunks
+      for (let i = 0; i < listOfChunks.length; i++) {
+        // if string is empty, continue
+        if (!listOfChunks[i]) continue;
+        let fullChunk = listOfChunks[i];
+        // if incompleteChunk not empty, append it to front of chunk then clear incompleteChunk
+        if (incompleteChunk) {
+          fullChunk = incompleteChunk + listOfChunks[i];
+          incompleteChunk = '';
+        }
+        // if chunk is last chunk, break
+        if (fullChunk.slice(6) == '[DONE]') {
+          break;
+        }
+        // if chunk is data, parse it and append it to output
+        try {
+          if (isError(fullChunk)) {
+            resp.write(
+              encoder.encode(
+                'The chat has reached its maximum length. Please "Clear chat" to continue chatting with Inkey.'
+              )
+            );
+            break;
           }
-        },
-        async flush() {
-          console.log('Output fetched for ', userId);
-          console.log('Output: ', output);
-          await updateUserWordsGenerated(
-            userId,
-            Math.round(output.length / 4.5)
-          );
-        },
-      })
-    );
+          const parsedData = JSON.parse(fullChunk.slice(6));
+          const text = parsedData.choices[0].text;
+          if (text == '\n' && chunkNumber < 2) continue; // beginning response usually has 2 new lines
+          output += text;
+          chunkNumber++;
+          resp.write(encoder.encode(text));
+        } catch (error) {
+          // if chunk is incomplete, store it in incompleteChunk and continue
+          incompleteChunk = fullChunk;
+          continue;
+        }
+      }
+    }
+
+    await updateUserWordsGenerated(userId, Math.round(output.length / 4.5));
 
     resp.status(200).end();
     return;
   } catch (error) {
-    console.log(error);
+    console.error(JSON.stringify(error));
     resp.status(500).json({ message: 'Server error' });
     return;
   }
 });
+
+const isError = (chunk: string) => {
+  try {
+    if (JSON.parse(chunk).error) return true;
+  } catch (e) {}
+  return false;
+};
+
+async function updateUserWordsGenerated(
+  userId: string,
+  numberOfWordsGenerated: number
+) {
+  console.log(
+    'Increased words generated for',
+    userId,
+    'by',
+    numberOfWordsGenerated
+  );
+
+  const db = admin.firestore();
+  const docRef = db.collection('usage_details').doc(userId);
+  const docSnapshot = await docRef.get();
+
+  if (docSnapshot.exists) {
+    const {
+      monthly_allowance: monthlyAllowance,
+      monthly_usage: monthlyUsage,
+      bonus_allowance: bonusAllowance,
+    } = docSnapshot.data() as UsageDetails;
+
+    // case: monthly usage < allowance
+    // add to monthly usage (if > allowance, set equal to allowance)
+    if (monthlyUsage < monthlyAllowance) {
+      if (monthlyUsage + numberOfWordsGenerated > monthlyAllowance) {
+        await docRef.update({
+          monthly_usage: monthlyAllowance,
+          total_usage: admin.firestore.FieldValue.increment(
+            numberOfWordsGenerated
+          ),
+        });
+      } else {
+        await docRef.update({
+          monthly_usage: admin.firestore.FieldValue.increment(
+            numberOfWordsGenerated
+          ),
+          total_usage: admin.firestore.FieldValue.increment(
+            numberOfWordsGenerated
+          ),
+        });
+      }
+    } else {
+      // case: monthly usage > allowance
+      // double check to make sure bonus allowance is not 0, then subtract from bonus allowance (if > bonus allowance, set bonus allowance to 0)
+      if (bonusAllowance <= 0) {
+        console.error('User', userId, 'should not have been able to call this');
+      } else {
+        if (numberOfWordsGenerated > bonusAllowance) {
+          await docRef.update({
+            bonus_allowance: 0,
+            total_usage: admin.firestore.FieldValue.increment(
+              numberOfWordsGenerated
+            ),
+          });
+        } else {
+          await docRef.update({
+            bonus_allowance: admin.firestore.FieldValue.increment(
+              -1 * numberOfWordsGenerated
+            ),
+            total_usage: admin.firestore.FieldValue.increment(
+              numberOfWordsGenerated
+            ),
+          });
+        }
+      }
+    }
+  } else {
+    console.error("Document doesn't exist for user", userId);
+  }
+}
+
+export const generateOutput = functions.https.onRequest(app);

@@ -14,21 +14,23 @@ const Home: NextPage = () => {
   const [outputs, setOutputs] = useState<Output[]>([])
   const formRef = useRef<any>(null)
   const messageElementRef = useRef<any>(null)
+  const bottomElementRef = useRef<any>(null)
   const { user, usageDetails } = useUser()
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
 
   const scrollToBottom = () => {
-    messageElementRef.current?.scrollIntoView({ behavior: 'smooth' })
+    bottomElementRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
   useEffect(() => {
     if (outputs.length > 0) scrollToBottom()
-  }, [outputs])
+  }, [messageElementRef?.current?.clientHeight])
 
   const getOutput = async (prompt: string, userId: string) => {
     try {
       const response = await fetch(
-        'http://127.0.0.1:5001/ghostwritten-c07c3/us-central1/generateOutput',
+        process.env.NEXT_PUBLIC_FIREBASE_FUNCTION_GENERATE_OUTPUT_URI ||
+          '/api/outputs',
         {
           method: 'post',
           body: JSON.stringify({
@@ -130,7 +132,10 @@ const Home: NextPage = () => {
           <UpgradeModal setShowUpgradeModal={setShowUpgradeModal} />
         )}
         <div className="pb-16 lg:pb-0">
-          <div className="flex flex-col items-center text-sm h-full">
+          <div
+            className="flex flex-col items-center text-sm h-full"
+            ref={messageElementRef}
+          >
             {outputs.map((output, index) => {
               if (output.agent == Agent.USER) {
                 return (
@@ -361,7 +366,7 @@ const Home: NextPage = () => {
             )}
             <div
               className="w-full h-48 flex-shrink-0"
-              ref={messageElementRef}
+              ref={bottomElementRef}
             ></div>
           </div>
           <div

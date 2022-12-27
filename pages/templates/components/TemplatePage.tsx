@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import ProtectedPage from '../../../components/ProtectedPage'
 import Output from './Output'
@@ -57,11 +57,22 @@ const TemplatePage = ({
   const [poemType, setPoemType] = useState(PoemType.FREE_VERSE)
   const { user, usageDetails, subscription } = useUser()
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const bottomElementRef = useRef<any>(null)
+  const textElementRef = useRef<any>(null)
+
+  const scrollToBottom = () => {
+    bottomElementRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  useEffect(() => {
+    if (output.length > 0) scrollToBottom()
+  }, [textElementRef?.current?.clientHeight])
 
   const getAndSetOutput = async (prompt: string, userId: string) => {
     try {
       const response = await fetch(
-        'http://127.0.0.1:5001/ghostwritten-c07c3/us-central1/generateOutput',
+        process.env.NEXT_PUBLIC_FIREBASE_FUNCTION_GENERATE_OUTPUT_URI ||
+          '/api/outputs',
         {
           method: 'post',
           body: JSON.stringify({
@@ -688,7 +699,12 @@ const TemplatePage = ({
                 </div>
               </div>
               {output.length > 0 ? (
-                <Output toast={toast} text={output} />
+                <Output
+                  toast={toast}
+                  text={output}
+                  bottomElementRef={bottomElementRef}
+                  textElementRef={textElementRef}
+                />
               ) : (
                 <OutputEmptyState />
               )}
