@@ -60,30 +60,33 @@ const TemplatePage = ({
 
   const getAndSetOutput = async (prompt: string, userId: string) => {
     try {
-      const response = await fetch('/api/outputs', {
-        method: 'post',
-        body: JSON.stringify({
-          id: id,
-          inputs: {
-            prompt,
-          },
-          userId,
-          ...(supportQuotes && addQuotes && { quotes: quotes }),
-          ...(supportReferences && { references: generateReferences }),
-          ...(supportRequestedLength && { length: requestedLength }),
-          ...(supportTone && { tone: tone }),
-          ...(supportPointOfView && { point_of_view: pointOfView }),
-          ...(supportLanguages && { language: language }),
-          ...(supportCodingLanguages && { coding_language: codingLanguage }),
-          ...(id == TemplateId.SUMMARIZER_ID && {
-            summary_method: summaryMethod,
+      const response = await fetch(
+        'http://127.0.0.1:5001/ghostwritten-c07c3/us-central1/generateOutput',
+        {
+          method: 'post',
+          body: JSON.stringify({
+            id: id,
+            inputs: {
+              prompt,
+            },
+            userId,
+            ...(supportQuotes && addQuotes && { quotes: quotes }),
+            ...(supportReferences && { references: generateReferences }),
+            ...(supportRequestedLength && { length: requestedLength }),
+            ...(supportTone && { tone: tone }),
+            ...(supportPointOfView && { point_of_view: pointOfView }),
+            ...(supportLanguages && { language: language }),
+            ...(supportCodingLanguages && { coding_language: codingLanguage }),
+            ...(id == TemplateId.SUMMARIZER_ID && {
+              summary_method: summaryMethod,
+            }),
+            ...(id == TemplateId.POEM_ID && { poem_type: poemType }),
           }),
-          ...(id == TemplateId.POEM_ID && { poem_type: poemType }),
-        }),
-        headers: {
-          'Content-Type': 'application/json',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         },
-      })
+      )
 
       await readStreamIntoOutput(response.body)
     } catch (error) {

@@ -27,19 +27,22 @@ const Home: NextPage = () => {
 
   const getOutput = async (prompt: string, userId: string) => {
     try {
-      const response = await fetch('/api/outputs', {
-        method: 'post',
-        body: JSON.stringify({
-          id: 'ask-inkey',
-          inputs: {
-            prompt,
+      const response = await fetch(
+        'http://127.0.0.1:5001/ghostwritten-c07c3/us-central1/generateOutput',
+        {
+          method: 'post',
+          body: JSON.stringify({
+            id: 'ask-inkey',
+            inputs: {
+              prompt,
+            },
+            userId,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
           },
-          userId,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
         },
-      })
+      )
 
       await readStreamIntoOutput(response.body)
     } catch (error) {
