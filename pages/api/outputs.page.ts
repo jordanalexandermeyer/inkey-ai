@@ -361,15 +361,15 @@ export default async function handler(request: Request, response: Response) {
             }
           }
         },
-        async flush() {
-          console.log('Output fetched for', userId)
-          console.log('Output:', output)
-          await updateUserWordsGenerated(
-            usageDetailsDocRef,
-            userId,
-            Math.round(output.length / 4.5),
-          )
-        },
+        // async flush() {
+        //   console.log('Output fetched for', userId)
+        //   console.log('Output:', output)
+        //   await updateUserWordsGenerated(
+        //     usageDetailsDocRef,
+        //     userId,
+        //     Math.round(output.length / 4.5),
+        //   )
+        // },
       }),
     )
 
