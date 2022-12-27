@@ -54,27 +54,27 @@ export default async function handler(request: Request, response: Response) {
     coding_language: CodingLanguages
   } = await request.json()
 
-  // if (!docSnapshot.exists()) {
-  //   console.error('User', userId, 'does not exist')
-  //   return new Response(null, {
-  //     status: 401,
-  //     statusText: 'Unauthorized',
-  //   })
-  // }
+  if (!(await isUserValid(userId))) {
+    console.error('User', userId, 'does not exist')
+    return new Response(null, {
+      status: 401,
+      statusText: 'Unauthorized',
+    })
+  }
 
-  // const {
-  //   monthly_allowance: monthlyAllowance,
-  //   monthly_usage: monthlyUsage,
-  //   bonus_allowance: bonusAllowance,
-  // } = docSnapshot.data() as UsageDetails
+  const {
+    monthly_allowance: monthlyAllowance,
+    monthly_usage: monthlyUsage,
+    bonus_allowance: bonusAllowance,
+  } = await getUsageDetails(userId)
 
-  // if (monthlyUsage >= monthlyAllowance + bonusAllowance) {
-  //   console.error(userId, 'usage limit reached')
-  //   return new Response(null, {
-  //     status: 400,
-  //     statusText: 'Usage limit reached',
-  //   })
-  // }
+  if (monthlyUsage >= monthlyAllowance + bonusAllowance) {
+    console.error(userId, 'usage limit reached')
+    return new Response(null, {
+      status: 400,
+      statusText: 'Usage limit reached',
+    })
+  }
 
   let openaiPrompt
   let model
@@ -443,4 +443,18 @@ async function updateUserWordsGenerated(
   } else {
     console.log("Error: document doesn't exist for user: ", userId)
   }
+}
+
+async function isUserValid(userId: string) {
+  const db = getFirestore()
+  const usageDetailsDocRef = doc(db, 'usage_details', userId)
+  const docSnapshot = await getDoc(usageDetailsDocRef)
+  return docSnapshot.exists()
+}
+
+async function getUsageDetails(userId: string): Promise<UsageDetails> {
+  const db = getFirestore()
+  const usageDetailsDocRef = doc(db, 'usage_details', userId)
+  const docSnapshot = await getDoc(usageDetailsDocRef)
+  return docSnapshot.data() as UsageDetails
 }
