@@ -56,7 +56,7 @@ export default async function handler(request: Request, response: Response) {
   const db = getFirestore()
 
   const usageDetailsDocRef = doc(db, 'usage_details', userId)
-  // const docSnapshot = await getDoc(usageDetailsDocRef)
+  const docSnapshot = await getDoc(usageDetailsDocRef)
 
   // if (!docSnapshot.exists()) {
   //   console.error('User', userId, 'does not exist')
