@@ -1,7 +1,6 @@
+import { FirebaseApp, initializeApp } from 'firebase/app'
 import {
   doc,
-  DocumentData,
-  DocumentReference,
   getDoc,
   getFirestore,
   increment,
@@ -16,14 +15,25 @@ import {
   SummaryMethod,
   UsageDetails,
 } from 'types'
-import initializeFirebaseApp from '../../utils/initializeFirebase'
 import { TemplateId } from '../templates/templates'
 
 export const config = {
   runtime: 'edge',
 }
 
-initializeFirebaseApp()
+let firebaseApp: FirebaseApp | undefined
+
+if (!firebaseApp) {
+  firebaseApp = initializeApp({
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  })
+}
 
 export default async function handler(request: Request, response: Response) {
   const {
@@ -54,27 +64,27 @@ export default async function handler(request: Request, response: Response) {
     coding_language: CodingLanguages
   } = await request.json()
 
-  // if (!(await isUserValid(userId))) {
-  //   console.error('User', userId, 'does not exist')
-  //   return new Response(null, {
-  //     status: 401,
-  //     statusText: 'Unauthorized',
-  //   })
-  // }
+  if (!(await isUserValid(userId))) {
+    console.error('User', userId, 'does not exist')
+    return new Response(null, {
+      status: 401,
+      statusText: 'Unauthorized',
+    })
+  }
 
-  // const {
-  //   monthly_allowance: monthlyAllowance,
-  //   monthly_usage: monthlyUsage,
-  //   bonus_allowance: bonusAllowance,
-  // } = await getUsageDetails(userId)
+  const {
+    monthly_allowance: monthlyAllowance,
+    monthly_usage: monthlyUsage,
+    bonus_allowance: bonusAllowance,
+  } = await getUsageDetails(userId)
 
-  // if (monthlyUsage >= monthlyAllowance + bonusAllowance) {
-  //   console.error(userId, 'usage limit reached')
-  //   return new Response(null, {
-  //     status: 400,
-  //     statusText: 'Usage limit reached',
-  //   })
-  // }
+  if (monthlyUsage >= monthlyAllowance + bonusAllowance) {
+    console.error(userId, 'usage limit reached')
+    return new Response(null, {
+      status: 400,
+      statusText: 'Usage limit reached',
+    })
+  }
 
   let openaiPrompt
   let model
