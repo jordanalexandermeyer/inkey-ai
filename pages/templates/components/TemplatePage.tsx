@@ -118,7 +118,6 @@ const TemplatePage = ({
       newOutput += decoder.decode(value)
       setOutput(newOutput)
     }
-    reader.cancel()
   }
 
   const handleGenerateClick = async () => {
