@@ -53,32 +53,32 @@ export default async function handler(request: Request, response: Response) {
   } = await request.json()
 
   initializeFirebaseApp()
-  const db = getFirestore()
+  // const db = getFirestore()
 
-  const usageDetailsDocRef = doc(db, 'usage_details', userId)
-  const docSnapshot = await getDoc(usageDetailsDocRef)
+  // const usageDetailsDocRef = doc(db, 'usage_details', userId)
+  // const docSnapshot = await getDoc(usageDetailsDocRef)
 
-  if (!docSnapshot.exists()) {
-    console.error('User', userId, 'does not exist')
-    return new Response(null, {
-      status: 401,
-      statusText: 'Unauthorized',
-    })
-  }
+  // if (!docSnapshot.exists()) {
+  //   console.error('User', userId, 'does not exist')
+  //   return new Response(null, {
+  //     status: 401,
+  //     statusText: 'Unauthorized',
+  //   })
+  // }
 
-  const {
-    monthly_allowance: monthlyAllowance,
-    monthly_usage: monthlyUsage,
-    bonus_allowance: bonusAllowance,
-  } = docSnapshot.data() as UsageDetails
+  // const {
+  //   monthly_allowance: monthlyAllowance,
+  //   monthly_usage: monthlyUsage,
+  //   bonus_allowance: bonusAllowance,
+  // } = docSnapshot.data() as UsageDetails
 
-  if (monthlyUsage >= monthlyAllowance + bonusAllowance) {
-    console.error(userId, 'usage limit reached')
-    return new Response(null, {
-      status: 400,
-      statusText: 'Usage limit reached',
-    })
-  }
+  // if (monthlyUsage >= monthlyAllowance + bonusAllowance) {
+  //   console.error(userId, 'usage limit reached')
+  //   return new Response(null, {
+  //     status: 400,
+  //     statusText: 'Usage limit reached',
+  //   })
+  // }
 
   let openaiPrompt
   let model
@@ -364,11 +364,11 @@ export default async function handler(request: Request, response: Response) {
         async flush() {
           console.log('Output fetched for', userId)
           console.log('Output:', output)
-          await updateUserWordsGenerated(
-            usageDetailsDocRef,
-            userId,
-            Math.round(output.length / 4.5),
-          )
+          // await updateUserWordsGenerated(
+          //   usageDetailsDocRef,
+          //   userId,
+          //   Math.round(output.length / 4.5),
+          // )
         },
       }),
     )
