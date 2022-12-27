@@ -313,7 +313,6 @@ export default async function handler(request: Request, response: Response) {
 
     const transformedResponse = stream!.pipeThrough(
       new TransformStream({
-        start(controller) {},
         transform(chunk, controller) {
           // get chunk in string format
           const textChunk = decoder.decode(chunk)
