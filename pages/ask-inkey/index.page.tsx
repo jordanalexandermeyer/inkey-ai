@@ -28,23 +28,19 @@ const Home: NextPage = () => {
 
   const getOutput = async (prompt: string, userId: string) => {
     try {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_FIREBASE_FUNCTION_GENERATE_OUTPUT_URI ||
-          '/api/outputs',
-        {
-          method: 'post',
-          body: JSON.stringify({
-            id: 'ask-inkey',
-            inputs: {
-              prompt,
-            },
-            userId,
-          }),
-          headers: {
-            'Content-Type': 'application/json',
+      const response = await fetch('/api/outputs', {
+        method: 'post',
+        body: JSON.stringify({
+          id: 'ask-inkey',
+          inputs: {
+            prompt,
           },
+          userId,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
         },
-      )
+      })
 
       await readStreamIntoOutput(response.body)
     } catch (error) {

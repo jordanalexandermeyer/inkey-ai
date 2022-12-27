@@ -70,34 +70,30 @@ const TemplatePage = ({
 
   const getAndSetOutput = async (prompt: string, userId: string) => {
     try {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_FIREBASE_FUNCTION_GENERATE_OUTPUT_URI ||
-          '/api/outputs',
-        {
-          method: 'post',
-          body: JSON.stringify({
-            id: id,
-            inputs: {
-              prompt,
-            },
-            userId,
-            ...(supportQuotes && addQuotes && { quotes: quotes }),
-            ...(supportReferences && { references: generateReferences }),
-            ...(supportRequestedLength && { length: requestedLength }),
-            ...(supportTone && { tone: tone }),
-            ...(supportPointOfView && { point_of_view: pointOfView }),
-            ...(supportLanguages && { language: language }),
-            ...(supportCodingLanguages && { coding_language: codingLanguage }),
-            ...(id == TemplateId.SUMMARIZER_ID && {
-              summary_method: summaryMethod,
-            }),
-            ...(id == TemplateId.POEM_ID && { poem_type: poemType }),
-          }),
-          headers: {
-            'Content-Type': 'application/json',
+      const response = await fetch('/api/outputs', {
+        method: 'post',
+        body: JSON.stringify({
+          id: id,
+          inputs: {
+            prompt,
           },
+          userId,
+          ...(supportQuotes && addQuotes && { quotes: quotes }),
+          ...(supportReferences && { references: generateReferences }),
+          ...(supportRequestedLength && { length: requestedLength }),
+          ...(supportTone && { tone: tone }),
+          ...(supportPointOfView && { point_of_view: pointOfView }),
+          ...(supportLanguages && { language: language }),
+          ...(supportCodingLanguages && { coding_language: codingLanguage }),
+          ...(id == TemplateId.SUMMARIZER_ID && {
+            summary_method: summaryMethod,
+          }),
+          ...(id == TemplateId.POEM_ID && { poem_type: poemType }),
+        }),
+        headers: {
+          'Content-Type': 'application/json',
         },
-      )
+      })
 
       await readStreamIntoOutput(response.body)
     } catch (error) {

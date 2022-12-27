@@ -21,14 +21,7 @@ import initializeFirebaseApp from '../../utils/initializeFirebase'
 import { TemplateId } from '../templates/templates'
 
 export const config = {
-  runtime: 'experimental-edge',
-}
-
-const isError = (chunk: string) => {
-  try {
-    if (JSON.parse(chunk).error) return true
-  } catch (e) {}
-  return false
+  runtime: 'edge',
 }
 
 export default async function handler(request: Request, response: Response) {
@@ -60,15 +53,13 @@ export default async function handler(request: Request, response: Response) {
     coding_language: CodingLanguages
   } = await request.json()
 
-  console.log('Request received: ', userId)
-
   const db = getFirestore()
 
   const usageDetailsDocRef = doc(db, 'usage_details', userId)
   const docSnapshot = await getDoc(usageDetailsDocRef)
 
   if (!docSnapshot.exists()) {
-    console.log(userId, ' does not exist')
+    console.error('User', userId, 'does not exist')
     return new Response(null, {
       status: 401,
       statusText: 'Unauthorized',
@@ -82,7 +73,7 @@ export default async function handler(request: Request, response: Response) {
   } = docSnapshot.data() as UsageDetails
 
   if (monthlyUsage >= monthlyAllowance + bonusAllowance) {
-    console.log(userId, ' usage limit reached')
+    console.error(userId, 'usage limit reached')
     return new Response(null, {
       status: 400,
       statusText: 'Usage limit reached',
@@ -157,13 +148,13 @@ export default async function handler(request: Request, response: Response) {
     case TemplateId.SUMMARIZER_ID:
       switch (summaryMethod) {
         // couldn't use SummaryMethod here because of edge runtime doesn't support the eval() function
-        case 'bullet-points':
+        case SummaryMethod.BULLET_POINTS:
           openaiPrompt = `Summarize the following with bullet points:\n\n${prompt}`
           break
-        case 'TLDR':
+        case SummaryMethod.TLDR:
           openaiPrompt = `${prompt}\n\nTl;dr\n`
           break
-        case 'paragraph':
+        case SummaryMethod.PARAGRAPH:
           openaiPrompt = `Summarize the following:\n\n${prompt}`
           break
         default:
@@ -253,8 +244,7 @@ export default async function handler(request: Request, response: Response) {
       })
   }
 
-  if (length == 'long') {
-    // couldn't use EssayLength.LONG here because of edge runtime doesn't support the eval() function
+  if (length == EssayLength.LONG) {
     openaiPrompt =
       `In approximately 1000 words, ` +
       openaiPrompt[0].toLowerCase() +
@@ -294,7 +284,7 @@ export default async function handler(request: Request, response: Response) {
   }
 
   try {
-    console.log('Fetching completion for ', userId)
+    console.log('Fetching ouput for', userId)
     const response = await fetch('https://api.openai.com/v1/completions', {
       method: 'POST',
       body: JSON.stringify({
@@ -373,8 +363,8 @@ export default async function handler(request: Request, response: Response) {
           }
         },
         async flush() {
-          console.log('Output fetched for ', userId)
-          console.log('Output: ', output)
+          console.log('Output fetched for', userId)
+          console.log('Output:', output)
           await updateUserWordsGenerated(
             usageDetailsDocRef,
             userId,
@@ -385,15 +375,22 @@ export default async function handler(request: Request, response: Response) {
     )
 
     return new Response(transformedResponse, {
-      status: 200,
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
     })
   } catch (error) {
-    console.log(error)
+    console.error(JSON.stringify(error))
     return new Response(null, {
       status: 500,
       statusText: 'Server Error',
     })
   }
+}
+
+const isError = (chunk: string) => {
+  try {
+    if (JSON.parse(chunk).error) return true
+  } catch (e) {}
+  return false
 }
 
 async function updateUserWordsGenerated(
