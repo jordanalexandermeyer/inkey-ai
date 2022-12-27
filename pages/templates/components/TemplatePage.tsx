@@ -95,7 +95,7 @@ const TemplatePage = ({
         },
       })
 
-      await readStreamIntoOutput(response.body)
+      await readStreamIntoOutput(response.body!)
     } catch (error) {
       console.log(error)
       toast.error(
@@ -105,7 +105,9 @@ const TemplatePage = ({
     }
   }
 
-  async function readStreamIntoOutput(readableStream: any) {
+  async function readStreamIntoOutput(
+    readableStream: ReadableStream<Uint8Array>,
+  ) {
     const reader = readableStream.getReader()
 
     const decoder = new TextDecoder()
@@ -116,6 +118,7 @@ const TemplatePage = ({
       newOutput += decoder.decode(value)
       setOutput(newOutput)
     }
+    reader.cancel()
   }
 
   const handleGenerateClick = async () => {
