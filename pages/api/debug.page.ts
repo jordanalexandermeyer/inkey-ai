@@ -53,7 +53,7 @@ export default async function handler(request: Request, response: Response) {
   } = await request.json()
 
   initializeFirebaseApp()
-  // const db = getFirestore()
+  const db = getFirestore()
 
   // const usageDetailsDocRef = doc(db, 'usage_details', userId)
   // const docSnapshot = await getDoc(usageDetailsDocRef)
