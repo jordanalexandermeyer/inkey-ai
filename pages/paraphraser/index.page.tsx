@@ -22,7 +22,6 @@ const ParaphraserPage: NextPage = () => {
       supportExamplePrompt={pageData.supportExamplePrompt}
       supportTone={pageData.supportTone}
       supportQuotes={pageData.supportQuotes}
-      supportReferences={pageData.supportReferences}
       supportRequestedLength={pageData.supportRequestedLength}
       supportPointOfView={pageData.supportPointOfView}
       href={pageData.href}
