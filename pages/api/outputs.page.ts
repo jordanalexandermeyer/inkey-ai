@@ -17,7 +17,6 @@ export default async function handler(request: Request, response: Response) {
     id,
     userId,
     inputs: { prompt },
-    references,
     quotes,
     length,
     tone,
@@ -26,11 +25,11 @@ export default async function handler(request: Request, response: Response) {
     poem_type: poemType,
     language,
     coding_language: codingLanguage,
+    content,
   }: {
     id: TemplateId | string
     userId: string
     inputs: { prompt: string }
-    references: boolean
     quotes?: QuoteMap
     length: EssayLength
     tone: string
@@ -39,6 +38,7 @@ export default async function handler(request: Request, response: Response) {
     poem_type: PoemType
     language: string
     coding_language: CodingLanguages
+    content: string
   } = await request.json()
 
   let openaiPrompt
@@ -130,7 +130,7 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case 'ask-inkey':
-      openaiPrompt = `You are Inkey, an AI assistant for students. Reply to the following prompt:\n\n${prompt}`
+      openaiPrompt = `You are Inkey, an AI assistant for students. Reply to the following prompt: """\n${prompt}\n"""`
       model = 'text-davinci-003'
       temperature = 0.25
       break
@@ -220,11 +220,6 @@ export default async function handler(request: Request, response: Response) {
     openaiPrompt += "Don't include any other quotes."
   }
 
-  if (references) {
-    openaiPrompt +=
-      ' Provide data to support your claims with specific sources. Provide references at the end of the essay citing your sources.'
-  }
-
   if (tone) {
     openaiPrompt += ` Use the following tone: "${tone}".`
   }
@@ -239,6 +234,10 @@ export default async function handler(request: Request, response: Response) {
 
   if (codingLanguage) {
     openaiPrompt += ` Write in ${codingLanguage}.`
+  }
+
+  if (content) {
+    openaiPrompt += ` Incorporate the following content: """\n${content}\n"""`
   }
 
   try {
@@ -265,7 +264,6 @@ export default async function handler(request: Request, response: Response) {
     const decoder = new TextDecoder()
 
     let chunkNumber = 0
-    let output = ''
     let incompleteChunk = ''
 
     const transformedResponse = stream!.pipeThrough(
@@ -309,7 +307,6 @@ export default async function handler(request: Request, response: Response) {
               const text = parsedData.choices[0].text
               if (text == '\n' && chunkNumber < 2) continue // beginning response usually has 2 new lines
               controller.enqueue(encoder.encode(text))
-              output += text
               chunkNumber++
             } catch (error) {
               // if chunk is incomplete, store it in incompleteChunk and continue

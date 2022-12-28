@@ -25,11 +25,11 @@ const DynamicTemplatePage: NextPage = () => {
       supportExamplePrompt={pageData.supportExamplePrompt}
       supportTone={pageData.supportTone}
       supportQuotes={pageData.supportQuotes}
-      supportReferences={pageData.supportReferences}
       supportRequestedLength={pageData.supportRequestedLength}
       supportPointOfView={pageData.supportPointOfView}
       supportLanguages={pageData.supportLanguages}
       supportCodingLanguages={pageData.supportCodingLanguages}
+      supportContent={pageData.supportContent}
       href={pageData.href}
       attribute={pageData.attribute}
     />
