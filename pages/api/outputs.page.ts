@@ -1,13 +1,3 @@
-initializeFirebaseApp()
-import {
-  doc,
-  DocumentData,
-  DocumentReference,
-  getDoc,
-  getFirestore,
-  increment,
-  updateDoc,
-} from 'firebase/firestore'
 import {
   CodingLanguages,
   EssayLength,
@@ -15,9 +5,7 @@ import {
   PointOfView,
   QuoteMap,
   SummaryMethod,
-  UsageDetails,
 } from 'types'
-import initializeFirebaseApp from '../../utils/initializeFirebase'
 import { TemplateId } from '../templates/templates'
 
 export const config = {
@@ -52,33 +40,6 @@ export default async function handler(request: Request, response: Response) {
     language: string
     coding_language: CodingLanguages
   } = await request.json()
-
-  const db = getFirestore()
-
-  const usageDetailsDocRef = doc(db, 'usage_details', userId)
-  const docSnapshot = await getDoc(usageDetailsDocRef)
-
-  if (!docSnapshot.exists()) {
-    console.error('User', userId, 'does not exist')
-    return new Response(null, {
-      status: 401,
-      statusText: 'Unauthorized',
-    })
-  }
-
-  const {
-    monthly_allowance: monthlyAllowance,
-    monthly_usage: monthlyUsage,
-    bonus_allowance: bonusAllowance,
-  } = docSnapshot.data() as UsageDetails
-
-  if (monthlyUsage >= monthlyAllowance + bonusAllowance) {
-    console.error(userId, 'usage limit reached')
-    return new Response(null, {
-      status: 400,
-      statusText: 'Usage limit reached',
-    })
-  }
 
   let openaiPrompt
   let model
@@ -364,11 +325,6 @@ export default async function handler(request: Request, response: Response) {
         async flush() {
           console.log('Output fetched for', userId)
           console.log('Output:', output)
-          await updateUserWordsGenerated(
-            usageDetailsDocRef,
-            userId,
-            Math.round(output.length / 4.5),
-          )
         },
       }),
     )
@@ -390,60 +346,4 @@ const isError = (chunk: string) => {
     if (JSON.parse(chunk).error) return true
   } catch (e) {}
   return false
-}
-
-async function updateUserWordsGenerated(
-  usageDetailsDocRef: DocumentReference<DocumentData>,
-  userId: string,
-  numberOfWordsGenerated: number,
-) {
-  console.log('Updating words generated for ', userId)
-  const docSnapshot = await getDoc(usageDetailsDocRef)
-
-  if (docSnapshot.exists()) {
-    const {
-      monthly_allowance: monthlyAllowance,
-      monthly_usage: monthlyUsage,
-      bonus_allowance: bonusAllowance,
-    } = docSnapshot.data() as UsageDetails
-
-    // case: monthly usage < allowance
-    // add to monthly usage (if > allowance, set equal to allowance)
-    if (monthlyUsage < monthlyAllowance) {
-      if (monthlyUsage + numberOfWordsGenerated > monthlyAllowance) {
-        await updateDoc(usageDetailsDocRef, {
-          monthly_usage: monthlyAllowance,
-          total_usage: increment(numberOfWordsGenerated),
-        })
-      } else {
-        await updateDoc(usageDetailsDocRef, {
-          monthly_usage: increment(numberOfWordsGenerated),
-          total_usage: increment(numberOfWordsGenerated),
-        })
-      }
-    } else {
-      // case: monthly usage > allowance
-      // double check to make sure bonus allowance is not 0, then subtract from bonus allowance (if > bonus allowance, set bonus allowance to 0)
-      if (bonusAllowance <= 0) {
-        console.log(
-          'Error: user should not have been able to call this: ',
-          userId,
-        )
-      } else {
-        if (numberOfWordsGenerated > bonusAllowance) {
-          await updateDoc(usageDetailsDocRef, {
-            bonus_allowance: 0,
-            total_usage: increment(numberOfWordsGenerated),
-          })
-        } else {
-          await updateDoc(usageDetailsDocRef, {
-            bonus_allowance: increment(-1 * numberOfWordsGenerated),
-            total_usage: increment(numberOfWordsGenerated),
-          })
-        }
-      }
-    }
-  } else {
-    console.log("Error: document doesn't exist for user: ", userId)
-  }
 }

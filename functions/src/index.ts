@@ -982,6 +982,3 @@ exports.creditReferralBonus = functions.firestore
       );
     }
   });
-
-import { generateOutput } from './api';
-exports.generateOutput = generateOutput;

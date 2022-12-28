@@ -20,6 +20,7 @@ import {
   SummaryMethod,
 } from 'types'
 import { languages, tones } from './constants'
+import { updateUserWordsGenerated } from 'utils/db'
 
 const TemplatePage = ({
   id,
@@ -118,6 +119,10 @@ const TemplatePage = ({
       newOutput += decoder.decode(value)
       setOutput(newOutput)
     }
+    await updateUserWordsGenerated(
+      user!.uid,
+      Math.round(newOutput.length / 4.5),
+    )
   }
 
   const handleGenerateClick = async () => {

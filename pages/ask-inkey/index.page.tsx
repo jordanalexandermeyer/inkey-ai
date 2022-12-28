@@ -7,6 +7,7 @@ import { logEvent } from '@amplitude/analytics-browser'
 import { useUser } from 'utils/useUser'
 import UpgradeModal from 'components/UpgradeModal'
 import { Agent, Output } from 'types'
+import { updateUserWordsGenerated } from 'utils/db'
 
 const Home: NextPage = () => {
   const [prompt, setPrompt] = useState('')
@@ -72,6 +73,10 @@ const Home: NextPage = () => {
         ]
       })
     }
+    await updateUserWordsGenerated(
+      user!.uid,
+      Math.round(newOutput.length / 4.5),
+    )
   }
 
   const getPrompt = (outputs: Output[]) => {

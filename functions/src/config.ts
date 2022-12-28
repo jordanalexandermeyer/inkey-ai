@@ -25,5 +25,4 @@ export default {
   autoDeleteUsers: process.env.DELETE_STRIPE_CUSTOMERS === 'Auto delete',
   minCheckoutInstances:
     Number(process.env.CREATE_CHECKOUT_SESSION_MIN_INSTANCES) ?? 0,
-  openaiKey: process.env.OPEN_AI_KEY || '',
 };
