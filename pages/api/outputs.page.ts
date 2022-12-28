@@ -103,23 +103,20 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case TemplateId.PARAPHRASER_ID:
-      openaiPrompt = `Rewrite the following using different words:\n\n${prompt}`
+      openaiPrompt = `Rewrite the following using different words: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.SUMMARIZER_ID:
       switch (summaryMethod) {
         // couldn't use SummaryMethod here because of edge runtime doesn't support the eval() function
         case SummaryMethod.BULLET_POINTS:
-          openaiPrompt = `Summarize the following with bullet points:\n\n${prompt}`
-          break
-        case SummaryMethod.TLDR:
-          openaiPrompt = `${prompt}\n\nTl;dr\n`
+          openaiPrompt = `Summarize the following with bullet points: "${prompt}".`
           break
         case SummaryMethod.PARAGRAPH:
-          openaiPrompt = `Summarize the following:\n\n${prompt}`
+          openaiPrompt = `Summarize the following: "${prompt}".`
           break
         default:
-          openaiPrompt = `Summarize the following:\n\n${prompt}`
+          openaiPrompt = `Summarize the following: "${prompt}".`
           break
       }
       model = 'text-davinci-003'
@@ -138,7 +135,7 @@ export default async function handler(request: Request, response: Response) {
       temperature = 0.25
       break
     case TemplateId.TRANSLATOR_ID:
-      openaiPrompt = `Translate the following into ${language}:\n\n${prompt}`
+      openaiPrompt = `Translate the following into ${language}: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.STORY_ID:
@@ -146,56 +143,56 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case TemplateId.BODY_PARAGRAPH_ID:
-      openaiPrompt = `Write a paragraph expanding on the following idea:\n\n${prompt}`
+      openaiPrompt = `Write a paragraph expanding on the following idea: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.INTRODUCTION_PARAGRAPH_ID:
-      openaiPrompt = `Write a long introduction paragraph for the following thesis:\n\n${prompt}`
+      openaiPrompt = `Write a long introduction paragraph for the following thesis: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.CONCLUSION_PARAGRAPH_ID:
-      openaiPrompt = `Write a long conclusion paragraph for the following essay:\n\n${prompt}`
+      openaiPrompt = `Write a long conclusion paragraph for the following essay: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.DISCUSSION_BOARD_RESPONSE_ID:
-      openaiPrompt = `Respond to the following discussion board post/s:\n\n${prompt}`
+      openaiPrompt = `Respond to the following discussion board post/s: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.LINKEDIN_BIO_ID:
-      openaiPrompt = `Write a LinkedIn bio for someone with the following resume:\n\n${prompt}`
+      openaiPrompt = `Write a LinkedIn bio for someone with the following resume: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.COVER_LETTER_ID:
-      openaiPrompt = `Write a cover letter for someone with the following resume:\n\n${prompt}`
+      openaiPrompt = `Write a cover letter for someone with the following resume: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.RESUME_BULLET_POINTS_ID:
-      openaiPrompt = `Write resume bullet points for someone with the following experience:\n\n${prompt}`
+      openaiPrompt = `Write resume bullet points for someone with the following experience: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.CODING_QUESTION_SOLVER_ID:
-      openaiPrompt = `Answer the following coding question. Show an optimized version and an unoptimized version. Give big o notation for each solution. Explain your work.\n\n${prompt}`
+      openaiPrompt = `Answer the following coding question. Show an optimized version and an unoptimized version. Give big o notation for each solution. Explain your work. "${prompt}".`
       temperature = 0.25
       model = 'text-davinci-003'
       break
     case TemplateId.FUNCTION_ID:
-      openaiPrompt = `Write a function that does the following:\n\n${prompt}`
+      openaiPrompt = `Write a function that does the following: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.CLASS_ID:
-      openaiPrompt = `Write a class that represents the following:\n\n${prompt}`
+      openaiPrompt = `Write a class that represents the following: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.SCRIPT_ID:
-      openaiPrompt = `Write a script that does the following:\n\n${prompt}`
+      openaiPrompt = `Write a script that does the following: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.REGEX_ID:
-      openaiPrompt = `Write a regular expression that matches the following:\n\n${prompt}`
+      openaiPrompt = `Write a regular expression that matches the following: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.EXPLAIN_CODE_ID:
-      openaiPrompt = `Rewrite the following code with comments explaining each line:\n\n${prompt}`
+      openaiPrompt = `Rewrite the following code with comments explaining each line: "${prompt}".`
       model = 'text-davinci-003'
       break
     default:

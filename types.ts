@@ -119,7 +119,6 @@ export enum PointOfView {
 
 export enum SummaryMethod {
   PARAGRAPH = 'paragraph',
-  TLDR = 'TLDR',
   BULLET_POINTS = 'bullet-points',
 }
 
