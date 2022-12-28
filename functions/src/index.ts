@@ -1,34 +1,20 @@
-/*
- * Copyright 2020 Stripe, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import * as admin from 'firebase-admin';
-import { getEventarc } from 'firebase-admin/eventarc';
 import * as functions from 'firebase-functions';
+import { getEventarc } from 'firebase-admin/eventarc';
 import Stripe from 'stripe';
+import config from './config';
 import {
-  Product,
-  Price,
-  Subscription,
   CustomerData,
-  TaxRate,
+  Price,
+  Product,
   Referral,
   ReferralCode,
+  Subscription,
+  TaxRate,
 } from './interfaces';
 import * as logs from './logs';
-import config from './config';
+
+admin.initializeApp();
 
 const apiVersion = '2020-08-27';
 const stripe = new Stripe(config.stripeSecretKey, {
@@ -41,8 +27,6 @@ const stripe = new Stripe(config.stripeSecretKey, {
     version: '0.1.0',
   },
 });
-
-admin.initializeApp();
 
 const eventChannel =
   process.env.EVENTARC_CHANNEL &&

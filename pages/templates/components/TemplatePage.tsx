@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import ProtectedPage from '../../../components/ProtectedPage'
 import Output from './Output'
@@ -20,6 +20,7 @@ import {
   SummaryMethod,
 } from 'types'
 import { languages, tones } from './constants'
+import { updateUserWordsGenerated } from 'utils/db'
 
 const TemplatePage = ({
   id,
@@ -57,6 +58,16 @@ const TemplatePage = ({
   const [poemType, setPoemType] = useState(PoemType.FREE_VERSE)
   const { user, usageDetails, subscription } = useUser()
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const bottomElementRef = useRef<any>(null)
+  const textElementRef = useRef<any>(null)
+
+  const scrollToBottom = () => {
+    bottomElementRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  useEffect(() => {
+    if (output.length > 0) scrollToBottom()
+  }, [textElementRef?.current?.clientHeight])
 
   const getAndSetOutput = async (prompt: string, userId: string) => {
     try {
@@ -85,9 +96,8 @@ const TemplatePage = ({
         },
       })
 
-      await readStreamIntoOutput(response.body)
+      await readStreamIntoOutput(response.body!)
     } catch (error) {
-      console.log(error)
       toast.error(
         'Oh no! Something went wrong. \nPlease refresh the page and try again.',
       )
@@ -95,7 +105,9 @@ const TemplatePage = ({
     }
   }
 
-  async function readStreamIntoOutput(readableStream: any) {
+  async function readStreamIntoOutput(
+    readableStream: ReadableStream<Uint8Array>,
+  ) {
     const reader = readableStream.getReader()
 
     const decoder = new TextDecoder()
@@ -106,6 +118,10 @@ const TemplatePage = ({
       newOutput += decoder.decode(value)
       setOutput(newOutput)
     }
+    await updateUserWordsGenerated(
+      user!.uid,
+      Math.round(newOutput.length / 4.5),
+    )
   }
 
   const handleGenerateClick = async () => {
@@ -685,7 +701,12 @@ const TemplatePage = ({
                 </div>
               </div>
               {output.length > 0 ? (
-                <Output toast={toast} text={output} />
+                <Output
+                  toast={toast}
+                  text={output}
+                  bottomElementRef={bottomElementRef}
+                  textElementRef={textElementRef}
+                />
               ) : (
                 <OutputEmptyState />
               )}

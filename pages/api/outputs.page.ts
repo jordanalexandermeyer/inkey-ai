@@ -1,13 +1,3 @@
-initializeFirebaseApp()
-import {
-  doc,
-  DocumentData,
-  DocumentReference,
-  getDoc,
-  getFirestore,
-  increment,
-  updateDoc,
-} from 'firebase/firestore'
 import {
   CodingLanguages,
   EssayLength,
@@ -15,23 +5,12 @@ import {
   PointOfView,
   QuoteMap,
   SummaryMethod,
-  UsageDetails,
 } from 'types'
-import initializeFirebaseApp from '../../utils/initializeFirebase'
 import { TemplateId } from '../templates/templates'
 
 export const config = {
-  runtime: 'experimental-edge',
+  runtime: 'edge',
 }
-
-const isError = (chunk: string) => {
-  try {
-    if (JSON.parse(chunk).error) return true
-  } catch (e) {}
-  return false
-}
-
-const db = getFirestore()
 
 export default async function handler(request: Request, response: Response) {
   const {
@@ -61,29 +40,6 @@ export default async function handler(request: Request, response: Response) {
     language: string
     coding_language: CodingLanguages
   } = await request.json()
-
-  const usageDetailsDocRef = doc(db, 'usage_details', userId)
-  const docSnapshot = await getDoc(usageDetailsDocRef)
-
-  if (!docSnapshot.exists()) {
-    return new Response(null, {
-      status: 401,
-      statusText: 'Unauthorized',
-    })
-  }
-
-  const {
-    monthly_allowance: monthlyAllowance,
-    monthly_usage: monthlyUsage,
-    bonus_allowance: bonusAllowance,
-  } = docSnapshot.data() as UsageDetails
-
-  if (monthlyUsage >= monthlyAllowance + bonusAllowance) {
-    return new Response(null, {
-      status: 400,
-      statusText: 'Usage limit reached',
-    })
-  }
 
   let openaiPrompt
   let model
@@ -147,23 +103,20 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case TemplateId.PARAPHRASER_ID:
-      openaiPrompt = `Rewrite the following using different words:\n\n${prompt}`
+      openaiPrompt = `Rewrite the following using different words: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.SUMMARIZER_ID:
       switch (summaryMethod) {
         // couldn't use SummaryMethod here because of edge runtime doesn't support the eval() function
-        case 'bullet-points':
-          openaiPrompt = `Summarize the following with bullet points:\n\n${prompt}`
+        case SummaryMethod.BULLET_POINTS:
+          openaiPrompt = `Summarize the following with bullet points: "${prompt}".`
           break
-        case 'TLDR':
-          openaiPrompt = `${prompt}\n\nTl;dr\n`
-          break
-        case 'paragraph':
-          openaiPrompt = `Summarize the following:\n\n${prompt}`
+        case SummaryMethod.PARAGRAPH:
+          openaiPrompt = `Summarize the following: "${prompt}".`
           break
         default:
-          openaiPrompt = `Summarize the following:\n\n${prompt}`
+          openaiPrompt = `Summarize the following: "${prompt}".`
           break
       }
       model = 'text-davinci-003'
@@ -182,7 +135,7 @@ export default async function handler(request: Request, response: Response) {
       temperature = 0.25
       break
     case TemplateId.TRANSLATOR_ID:
-      openaiPrompt = `Translate the following into ${language}:\n\n${prompt}`
+      openaiPrompt = `Translate the following into ${language}: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.STORY_ID:
@@ -190,56 +143,56 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case TemplateId.BODY_PARAGRAPH_ID:
-      openaiPrompt = `Write a paragraph expanding on the following idea:\n\n${prompt}`
+      openaiPrompt = `Write a paragraph expanding on the following idea: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.INTRODUCTION_PARAGRAPH_ID:
-      openaiPrompt = `Write a long introduction paragraph for the following thesis:\n\n${prompt}`
+      openaiPrompt = `Write a long introduction paragraph for the following thesis: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.CONCLUSION_PARAGRAPH_ID:
-      openaiPrompt = `Write a long conclusion paragraph for the following essay:\n\n${prompt}`
+      openaiPrompt = `Write a long conclusion paragraph for the following essay: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.DISCUSSION_BOARD_RESPONSE_ID:
-      openaiPrompt = `Respond to the following discussion board post/s:\n\n${prompt}`
+      openaiPrompt = `Respond to the following discussion board post/s: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.LINKEDIN_BIO_ID:
-      openaiPrompt = `Write a LinkedIn bio for someone with the following resume:\n\n${prompt}`
+      openaiPrompt = `Write a LinkedIn bio for someone with the following resume: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.COVER_LETTER_ID:
-      openaiPrompt = `Write a cover letter for someone with the following resume:\n\n${prompt}`
+      openaiPrompt = `Write a cover letter for someone with the following resume: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.RESUME_BULLET_POINTS_ID:
-      openaiPrompt = `Write resume bullet points for someone with the following experience:\n\n${prompt}`
+      openaiPrompt = `Write resume bullet points for someone with the following experience: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.CODING_QUESTION_SOLVER_ID:
-      openaiPrompt = `Answer the following coding question. Show an optimized version and an unoptimized version. Give big o notation for each solution. Explain your work.\n\n${prompt}`
+      openaiPrompt = `Answer the following coding question. Show an optimized version and an unoptimized version. Give big o notation for each solution. Explain your work. "${prompt}".`
       temperature = 0.25
       model = 'text-davinci-003'
       break
     case TemplateId.FUNCTION_ID:
-      openaiPrompt = `Write a function that does the following:\n\n${prompt}`
+      openaiPrompt = `Write a function that does the following: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.CLASS_ID:
-      openaiPrompt = `Write a class that represents the following:\n\n${prompt}`
+      openaiPrompt = `Write a class that represents the following: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.SCRIPT_ID:
-      openaiPrompt = `Write a script that does the following:\n\n${prompt}`
+      openaiPrompt = `Write a script that does the following: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.REGEX_ID:
-      openaiPrompt = `Write a regular expression that matches the following:\n\n${prompt}`
+      openaiPrompt = `Write a regular expression that matches the following: "${prompt}".`
       model = 'text-davinci-003'
       break
     case TemplateId.EXPLAIN_CODE_ID:
-      openaiPrompt = `Rewrite the following code with comments explaining each line:\n\n${prompt}`
+      openaiPrompt = `Rewrite the following code with comments explaining each line: "${prompt}".`
       model = 'text-davinci-003'
       break
     default:
@@ -249,8 +202,7 @@ export default async function handler(request: Request, response: Response) {
       })
   }
 
-  if (length == 'long') {
-    // couldn't use EssayLength.LONG here because of edge runtime doesn't support the eval() function
+  if (length == EssayLength.LONG) {
     openaiPrompt =
       `In approximately 1000 words, ` +
       openaiPrompt[0].toLowerCase() +
@@ -318,7 +270,6 @@ export default async function handler(request: Request, response: Response) {
 
     const transformedResponse = stream!.pipeThrough(
       new TransformStream({
-        start(controller) {},
         transform(chunk, controller) {
           // get chunk in string format
           const textChunk = decoder.decode(chunk)
@@ -367,21 +318,14 @@ export default async function handler(request: Request, response: Response) {
             }
           }
         },
-        async flush() {
-          await updateUserWordsGenerated(
-            usageDetailsDocRef,
-            userId,
-            Math.round(output.length / 4.5),
-          )
-        },
       }),
     )
 
     return new Response(transformedResponse, {
-      status: 200,
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
     })
   } catch (error) {
-    console.log(error)
+    console.error(JSON.stringify(error))
     return new Response(null, {
       status: 500,
       statusText: 'Server Error',
@@ -389,57 +333,9 @@ export default async function handler(request: Request, response: Response) {
   }
 }
 
-async function updateUserWordsGenerated(
-  usageDetailsDocRef: DocumentReference<DocumentData>,
-  userId: string,
-  numberOfWordsGenerated: number,
-) {
-  const docSnapshot = await getDoc(usageDetailsDocRef)
-
-  if (docSnapshot.exists()) {
-    const {
-      monthly_allowance: monthlyAllowance,
-      monthly_usage: monthlyUsage,
-      bonus_allowance: bonusAllowance,
-    } = docSnapshot.data() as UsageDetails
-
-    // case: monthly usage < allowance
-    // add to monthly usage (if > allowance, set equal to allowance)
-    if (monthlyUsage < monthlyAllowance) {
-      if (monthlyUsage + numberOfWordsGenerated > monthlyAllowance) {
-        await updateDoc(usageDetailsDocRef, {
-          monthly_usage: monthlyAllowance,
-          total_usage: increment(numberOfWordsGenerated),
-        })
-      } else {
-        await updateDoc(usageDetailsDocRef, {
-          monthly_usage: increment(numberOfWordsGenerated),
-          total_usage: increment(numberOfWordsGenerated),
-        })
-      }
-    } else {
-      // case: monthly usage > allowance
-      // double check to make sure bonus allowance is not 0, then subtract from bonus allowance (if > bonus allowance, set bonus allowance to 0)
-      if (bonusAllowance <= 0) {
-        console.log(
-          'Error: user should not have been able to call this: ',
-          userId,
-        )
-      } else {
-        if (numberOfWordsGenerated > bonusAllowance) {
-          await updateDoc(usageDetailsDocRef, {
-            bonus_allowance: 0,
-            total_usage: increment(numberOfWordsGenerated),
-          })
-        } else {
-          await updateDoc(usageDetailsDocRef, {
-            bonus_allowance: increment(-1 * numberOfWordsGenerated),
-            total_usage: increment(numberOfWordsGenerated),
-          })
-        }
-      }
-    }
-  } else {
-    console.log("Error: document doesn't exist for user: ", userId)
-  }
+const isError = (chunk: string) => {
+  try {
+    if (JSON.parse(chunk).error) return true
+  } catch (e) {}
+  return false
 }

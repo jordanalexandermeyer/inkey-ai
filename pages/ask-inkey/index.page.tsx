@@ -7,6 +7,7 @@ import { logEvent } from '@amplitude/analytics-browser'
 import { useUser } from 'utils/useUser'
 import UpgradeModal from 'components/UpgradeModal'
 import { Agent, Output } from 'types'
+import { updateUserWordsGenerated } from 'utils/db'
 
 const Home: NextPage = () => {
   const [prompt, setPrompt] = useState('')
@@ -14,16 +15,17 @@ const Home: NextPage = () => {
   const [outputs, setOutputs] = useState<Output[]>([])
   const formRef = useRef<any>(null)
   const messageElementRef = useRef<any>(null)
+  const bottomElementRef = useRef<any>(null)
   const { user, usageDetails } = useUser()
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
 
   const scrollToBottom = () => {
-    messageElementRef.current?.scrollIntoView({ behavior: 'smooth' })
+    bottomElementRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
   useEffect(() => {
     if (outputs.length > 0) scrollToBottom()
-  }, [outputs])
+  }, [messageElementRef?.current?.clientHeight])
 
   const getOutput = async (prompt: string, userId: string) => {
     try {
@@ -43,7 +45,6 @@ const Home: NextPage = () => {
 
       await readStreamIntoOutput(response.body)
     } catch (error) {
-      console.log(error)
       toast.error(
         'Oh no! Something went wrong. \nPlease refresh the page and try again.',
       )
@@ -71,6 +72,10 @@ const Home: NextPage = () => {
         ]
       })
     }
+    await updateUserWordsGenerated(
+      user!.uid,
+      Math.round(newOutput.length / 4.5),
+    )
   }
 
   const getPrompt = (outputs: Output[]) => {
@@ -127,7 +132,10 @@ const Home: NextPage = () => {
           <UpgradeModal setShowUpgradeModal={setShowUpgradeModal} />
         )}
         <div className="pb-16 lg:pb-0">
-          <div className="flex flex-col items-center text-sm h-full">
+          <div
+            className="flex flex-col items-center text-sm h-full"
+            ref={messageElementRef}
+          >
             {outputs.map((output, index) => {
               if (output.agent == Agent.USER) {
                 return (
@@ -358,7 +366,7 @@ const Home: NextPage = () => {
             )}
             <div
               className="w-full h-48 flex-shrink-0"
-              ref={messageElementRef}
+              ref={bottomElementRef}
             ></div>
           </div>
           <div

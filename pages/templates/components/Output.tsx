@@ -1,17 +1,21 @@
-import { useRef } from 'react'
-
-const Output = ({ toast, text }: { text: string; toast: any }) => {
-  const textEditorReference: React.Ref<any> = useRef(null)
-
+const Output = ({
+  toast,
+  text,
+  bottomElementRef,
+  textElementRef,
+}: {
+  text: string
+  toast: any
+  bottomElementRef: any
+  textElementRef: any
+}) => {
   return (
     <div className="px-6 py-3">
       <div className="sticky top-14 z-10 flex justify-start border rounded-lg p-2 bg-white">
         <button
           className="mr-3"
           onClick={(e) => {
-            navigator.clipboard.writeText(
-              textEditorReference.current.textContent,
-            )
+            navigator.clipboard.writeText(textElementRef.current.textContent)
             toast.success('Copied to clipboard!')
           }}
         >
@@ -27,10 +31,11 @@ const Output = ({ toast, text }: { text: string; toast: any }) => {
       </div>
       <div
         className="w-full mt-2 mb-3 leading-7 text-gray-800 whitespace-pre-wrap pre focus:outline-none"
-        ref={textEditorReference}
+        ref={textElementRef}
       >
         {text}
       </div>
+      <div ref={bottomElementRef}></div>
     </div>
   )
 }
