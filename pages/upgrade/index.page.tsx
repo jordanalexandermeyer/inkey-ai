@@ -9,7 +9,7 @@ import {
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Role, BillingPeriod } from 'types'
 import { getURL, roundToTwoDecimals } from 'utils/helpers'
 import { useUser } from 'utils/useUser'
@@ -20,6 +20,7 @@ import {
   prices,
   ultimateFeatures,
 } from './components/constants'
+import SuccessModal from './components/SuccessModal'
 
 const getBillFromRole = (
   product: Role,
@@ -57,6 +58,11 @@ const UpgradePage: NextPage = () => {
   const [premiumLoading, setPremiumLoading] = useState(false)
   const [ultimateLoading, setUltimateLoading] = useState(false)
   const { user, subscription, isLoading: isUserLoading } = useUser()
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+
+  useEffect(() => {
+    if (router.query.success) setShowSuccessModal(true)
+  }, [router.query.success])
 
   const premiumPrice = roundToTwoDecimals(
     prices[billingPeriod as keyof typeof prices][Role.PREMIUM].price / 12,
@@ -76,7 +82,7 @@ const UpgradePage: NextPage = () => {
       collection(db, 'customers', user!.uid, 'checkout_sessions'),
       {
         price: premiumStripePrice,
-        success_url: getURL() + 'upgrade/success',
+        success_url: getURL() + 'upgrade?success=true',
         cancel_url: getURL() + 'upgrade',
       },
     )
@@ -109,7 +115,7 @@ const UpgradePage: NextPage = () => {
       collection(db, 'customers', user!.uid, 'checkout_sessions'),
       {
         price: ultimateStripePrice,
-        success_url: getURL() + 'upgrade/success',
+        success_url: getURL() + 'upgrade?success=true',
         cancel_url: getURL() + 'upgrade',
       },
     )
@@ -139,6 +145,7 @@ const UpgradePage: NextPage = () => {
   return (
     <ProtectedPage>
       <Page title="Upgrade - Inkey">
+        {showSuccessModal && <SuccessModal />}
         <div className="py-8 px-4 pb-36 min-h-screen mx-auto lg:py-16 lg:px-6 bg-gray-100">
           <div className="mx-auto max-w-screen-md text-center mb-8">
             <h2 className="mb-4 text-3xl tracking-tight font-semibold text-gray-900 dark:text-white">
@@ -172,14 +179,14 @@ const UpgradePage: NextPage = () => {
               </div>
             </div>
           </div>
-          <div className="max-w-md mx-auto flex flex-col gap-10 md:grid md:max-w-5xl md:grid-cols-2 md:gap-5 md:space-y-0">
-            <div className="overflow-hidden rounded-lg ring-4 ring-blue-500 shadow-2xl flex flex-col justify-between p-6 mx-auto max-w-sm text-center text-gray-900 bg-white">
+          <div className="max-w-md mx-auto flex flex-col gap-10 md:grid md:max-w-3xl md:grid-cols-2 md:gap-5 md:space-y-0">
+            <div className="overflow-hidden rounded-lg ring-4 ring-blue-500 shadow-2xl flex flex-col justify-between p-8 mx-auto max-w-sm text-center text-gray-900 bg-white">
               <h3 className="mb-4 text-2xl font-semibold">Premium 💎</h3>
               <p className="font-light text-gray-500 sm:text-lg">
                 For students getting started
               </p>
-              <div className="flex justify-center items-baseline mt-8 mb-3">
-                <span className="mr-2 text-5xl font-extrabold">
+              <div className="flex justify-center items-baseline pt-4 mb-3">
+                <span className="mr-2 text-4xl font-extrabold">
                   ${premiumPrice}
                 </span>
                 <span className="text-gray-500">/month</span>
@@ -243,13 +250,13 @@ const UpgradePage: NextPage = () => {
                 </div>
               )}
             </div>
-            <div className="overflow-hidden rounded-lg ring-4 ring-purple-500 shadow-2xl flex flex-col justify-between p-6 mx-auto max-w-sm text-center text-gray-900 bg-white">
+            <div className="overflow-hidden rounded-lg ring-4 ring-purple-500 shadow-2xl flex flex-col justify-between p-8 mx-auto max-w-sm text-center text-gray-900 bg-white">
               <h3 className="mb-4 text-2xl font-semibold">Ultimate 👑</h3>
               <p className="font-light text-gray-500 sm:text-lg">
                 For power users
               </p>
-              <div className="flex justify-center items-baseline mt-8 mb-3">
-                <span className="mr-2 text-5xl font-extrabold">
+              <div className="flex justify-center items-baseline pt-4 mb-3">
+                <span className="mr-2 text-4xl font-extrabold">
                   ${ultimatePrice}
                 </span>
                 <span className="text-gray-500">/month</span>
