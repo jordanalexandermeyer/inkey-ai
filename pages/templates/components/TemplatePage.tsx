@@ -35,20 +35,20 @@ const TemplatePage = ({
   quotePlaceholder = '"The true sign of intelligence is not knowledge but imagination." - Albert Einstein',
   supportExamplePrompt = true,
   supportQuotes = false,
-  supportReferences = false,
   supportRequestedLength = true,
   supportTone = true,
   supportPointOfView = true,
   supportLanguages = true,
   supportCodingLanguages = false,
+  supportContent = false,
 }: Template) => {
   const [prompt, setPrompt] = useState('')
   const [output, setOutput] = useState('')
   const [numberOfCharacters, setNumberOfCharacters] = useState(0)
+  const [numberOfContentCharacters, setNumberOfContentCharacters] = useState(0)
   const [generateIsLoading, setGenerateIsLoading] = useState(false)
   const [addQuotes, setAddQuotes] = useState(false)
   const [quotes, setQuotes] = useState<QuoteMap>({})
-  const [generateReferences, setGenerateReferences] = useState(false)
   const [requestedLength, setRequestedLength] = useState(EssayLength.SHORT)
   const [tone, setTone] = useState('professional')
   const [language, setLanguage] = useState('English')
@@ -58,8 +58,12 @@ const TemplatePage = ({
   const [poemType, setPoemType] = useState(PoemType.FREE_VERSE)
   const { user, usageDetails, subscription } = useUser()
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const [content, setContent] = useState('')
   const bottomElementRef = useRef<any>(null)
   const textElementRef = useRef<any>(null)
+  const [reader, setReader] = useState<ReadableStreamDefaultReader<
+    Uint8Array
+  > | null>(null)
 
   const scrollToBottom = () => {
     bottomElementRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -80,12 +84,12 @@ const TemplatePage = ({
           },
           userId,
           ...(supportQuotes && addQuotes && { quotes: quotes }),
-          ...(supportReferences && { references: generateReferences }),
           ...(supportRequestedLength && { length: requestedLength }),
           ...(supportTone && { tone: tone }),
           ...(supportPointOfView && { point_of_view: pointOfView }),
           ...(supportLanguages && { language: language }),
           ...(supportCodingLanguages && { coding_language: codingLanguage }),
+          ...(supportContent && content.trim() && { content: content.trim() }),
           ...(id == TemplateId.SUMMARIZER_ID && {
             summary_method: summaryMethod,
           }),
@@ -109,7 +113,7 @@ const TemplatePage = ({
     readableStream: ReadableStream<Uint8Array>,
   ) {
     const reader = readableStream.getReader()
-
+    setReader(reader)
     const decoder = new TextDecoder()
     let newOutput = ''
     while (true) {
@@ -143,13 +147,16 @@ const TemplatePage = ({
 
   const clearInputs = () => {
     setPrompt('')
-    setAddQuotes(false)
-    setQuotes({})
-    setGenerateReferences(false)
+    setNumberOfCharacters(0)
     setRequestedLength(EssayLength.SHORT)
     setTone('professional')
+    setPointOfView(PointOfView.THIRD)
     setSummaryMethod(SummaryMethod.PARAGRAPH)
-    setNumberOfCharacters(0)
+    setLanguage('English')
+    setAddQuotes(false)
+    setQuotes({})
+    setContent('')
+    setNumberOfContentCharacters(0)
   }
 
   const clearOutputs = () => {
@@ -583,43 +590,53 @@ const TemplatePage = ({
                     </div>
                   </div>
                 )}
-                {supportReferences && (
-                  <div className="flex flex-col">
-                    <div className="inline-flex items-center mb-2">
-                      <label
-                        htmlFor="length"
-                        className="block text-sm mr-1 font-medium text-gray-900 dark:text-white"
-                      >
-                        Generate references
-                      </label>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 48 48"
-                        fill="red"
-                        className="w-5"
-                        data-tip="This feature is experimental and may add fake data and references."
-                        data-type="error"
-                      >
-                        <path
-                          xmlns="http://www.w3.org/2000/svg"
-                          d="M2 42 24 4l22 38Zm5.2-3h33.6L24 10Zm17-2.85q.65 0 1.075-.425.425-.425.425-1.075 0-.65-.425-1.075-.425-.425-1.075-.425-.65 0-1.075.425Q22.7 34 22.7 34.65q0 .65.425 1.075.425.425 1.075.425Zm-1.5-5.55h3V19.4h-3Zm1.3-6.1Z"
-                        />
-                      </svg>
-                      <ReactTooltip effect="solid" place="right" />
+                {supportContent && (
+                  <div className="flex flex-col flex-1">
+                    <div className="flex justify-end items-center">
+                      <div className="flex-grow mb-1 flex items-center">
+                        <div className="inline-flex items-center mb-1">
+                          <label
+                            htmlFor="content"
+                            className="block text-sm mr-1 font-medium text-gray-900 dark:text-white"
+                          >
+                            Content to include
+                          </label>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 48 48"
+                            fill="grey"
+                            className="w-5"
+                            data-tip="Add content here to have it incorporated in the generated output."
+                            data-type="info"
+                          >
+                            <path
+                              xmlns="http://www.w3.org/2000/svg"
+                              d="M22.65 34h3V22h-3ZM24 18.3q.7 0 1.175-.45.475-.45.475-1.15t-.475-1.2Q24.7 15 24 15q-.7 0-1.175.5-.475.5-.475 1.2t.475 1.15q.475.45 1.175.45ZM24 44q-4.1 0-7.75-1.575-3.65-1.575-6.375-4.3-2.725-2.725-4.3-6.375Q4 28.1 4 23.95q0-4.1 1.575-7.75 1.575-3.65 4.3-6.35 2.725-2.7 6.375-4.275Q19.9 4 24.05 4q4.1 0 7.75 1.575 3.65 1.575 6.35 4.275 2.7 2.7 4.275 6.35Q44 19.85 44 24q0 4.1-1.575 7.75-1.575 3.65-4.275 6.375t-6.35 4.3Q28.15 44 24 44Zm.05-3q7.05 0 12-4.975T41 23.95q0-7.05-4.95-12T24 7q-7.05 0-12.025 4.95Q7 16.9 7 24q0 7.05 4.975 12.025Q16.95 41 24.05 41ZM24 24Z"
+                            />
+                          </svg>
+                          <ReactTooltip effect="solid" place="right" />
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-end px-3 py-2 text-xs text-gray-600">
+                        <span className="text-xs">
+                          {numberOfContentCharacters}/{15000}
+                        </span>
+                      </div>
                     </div>
-                    <div className="inline-flex relative items-center">
-                      <input
-                        type="checkbox"
-                        className="sr-only peer"
-                        checked={generateReferences}
-                        readOnly={true}
-                      />
-                      <div
-                        onClick={(e) => {
-                          setGenerateReferences(!generateReferences)
+                    <div className="relative flex items-center mb-2">
+                      <textarea
+                        maxLength={15000}
+                        rows={10}
+                        placeholder={
+                          'Paste content you want incorporated here.'
+                        }
+                        className="px-3 py-2 w-full block text-sm text-gray-600 placeholder-gray-400 transition-shadow duration-150 ease-in-out bg-white border border-gray-200 rounded shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500"
+                        value={content}
+                        onChange={(e) => {
+                          setContent(e.target.value)
+                          setNumberOfContentCharacters(e.target.value.length)
                         }}
-                        className="cursor-pointer w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
-                      ></div>
+                      ></textarea>
                     </div>
                   </div>
                 )}
@@ -633,11 +650,24 @@ const TemplatePage = ({
                   >
                     Clear inputs
                   </button>
-                  <div className="flex">
+                  <div className="flex gap-3">
                     <button
                       type="submit"
                       className={classNames(
-                        'inline-flex items-center ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 inline-flex justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-white shadow-sm selectionRing px-6 py-4 text-base w-full',
+                        'inline-flex items-center overflow-hidden ease-in-out outline-none focus:outline-none focus:ring-2 justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-gray-700 bg-white border border-black-300 shadow-sm hover:text-gray-500 selectionRing active:bg-gray-50 active:text-gray-800 px-3 py-2 text-base w-full',
+                        {
+                          'cursor-not-allowed': !generateIsLoading,
+                        },
+                      )}
+                      disabled={!generateIsLoading}
+                      onClick={() => reader?.cancel()}
+                    >
+                      <div>Cancel</div>
+                    </button>
+                    <button
+                      type="submit"
+                      className={classNames(
+                        'inline-flex items-center ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 inline-flex justify-center transition-all duration-150 relative font-medium rounded-lg text-white shadow-sm px-6 py-4 text-base w-full',
                         {
                           'active:bg-blue-800 hover:bg-blue-400 bg-blue-500': !disabled(),
                           'bg-blue-400 hover:bg-blue-300 cursor-not-allowed': disabled(),

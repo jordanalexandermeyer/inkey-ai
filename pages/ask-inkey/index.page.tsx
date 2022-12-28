@@ -43,7 +43,7 @@ const Home: NextPage = () => {
         },
       })
 
-      await readStreamIntoOutput(response.body)
+      await readStreamIntoOutput(response.body!)
     } catch (error) {
       toast.error(
         'Oh no! Something went wrong. \nPlease refresh the page and try again.',
@@ -56,7 +56,9 @@ const Home: NextPage = () => {
     return generateIsLoading || prompt.trim() == ''
   }
 
-  async function readStreamIntoOutput(readableStream: any) {
+  async function readStreamIntoOutput(
+    readableStream: ReadableStream<Uint8Array>,
+  ) {
     const reader = readableStream.getReader()
     const decoder = new TextDecoder()
     setOutputs((outputs) => [...outputs, { agent: Agent.INKEY, text: '' }])
@@ -163,6 +165,24 @@ const Home: NextPage = () => {
                         <div className="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap">
                           {output.text}
                         </div>
+                        <div className="flex self-end lg:self-center justify-center mt-2 gap-4 lg:gap-1 lg:absolute lg:top-0 lg:translate-x-full lg:right-0 lg:mt-0 lg:pl-2">
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(output.text)
+                              toast.success('Copied to clipboard!')
+                            }}
+                            className="p-1 rounded-md hover:bg-gray-100 text-gray-500"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 48 48"
+                              fill="currentColor"
+                              className="w-5 h-5"
+                            >
+                              <path d="M9 43.95q-1.2 0-2.1-.9-.9-.9-.9-2.1V10.8h3v30.15h23.7v3Zm6-6q-1.2 0-2.1-.9-.9-.9-.9-2.1v-28q0-1.2.9-2.1.9-.9 2.1-.9h22q1.2 0 2.1.9.9.9.9 2.1v28q0 1.2-.9 2.1-.9.9-2.1.9Zm0-3h22v-28H15v28Zm0 0v-28 28Z" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -221,19 +241,19 @@ const Home: NextPage = () => {
                             <p>{output.text}</p>
                           </div>
                         </div>
-                        <div className="text-gray-400 flex self-end lg:self-center justify-center mt-2 gap-4 lg:gap-1 lg:absolute lg:top-0 lg:translate-x-full lg:right-0 lg:mt-0 lg:pl-2">
+                        <div className="flex self-end lg:self-center justify-center mt-2 gap-4 lg:gap-1 lg:absolute lg:top-0 lg:translate-x-full lg:right-0 lg:mt-0 lg:pl-2">
                           <button
                             onClick={() => {
                               navigator.clipboard.writeText(output.text)
                               toast.success('Copied to clipboard!')
                             }}
-                            className="p-1 rounded-md hover:bg-gray-100 hover:text-gray-700"
+                            className="p-1 rounded-md hover:bg-gray-200 text-gray-500"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               viewBox="0 0 48 48"
                               fill="currentColor"
-                              className="w-5 h-5 text-gray-500 hover:text-gray-300"
+                              className="w-5 h-5"
                             >
                               <path d="M9 43.95q-1.2 0-2.1-.9-.9-.9-.9-2.1V10.8h3v30.15h23.7v3Zm6-6q-1.2 0-2.1-.9-.9-.9-.9-2.1v-28q0-1.2.9-2.1.9-.9 2.1-.9h22q1.2 0 2.1.9.9.9.9 2.1v28q0 1.2-.9 2.1-.9.9-2.1.9Zm0-3h22v-28H15v28Zm0 0v-28 28Z" />
                             </svg>
@@ -297,13 +317,16 @@ const Home: NextPage = () => {
                       <button
                         className="w-full bg-gray-100 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-900"
                         onClick={() => {
-                          setPrompt('Explain quantum computing in simple terms')
+                          setPrompt(
+                            'Write an essay about the importance of investing money.',
+                          )
                           handleSubmit(
-                            'Explain quantum computing in simple terms',
+                            'Write an essay about the importance of investing money.',
                           )
                         }}
                       >
-                        "Explain quantum computing in simple terms" →
+                        "Write an essay about the importance of investing
+                        money." →
                       </button>
                       <button
                         className="w-full bg-gray-100 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-900"
@@ -373,7 +396,7 @@ const Home: NextPage = () => {
             className="fixed lg:pl-56 pb-16 lg:pb-0 bottom-0 left-0 w-full"
             style={{
               backgroundImage:
-                'linear-gradient(180deg,hsla(0,0%,100%,0) 13.94%,#fff 54.73%)',
+                'linear-gradient(180deg,hsla(0,0%,100%,0) 0%,#fff 50%)',
             }}
           >
             <form
@@ -414,7 +437,6 @@ const Home: NextPage = () => {
                     style={{
                       maxHeight: '200px',
                       height: 24,
-                      overflowY: 'hidden',
                     }}
                     rows={1}
                     placeholder=""

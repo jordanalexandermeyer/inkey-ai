@@ -15,11 +15,11 @@ export interface Template {
   supportExamplePrompt?: boolean
   supportTone?: boolean
   supportQuotes?: boolean
-  supportReferences?: boolean
   supportRequestedLength?: boolean
   supportPointOfView?: boolean
   supportLanguages?: boolean
   supportCodingLanguages?: boolean
+  supportContent?: boolean
   href: string
   new?: boolean
   attribute: FilterType
@@ -95,6 +95,7 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       '"That\'s one small step for man, one giant leap for mankind." - Neil Armstrong',
     supportQuotes: true,
+    supportContent: true,
     href: `/templates/${TemplateId.GENERAL_ESSAY_ID}`,
     attribute: FilterType.WHOLE_ESSAYS,
   },
@@ -110,6 +111,7 @@ export const templates: TemplateMap = {
     supportRequestedLength: false,
     supportTone: false,
     supportPointOfView: false,
+    supportContent: true,
     href: `/templates/${TemplateId.RESUME_BULLET_POINTS_ID}`,
     attribute: FilterType.JOB_TOOLS,
     new: true,
@@ -128,6 +130,7 @@ export const templates: TemplateMap = {
     supportRequestedLength: true,
     supportTone: false,
     supportPointOfView: false,
+    supportContent: true,
     href: `/templates/${TemplateId.COVER_LETTER_ID}`,
     attribute: FilterType.JOB_TOOLS,
     new: true,
@@ -226,6 +229,7 @@ export const templates: TemplateMap = {
     supportRequestedLength: true,
     supportTone: false,
     supportPointOfView: true,
+    supportContent: true,
     href: `/templates/${TemplateId.LINKEDIN_BIO_ID}`,
     attribute: FilterType.JOB_TOOLS,
     new: true,
@@ -256,6 +260,7 @@ export const templates: TemplateMap = {
     supportRequestedLength: true,
     supportPointOfView: false,
     supportQuotes: true,
+    supportContent: true,
     href: `/templates/${TemplateId.SPEECH_ID}`,
     attribute: FilterType.OTHER,
   },
@@ -289,6 +294,7 @@ export const templates: TemplateMap = {
     supportPointOfView: true,
     supportLanguages: true,
     supportQuotes: true,
+    supportContent: true,
     href: `/templates/${TemplateId.INTRODUCTION_PARAGRAPH_ID}`,
     attribute: FilterType.ESSAY_PARTS,
     new: true,
@@ -308,6 +314,7 @@ export const templates: TemplateMap = {
     supportPointOfView: true,
     supportLanguages: true,
     supportQuotes: true,
+    supportContent: true,
     href: `/templates/${TemplateId.BODY_PARAGRAPH_ID}`,
     attribute: FilterType.ESSAY_PARTS,
     new: true,
@@ -347,6 +354,7 @@ export const templates: TemplateMap = {
     supportPointOfView: true,
     supportLanguages: true,
     supportQuotes: true,
+    supportContent: true,
     href: `/templates/${TemplateId.CONCLUSION_PARAGRAPH_ID}`,
     attribute: FilterType.ESSAY_PARTS,
     new: true,
@@ -367,6 +375,7 @@ export const templates: TemplateMap = {
     supportPointOfView: true,
     supportLanguages: true,
     supportQuotes: true,
+    supportContent: true,
     href: `/templates/${TemplateId.DISCUSSION_BOARD_RESPONSE_ID}`,
     attribute: FilterType.CLASS_TOOLS,
     new: true,
@@ -415,6 +424,7 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       '"The most productive workplaces are those that foster collaboration, innovation, and a sense of purpose." - Bill Gates',
     supportQuotes: true,
+    supportContent: true,
     href: `/templates/${TemplateId.BLOG_ID}`,
     attribute: FilterType.OTHER,
   },
@@ -432,6 +442,7 @@ export const templates: TemplateMap = {
     supportTone: true,
     supportPointOfView: true,
     supportLanguages: true,
+    supportContent: true,
     href: `/templates/${TemplateId.STORY_ID}`,
     attribute: FilterType.OTHER,
     new: true,
@@ -524,6 +535,7 @@ export const templates: TemplateMap = {
       'Some students have a background, identity, interest, or talent that is so meaningful they believe their application would be incomplete without it. If this sounds like you, then please share your story.',
     quotePlaceholder: 'My father said, "You can\'t live here anymore."',
     supportQuotes: true,
+    supportContent: true,
     href: `/templates/${TemplateId.COLLEGE_APP_ESSAY_ID}`,
     attribute: FilterType.WHOLE_ESSAYS,
   },
@@ -538,6 +550,7 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       'According to Elon Musk, "Remote work is no longer acceptable."',
     supportQuotes: true,
+    supportContent: true,
     href: `/templates/${TemplateId.PERSUASIVE_ESSAY_ID}`,
     attribute: FilterType.WHOLE_ESSAYS,
   },
@@ -552,6 +565,7 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       '"iPhone is a revolutionary and magical product that is literally five years ahead of any other mobile phone," - Steve Jobs',
     supportQuotes: true,
+    supportContent: true,
     href: `/templates/${TemplateId.EXPOSITORY_ESSAY_ID}`,
     attribute: FilterType.WHOLE_ESSAYS,
   },
@@ -566,6 +580,7 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       '"Ralph wept for the end of innocence, the darkness of man\'s heart, and the fall through the air of the true, wise friend called Piggy." - William Golding',
     supportQuotes: true,
+    supportContent: true,
     href: `/templates/${TemplateId.COMPARE_CONTRAST_ESSAY_ID}`,
     attribute: FilterType.WHOLE_ESSAYS,
   },
@@ -580,6 +595,7 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       '"You have a lifetime to work, but children are only young once." - Polish proverb',
     supportQuotes: true,
+    supportContent: true,
     href: `/templates/${TemplateId.ARGUMENTATIVE_ESSAY_ID}`,
     attribute: FilterType.WHOLE_ESSAYS,
   },
@@ -594,6 +610,7 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       '"This is the moment when we must come together to save this planet. Let us resolve that we will not leave our children a world where the oceans rise and famine spreads and terrible storms devastate our lands." - Barack Obama',
     supportQuotes: true,
+    supportContent: true,
     href: `/templates/${TemplateId.CAUSE_EFFECT_ESSAY_ID}`,
     attribute: FilterType.WHOLE_ESSAYS,
   },
@@ -607,6 +624,7 @@ export const templates: TemplateMap = {
       'Most of us remember exactly where we were and what we were doing when we received shocking or important news. Tell the story of what you were doing when you heard about an important event and how that news affected you.',
     quotePlaceholder: '"Your aunt is going to live." - Doctor Jerry',
     supportQuotes: true,
+    supportContent: true,
     href: `/templates/${TemplateId.NARRATIVE_ESSAY_ID}`,
     attribute: FilterType.WHOLE_ESSAYS,
   },
@@ -620,6 +638,7 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       '"Time and health are two precious assets that we don\'t recognize and appreciate until they have been depleted." - Denis Waitley',
     supportQuotes: true,
+    supportContent: true,
     href: `/templates/${TemplateId.DEFINITION_ESSAY_ID}`,
     attribute: FilterType.WHOLE_ESSAYS,
   },
@@ -633,6 +652,7 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       '"This mysterious 3.141592..., which comes in at every door and window, and down every chimney, calling itself the circumference to a unit of diameter." - Augustus De Morgan',
     supportQuotes: true,
+    supportContent: true,
     href: `/templates/${TemplateId.DESCRIPTIVE_ESSAY_ID}`,
     attribute: FilterType.WHOLE_ESSAYS,
   },
@@ -647,6 +667,7 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       '"War is peace. Freedom is slavery. Ignorance is strength." - George Orwell',
     supportQuotes: true,
+    supportContent: true,
     href: `/templates/${TemplateId.LITERARY_ESSAY_ID}`,
     attribute: FilterType.WHOLE_ESSAYS,
   },
@@ -660,6 +681,7 @@ export const templates: TemplateMap = {
     quotePlaceholder:
       'The American Academy of Dermatology declared ultraviolet radiation to be a known skin carcinogen.',
     supportQuotes: true,
+    supportContent: true,
     href: `/templates/${TemplateId.SCIENTIFIC_ESSAY_ID}`,
     attribute: FilterType.WHOLE_ESSAYS,
   },
