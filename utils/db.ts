@@ -13,7 +13,6 @@ export async function updateUserWordsGenerated(
   userId: string,
   numberOfWordsGenerated: number,
 ) {
-  console.log('Updating words generated for ', userId)
   const usageDetailsDocRef = doc(db, 'usage_details', userId)
   const docSnapshot = await getDoc(usageDetailsDocRef)
 
@@ -42,10 +41,6 @@ export async function updateUserWordsGenerated(
       // case: monthly usage > allowance
       // double check to make sure bonus allowance is not 0, then subtract from bonus allowance (if > bonus allowance, set bonus allowance to 0)
       if (bonusAllowance <= 0) {
-        console.log(
-          'Error: user should not have been able to call this: ',
-          userId,
-        )
       } else {
         if (numberOfWordsGenerated > bonusAllowance) {
           await updateDoc(usageDetailsDocRef, {
@@ -60,7 +55,5 @@ export async function updateUserWordsGenerated(
         }
       }
     }
-  } else {
-    console.log("Error: document doesn't exist for user: ", userId)
   }
 }

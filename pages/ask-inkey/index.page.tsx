@@ -45,7 +45,6 @@ const Home: NextPage = () => {
 
       await readStreamIntoOutput(response.body)
     } catch (error) {
-      console.log(error)
       toast.error(
         'Oh no! Something went wrong. \nPlease refresh the page and try again.',
       )

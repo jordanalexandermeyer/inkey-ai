@@ -242,7 +242,6 @@ export default async function handler(request: Request, response: Response) {
   }
 
   try {
-    console.log('Fetching ouput for', userId)
     const response = await fetch('https://api.openai.com/v1/completions', {
       method: 'POST',
       body: JSON.stringify({
@@ -318,10 +317,6 @@ export default async function handler(request: Request, response: Response) {
               continue
             }
           }
-        },
-        async flush() {
-          console.log('Output fetched for', userId)
-          console.log('Output:', output)
         },
       }),
     )
