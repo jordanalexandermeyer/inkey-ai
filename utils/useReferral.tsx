@@ -31,7 +31,7 @@ export const ReferralContextProvider = (props: Props) => {
   const db = getFirestore()
   const router = useRouter()
   const [isLoadingData, setIsLoadingData] = useState(false)
-  const { user, isLoading: isLoadingUser } = useUser()
+  const { user, isNewUser, isLoading: isLoadingUser } = useUser()
   const [referralCode, setReferralCode] = useState<ReferralCode | null>(null)
   const [referral, setReferral] = useState<Referral | null>(null)
 
@@ -118,6 +118,7 @@ export const ReferralContextProvider = (props: Props) => {
       const referralCodeFromBrowser = localStorage.getItem('referral_code')
       if (
         user &&
+        isNewUser &&
         !isLoadingData &&
         !referral &&
         referralCode &&
