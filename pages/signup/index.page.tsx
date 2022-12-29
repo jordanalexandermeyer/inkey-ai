@@ -89,7 +89,7 @@ const Signup: NextPage = () => {
       </Head>
       <Toaster />
       <div className="flex min-h-screen bg-white">
-        <div className="relative z-10 flex flex-col justify-center flex-1 px-4 py-12 lg:flex-none lg:px-16 xl:px-24 lg:shadow-2xl">
+        <div className="relative z-10 flex flex-col justify-center flex-1 px-4 py-8 bg-white ring-1 ring-black ring-opacity-5 sm:px-6">
           <div className="w-full max-w-sm mx-auto lg:w-96">
             <div>
               <div className="flex items-center justify-center space-x-3">
@@ -255,42 +255,6 @@ const Signup: NextPage = () => {
                   </Link>
                 </p>
                 <div className="relative"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="relative z-0 flex-1 hidden w-0 bg-gray-100 lg:block">
-          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-tr from-purple-700 to-purple-400">
-            <div className="max-w-3xl px-4 py-12 mx-auto sm:px-6 lg:py-16 lg:px-8">
-              <p className="max-w-2xl mx-auto text-4xl font-bold leading-10 tracking-tight text-center text-white">
-                Join students at leading universities.
-              </p>
-              <div className="flex flex-wrap items-center justify-center mt-10 space-x-8 opacity-80">
-                <div className="relative mb-6">
-                  <img src="/schools/yale.png" alt="" className="h-10" />
-                </div>
-                <div className="relative mb-6">
-                  <img src="/schools/harvard.png" alt="" className="h-10" />
-                </div>
-                <div className="relative mb-6">
-                  <img src="/schools/stanford.png" alt="" className="h-10" />
-                </div>
-                <div className="relative mb-6">
-                  <img src="/schools/berkeley.png" alt="" className="h-10" />
-                </div>
-                <div className="relative mb-6">
-                  <img
-                    src="/schools/georgia-tech.png"
-                    alt=""
-                    className="h-10"
-                  />
-                </div>
-                <div className="relative mb-6">
-                  <img src="/schools/uiuc.png" alt="" className="h-10" />
-                </div>
-                <div className="relative mb-6">
-                  <img src="/schools/mit.png" alt="" className="h-10" />
-                </div>
               </div>
             </div>
           </div>
