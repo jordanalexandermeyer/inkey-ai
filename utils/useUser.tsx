@@ -18,6 +18,7 @@ import { Subscription } from 'types'
 
 type UserContextType = {
   user: User | null | undefined
+  isNewUser: boolean
   usageDetails: UsageDetails | null
   isLoading: boolean
   subscription: Subscription | null
@@ -36,6 +37,8 @@ export const MyUserContextProvider = (props: Props) => {
   const [isLoadingData, setIsLoadingData] = useState(false)
   const [usageDetails, setUsageDetails] = useState<UsageDetails | null>(null)
   const [subscription, setSubscription] = useState<Subscription | null>(null)
+
+  const isNewUser = user?.metadata.creationTime == user?.metadata.lastSignInTime
 
   const getSubscription = async (): Promise<Subscription | null> => {
     const subscriptionsRef = collection(
@@ -117,6 +120,7 @@ export const MyUserContextProvider = (props: Props) => {
 
   const value = {
     user,
+    isNewUser,
     usageDetails,
     isLoading: isLoadingUser || isLoadingData,
     subscription,
