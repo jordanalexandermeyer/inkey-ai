@@ -84,6 +84,7 @@ const UpgradePage: NextPage = () => {
         price: premiumStripePrice,
         success_url: getURL() + 'upgrade?success=true',
         cancel_url: getURL() + 'upgrade',
+        allow_promotion_codes: true,
       },
     )
 
@@ -117,6 +118,7 @@ const UpgradePage: NextPage = () => {
         price: ultimateStripePrice,
         success_url: getURL() + 'upgrade?success=true',
         cancel_url: getURL() + 'upgrade',
+        allow_promotion_codes: true,
       },
     )
 
