@@ -47,7 +47,8 @@ const UpgradeModal = ({
               type="button"
               onClick={() => {
                 navigator.clipboard.writeText(
-                  'https://www.inkey.ai?referral_code=' + referralCode?.id,
+                  'https://app.inkey.ai/signup?referral_code=' +
+                    referralCode?.id,
                 )
                 toast.success('Copied to clipboard!')
               }}

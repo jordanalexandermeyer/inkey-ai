@@ -7,7 +7,7 @@ export interface Template {
   svgIcon?: ReactElement
   title: string
   description: string
-  characterLimit?: number
+  promptCharacterLimit?: number
   inputRows?: number
   promptName?: string
   promptPlaceholder: string
@@ -20,6 +20,7 @@ export interface Template {
   supportLanguages?: boolean
   supportCodingLanguages?: boolean
   supportContent?: boolean
+  contentCharacterLimit?: number
   href: string
   new?: boolean
   attribute: FilterType
@@ -123,7 +124,7 @@ export const templates: TemplateMap = {
     description:
       'A document sent with a resume to provide additional information on your skills and experience.',
     promptName: 'Resume',
-    characterLimit: 15000,
+    promptCharacterLimit: 5000,
     inputRows: 10,
     supportExamplePrompt: false,
     promptPlaceholder: 'Paste your resume here.',
@@ -131,6 +132,7 @@ export const templates: TemplateMap = {
     supportTone: false,
     supportPointOfView: false,
     supportContent: true,
+    contentCharacterLimit: 5000,
     href: `/templates/${TemplateId.COVER_LETTER_ID}`,
     attribute: FilterType.JOB_TOOLS,
     new: true,
@@ -143,7 +145,7 @@ export const templates: TemplateMap = {
       'Paste a coding question here to have it solved in any language.',
     promptName: 'Coding question',
     promptPlaceholder: 'How do you determine if a string is a palindrome?',
-    characterLimit: 15000,
+    promptCharacterLimit: 8000,
     inputRows: 10,
     supportExamplePrompt: true,
     supportRequestedLength: false,
@@ -190,13 +192,12 @@ export const templates: TemplateMap = {
        });
      return msg
    }`,
-    characterLimit: 15000,
+    promptCharacterLimit: 8000,
     inputRows: 10,
     supportExamplePrompt: true,
     supportRequestedLength: false,
     supportTone: false,
     supportPointOfView: false,
-    supportLanguages: true,
     supportCodingLanguages: false,
     supportQuotes: false,
     href: `/templates/${TemplateId.EXPLAIN_CODE_ID}`,
@@ -222,7 +223,7 @@ export const templates: TemplateMap = {
     description:
       'The text box at the top of your LinkedIn Profile, aka the “About” section.',
     promptName: 'Resume',
-    characterLimit: 15000,
+    promptCharacterLimit: 5000,
     inputRows: 10,
     supportExamplePrompt: false,
     promptPlaceholder: 'Paste your resume here.',
@@ -230,6 +231,7 @@ export const templates: TemplateMap = {
     supportTone: false,
     supportPointOfView: true,
     supportContent: true,
+    contentCharacterLimit: 5000,
     href: `/templates/${TemplateId.LINKEDIN_BIO_ID}`,
     attribute: FilterType.JOB_TOOLS,
     new: true,
@@ -292,7 +294,6 @@ export const templates: TemplateMap = {
     supportRequestedLength: false,
     supportTone: true,
     supportPointOfView: true,
-    supportLanguages: true,
     supportQuotes: true,
     supportContent: true,
     href: `/templates/${TemplateId.INTRODUCTION_PARAGRAPH_ID}`,
@@ -312,7 +313,6 @@ export const templates: TemplateMap = {
     supportRequestedLength: true,
     supportTone: true,
     supportPointOfView: true,
-    supportLanguages: true,
     supportQuotes: true,
     supportContent: true,
     href: `/templates/${TemplateId.BODY_PARAGRAPH_ID}`,
@@ -332,7 +332,7 @@ export const templates: TemplateMap = {
     supportTone: false,
     supportPointOfView: false,
     supportLanguages: true,
-    characterLimit: 15000,
+    promptCharacterLimit: 5000,
     inputRows: 10,
     href: `/templates/${TemplateId.TRANSLATOR_ID}`,
     attribute: FilterType.WRITING_TOOLS,
@@ -346,15 +346,15 @@ export const templates: TemplateMap = {
       'Reviews the main points of the essay and wraps up the ideas previously introduced.',
     promptName: 'Essay without conclusion',
     promptPlaceholder: 'Paste an essay without a conclusion here.',
-    characterLimit: 15000,
+    promptCharacterLimit: 7500,
     inputRows: 10,
     supportExamplePrompt: false,
     supportRequestedLength: false,
     supportTone: true,
     supportPointOfView: true,
-    supportLanguages: true,
     supportQuotes: true,
     supportContent: true,
+    contentCharacterLimit: 2500,
     href: `/templates/${TemplateId.CONCLUSION_PARAGRAPH_ID}`,
     attribute: FilterType.ESSAY_PARTS,
     new: true,
@@ -367,15 +367,15 @@ export const templates: TemplateMap = {
     promptName: 'Discussion board post/s',
     promptPlaceholder:
       'Paste a discussion board post or question to get a response.',
-    characterLimit: 15000,
+    promptCharacterLimit: 7500,
     inputRows: 10,
     supportExamplePrompt: false,
     supportRequestedLength: true,
     supportTone: true,
     supportPointOfView: true,
-    supportLanguages: true,
     supportQuotes: true,
     supportContent: true,
+    contentCharacterLimit: 2500,
     href: `/templates/${TemplateId.DISCUSSION_BOARD_RESPONSE_ID}`,
     attribute: FilterType.CLASS_TOOLS,
     new: true,
@@ -385,7 +385,7 @@ export const templates: TemplateMap = {
     icon: '♻️',
     title: 'Paraphraser',
     description: 'This template takes in text and paraphrases it.',
-    characterLimit: 15000,
+    promptCharacterLimit: 8000,
     inputRows: 10,
     promptName: 'Text',
     promptPlaceholder:
@@ -401,7 +401,7 @@ export const templates: TemplateMap = {
     title: 'Summarizer',
     description:
       'Condenses articles, papers, or documents down to the key points instantly.',
-    characterLimit: 15000,
+    promptCharacterLimit: 15000,
     inputRows: 10,
     promptName: 'Text',
     promptPlaceholder:
@@ -441,7 +441,6 @@ export const templates: TemplateMap = {
     supportQuotes: true,
     supportTone: true,
     supportPointOfView: true,
-    supportLanguages: true,
     supportContent: true,
     href: `/templates/${TemplateId.STORY_ID}`,
     attribute: FilterType.OTHER,

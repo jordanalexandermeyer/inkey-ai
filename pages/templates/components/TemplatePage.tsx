@@ -28,7 +28,7 @@ const TemplatePage = ({
   svgIcon,
   title,
   description,
-  characterLimit = 500,
+  promptCharacterLimit = 500,
   inputRows = 4,
   promptName = 'Prompt',
   promptPlaceholder,
@@ -38,9 +38,10 @@ const TemplatePage = ({
   supportRequestedLength = true,
   supportTone = true,
   supportPointOfView = true,
-  supportLanguages = true,
+  supportLanguages = false,
   supportCodingLanguages = false,
   supportContent = false,
+  contentCharacterLimit = 10000,
 }: Template) => {
   const [prompt, setPrompt] = useState('')
   const [output, setOutput] = useState('')
@@ -214,13 +215,13 @@ const TemplatePage = ({
                       </div>
                       <div className="flex items-center justify-end px-3 py-2 text-xs text-gray-600">
                         <span className="text-xs">
-                          {numberOfCharacters}/{characterLimit}
+                          {numberOfCharacters}/{promptCharacterLimit}
                         </span>
                       </div>
                     </div>
                     <div className="relative flex items-center mb-2">
                       <textarea
-                        maxLength={characterLimit}
+                        maxLength={promptCharacterLimit}
                         rows={inputRows}
                         placeholder={promptPlaceholder}
                         className="px-3 py-2 w-full block text-sm text-gray-600 placeholder-gray-400 transition-shadow duration-150 ease-in-out bg-white border border-gray-200 rounded shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500"
@@ -619,13 +620,13 @@ const TemplatePage = ({
                       </div>
                       <div className="flex items-center justify-end px-3 py-2 text-xs text-gray-600">
                         <span className="text-xs">
-                          {numberOfContentCharacters}/{15000}
+                          {numberOfContentCharacters}/{contentCharacterLimit}
                         </span>
                       </div>
                     </div>
                     <div className="relative flex items-center mb-2">
                       <textarea
-                        maxLength={15000}
+                        maxLength={contentCharacterLimit}
                         rows={10}
                         placeholder={
                           'Paste content you want incorporated here.'

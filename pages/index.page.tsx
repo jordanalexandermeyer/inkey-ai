@@ -100,7 +100,7 @@ const Home: NextPage = () => {
                     type="button"
                     onClick={() => {
                       navigator.clipboard.writeText(
-                        'https://www.inkey.ai?referral_code=' +
+                        'https://app.inkey.ai/signup?referral_code=' +
                           referralCode?.id,
                       )
                       toast.success('Copied to clipboard!')

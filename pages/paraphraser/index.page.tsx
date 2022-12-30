@@ -12,7 +12,7 @@ const ParaphraserPage: NextPage = () => {
       icon={pageData.icon}
       title={pageData.title}
       description={pageData.description}
-      characterLimit={pageData.characterLimit}
+      promptCharacterLimit={pageData.promptCharacterLimit}
       inputRows={pageData.inputRows}
       promptPlaceholder={pageData.promptPlaceholder}
       quotePlaceholder={pageData.quotePlaceholder}
@@ -21,6 +21,8 @@ const ParaphraserPage: NextPage = () => {
       supportQuotes={pageData.supportQuotes}
       supportRequestedLength={pageData.supportRequestedLength}
       supportPointOfView={pageData.supportPointOfView}
+      supportContent={pageData.supportContent}
+      contentCharacterLimit={pageData.contentCharacterLimit}
       href={pageData.href}
       attribute={pageData.attribute}
     />

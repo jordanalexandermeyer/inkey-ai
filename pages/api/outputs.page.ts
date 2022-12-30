@@ -44,6 +44,7 @@ export default async function handler(request: Request, response: Response) {
   let openaiPrompt
   let model
   let temperature
+  let tokens
 
   switch (id) {
     case TemplateId.GENERAL_ESSAY_ID:
@@ -105,6 +106,7 @@ export default async function handler(request: Request, response: Response) {
     case TemplateId.PARAPHRASER_ID:
       openaiPrompt = `Rewrite the following using different words: "${prompt}".`
       model = 'text-davinci-003'
+      tokens = 2000
       break
     case TemplateId.SUMMARIZER_ID:
       switch (summaryMethod) {
@@ -135,8 +137,9 @@ export default async function handler(request: Request, response: Response) {
       temperature = 0.25
       break
     case TemplateId.TRANSLATOR_ID:
-      openaiPrompt = `Translate the following into ${language}: "${prompt}".`
+      openaiPrompt = `Translate the following into ${language}: """\n${prompt}\n"""`
       model = 'text-davinci-003'
+      tokens = 2000
       break
     case TemplateId.STORY_ID:
       openaiPrompt = `Write a story with the following title: "${prompt}".`
@@ -151,7 +154,7 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case TemplateId.CONCLUSION_PARAGRAPH_ID:
-      openaiPrompt = `Write a long conclusion paragraph for the following essay: "${prompt}".`
+      openaiPrompt = `Write a long conclusion paragraph for the following essay: """\n${prompt}\n""".`
       model = 'text-davinci-003'
       break
     case TemplateId.DISCUSSION_BOARD_RESPONSE_ID:
@@ -173,6 +176,7 @@ export default async function handler(request: Request, response: Response) {
     case TemplateId.CODING_QUESTION_SOLVER_ID:
       openaiPrompt = `Answer the following coding question. Show an optimized version and an unoptimized version. Give big o notation for each solution. Explain your work. "${prompt}".`
       temperature = 0.25
+      tokens = 2000
       model = 'text-davinci-003'
       break
     case TemplateId.FUNCTION_ID:
@@ -192,7 +196,8 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case TemplateId.EXPLAIN_CODE_ID:
-      openaiPrompt = `Rewrite the following code with comments explaining each line: "${prompt}".`
+      openaiPrompt = `Rewrite the following code with comments explaining each line: """\n${prompt}\n"""`
+      tokens = 2000
       model = 'text-davinci-003'
       break
     default:
@@ -249,7 +254,7 @@ export default async function handler(request: Request, response: Response) {
         prompt: openaiPrompt,
         temperature: temperature || 1,
         top_p: 0.9,
-        max_tokens: 1000,
+        max_tokens: tokens || 1000,
         user: userId || '',
       }),
       headers: {
