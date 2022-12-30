@@ -62,20 +62,6 @@ export const ReferralContextProvider = (props: Props) => {
     }
   }
 
-  const getReferralCodeFromId = async (
-    id: string,
-  ): Promise<ReferralCode | null> => {
-    const referralCodeRef = doc(db, 'referral_codes', id)
-    const referralCodeSnapshot = await getDoc(referralCodeRef)
-
-    if (referralCodeSnapshot.exists()) {
-      return {
-        id: referralCodeSnapshot.id,
-        ...referralCodeSnapshot.data(),
-      } as ReferralCode
-    } else return null
-  }
-
   const getReferralFromUser = async (uid: string): Promise<Referral | null> => {
     const referralsRef = collection(db, 'referrals')
     const q = query(referralsRef, where('recipient', '==', uid))
@@ -116,19 +102,30 @@ export const ReferralContextProvider = (props: Props) => {
     const handleBrowserReferralCode = async () => {
       const referralCodeFromBrowser = localStorage.getItem('referral_code')
       if (user && isNewUser && !isLoadingData && referralCodeFromBrowser) {
-        const referralCode = await getReferralCodeFromId(
+        const referralCodeRef = doc(
+          db,
+          'referral_codes',
           referralCodeFromBrowser,
         )
-        const referral = await getReferralFromUser(user.uid)
+        const referralCodeSnapshot = await getDoc(referralCodeRef)
 
-        if (referralCode && !referral && referralCode.provider != user.uid) {
-          const newReferral = {
-            provider: referralCode.provider,
-            recipient: user.uid,
-            referral_code: referralCode,
+        if (referralCodeSnapshot.exists()) {
+          const referralCodeData = {
+            id: referralCodeSnapshot.id,
+            ...referralCodeSnapshot.data(),
+          } as ReferralCode
+
+          const referral = await getReferralFromUser(user.uid)
+
+          if (!referral && referralCodeData.provider != user.uid) {
+            const newReferral = {
+              provider: referralCodeData.provider,
+              recipient: user.uid,
+              referral_code: referralCodeRef,
+            }
+
+            await addDoc(collection(db, 'referrals'), newReferral)
           }
-
-          await addDoc(collection(db, 'referrals'), newReferral)
         }
         // remove item so this doesn't trigger again
         localStorage.removeItem('referral_code')
