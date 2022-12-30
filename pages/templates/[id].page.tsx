@@ -17,7 +17,7 @@ const DynamicTemplatePage: NextPage = () => {
       svgIcon={pageData.svgIcon}
       title={pageData.title}
       description={pageData.description}
-      characterLimit={pageData.characterLimit}
+      promptCharacterLimit={pageData.promptCharacterLimit}
       inputRows={pageData.inputRows}
       promptName={pageData.promptName}
       promptPlaceholder={pageData.promptPlaceholder}
@@ -30,6 +30,7 @@ const DynamicTemplatePage: NextPage = () => {
       supportLanguages={pageData.supportLanguages}
       supportCodingLanguages={pageData.supportCodingLanguages}
       supportContent={pageData.supportContent}
+      contentCharacterLimit={pageData.contentCharacterLimit}
       href={pageData.href}
       attribute={pageData.attribute}
     />
