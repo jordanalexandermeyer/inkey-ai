@@ -37,18 +37,19 @@ const Home: NextPage = () => {
                   </div>
                 </div>
                 <div className="text-lg font-semibold tracking-tight text-white md:text-2xl">
-                  Ask Inkey 🦑
+                  Use Templates 🎭
                 </div>
                 <p className="mt-1 mb-4 text-sm text-white text-opacity-80 md:text-lg md:mb-7">
-                  You can ask Inkey to do just about anything. Writing essays,
-                  answering coding questions, translating — it does it all!
+                  Each template is something different that Inkey can do. If
+                  there is anything we are missing, submit a feature request
+                  below to get a new template added!
                 </p>
                 <div className="flex flex-col w-full items-stretch md:items-start">
                   <Link
-                    href={'/ask-inkey'}
+                    href={'/templates'}
                     className="inline-flex items-center justify-center font-medium text-white bg-blue-500 hover:bg-opacity-80 px-5 py-2 text-md overflow-hidden ease-in-out focus:outline-none focus:ring-offset-2 transition-all duration-150 relative rounded-lg space-x-2 ring-opacity-20 border-none focus:ring-0"
                   >
-                    Ask a question
+                    See templates
                   </Link>
                 </div>
               </div>
@@ -59,20 +60,19 @@ const Home: NextPage = () => {
               <div className="p-6 mb-6 border border-gray-200 rounded-md shadow-lg">
                 <div className="mb-3 md:flex md:items-center md:space-x-3">
                   <div className="text-lg font-semibold tracking-tight md:text-2xl">
-                    Use Templates 🎭
+                    Ask Inkey 🦑
                   </div>
                 </div>
                 <p className="mt-1 mb-4 text-sm md:text-lg">
-                  Each template is something different that Inkey can do. If
-                  there is anything we are missing, submit a feature request
-                  below to get a new template added!
+                  You can ask Inkey to do just about anything. Writing essays,
+                  answering coding questions, translating — it does it all!
                 </p>
                 <div className="flex flex-col w-full items-stretch md:items-start">
                   <Link
-                    href={'/templates'}
+                    href={'/ask-inkey'}
                     className="inline-flex items-center justify-center font-medium text-white bg-blue-500 hover:bg-opacity-80 px-5 py-2 text-md overflow-hidden ease-in-out focus:outline-none focus:ring-2 transition-all duration-150 relative rounded-lg space-x-2 ring-opacity-20 border-none focus:ring-0"
                   >
-                    See templates
+                    Ask a question
                   </Link>
                 </div>
               </div>
