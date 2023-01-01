@@ -1,6 +1,6 @@
 import type { NextPage } from 'next'
 import { useState } from 'react'
-import { FilterType } from 'types'
+import { FilterMap, FilterType } from 'types'
 import Page from '../../components/Page'
 import ProtectedPage from '../../components/ProtectedPage'
 import { filters } from './components/constants'
@@ -10,7 +10,9 @@ import { Template, templates } from './templates'
 
 const Templates: NextPage = () => {
   const [searchText, setSearchText] = useState('')
-  const [filterState, setFilterState] = useState(filters)
+  const [filterState, setFilterState] = useState<FilterMap>(
+    JSON.parse(JSON.stringify(filters)),
+  )
   const templateArray = Object.values(templates)
   const filtered = templateArray.filter((template: Template) =>
     template.title.toLowerCase().includes(searchText.trim().toLowerCase()),
