@@ -218,7 +218,7 @@ export default async function handler(request: Request, response: Response) {
   }
 
   if (quotes) {
-    openaiPrompt += ' Include the following quotes: \n'
+    openaiPrompt += ' Include each of the following quotes only once: \n'
     for (const index in Object.keys(quotes)) {
       openaiPrompt += quotes[index].value + '\n'
     }
