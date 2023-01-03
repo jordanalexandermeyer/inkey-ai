@@ -16,6 +16,8 @@ import { useUser } from './useUser'
 type ReferralContextType = {
   isLoading: boolean
   referralCode: ReferralCode | null
+  showReferralModal: boolean
+  setShowReferralModal: CallableFunction
 }
 
 export const ReferralContext = createContext<ReferralContextType | undefined>(
@@ -32,6 +34,7 @@ export const ReferralContextProvider = (props: Props) => {
   const [isLoadingData, setIsLoadingData] = useState(false)
   const { user, isNewUser, isLoading: isLoadingUser } = useUser()
   const [referralCode, setReferralCode] = useState<ReferralCode | null>(null)
+  const [showReferralModal, setShowReferralModal] = useState(false)
 
   const getReferralCodeFromUser = async (
     uid: string,
@@ -125,6 +128,7 @@ export const ReferralContextProvider = (props: Props) => {
             }
 
             await addDoc(collection(db, 'referrals'), newReferral)
+            setShowReferralModal(true)
           }
         }
         // remove item so this doesn't trigger again
@@ -138,6 +142,8 @@ export const ReferralContextProvider = (props: Props) => {
   const value = {
     isLoading: isLoadingData,
     referralCode,
+    showReferralModal,
+    setShowReferralModal,
   }
 
   return <ReferralContext.Provider value={value} {...props} />
