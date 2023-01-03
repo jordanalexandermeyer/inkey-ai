@@ -145,15 +145,17 @@ const Home: NextPage = () => {
                     key={index}
                     className="w-full border-b border-black/10 text-gray-800 group"
                   >
-                    <div className="text-base gap-6 m-auto md:max-w-2xl lg:max-w-2xl xl:max-w-3xl p-4 md:py-6 flex lg:px-0">
+                    <div className="flex flex-col md:flex-row text-base gap-4 md:gap-6 m-auto md:max-w-2xl xl:max-w-3xl p-4 md:py-6 lg:px-0">
                       <div className="w-[30px] flex flex-col relative items-end">
-                        <div className="relative h-[30px] w-[30px] p-1 rounded-sm flex items-center justify-center">
+                        <div className="relative h-[30px] w-[30px] md:p-1 rounded-sm flex items-center md:justify-center">
                           <div className="text-2xl">🧑</div>
                         </div>
                       </div>
-                      <div className="relative flex w-full flex-col lg:w-[calc(100%-115px)]">
-                        <div className="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap">
-                          {output.text}
+                      <div className="relative flex flex-col w-full lg:w-[calc(100%-115px)]">
+                        <div className="min-h-[20px] flex flex-col items-start gap-4">
+                          <div className="break-words whitespace-pre-line w-full">
+                            {output.text}
+                          </div>
                         </div>
                         <div className="flex self-end lg:self-center justify-center mt-2 gap-4 lg:gap-1 lg:absolute lg:top-0 lg:translate-x-full lg:right-0 lg:mt-0 lg:pl-2">
                           <button
@@ -183,9 +185,9 @@ const Home: NextPage = () => {
                     key={index}
                     className="w-full border-b border-black/10 text-gray-800 group bg-gray-100"
                   >
-                    <div className="text-base gap-6 m-auto md:max-w-2xl lg:max-w-2xl xl:max-w-3xl p-4 md:py-6 flex lg:px-0">
+                    <div className="flex flex-col md:flex-row text-base gap-4 md:gap-6 m-auto md:max-w-2xl xl:max-w-3xl p-4 md:py-6 lg:px-0">
                       <div className="w-[30px] flex flex-col relative items-end">
-                        <div className="relative h-[30px] w-[30px] p-1 rounded-sm text-white flex items-center justify-center">
+                        <div className="relative h-[30px] w-[30px] md:p-1 rounded-sm flex items-center md:justify-center">
                           <svg
                             viewBox="0 0 390 475"
                             fill="none"
@@ -225,10 +227,10 @@ const Home: NextPage = () => {
                           </svg>
                         </div>
                       </div>
-                      <div className="relative flex w-full flex-col lg:w-[calc(100%-115px)]">
+                      <div className="relative flex flex-col w-full lg:w-[calc(100%-115px)]">
                         <div className="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap">
-                          <div className="break-words">
-                            <p>{output.text}</p>
+                          <div className="break-words whitespace-pre-line w-full">
+                            {output.text}
                           </div>
                         </div>
                         <div className="flex self-end lg:self-center justify-center mt-2 gap-4 lg:gap-1 lg:absolute lg:top-0 lg:translate-x-full lg:right-0 lg:mt-0 lg:pl-2">
