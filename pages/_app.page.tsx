@@ -14,6 +14,7 @@ import { EventName, page, track } from 'utils/segment'
 function MyApp({ Component, pageProps: { ...pageProps } }: AppProps) {
   useEffect(() => {
     window.addEventListener('beforeunload', (e) => track(EventName.USER_LEFT))
+    window.addEventListener('unload', (e) => track(EventName.USER_LEFT))
     Router.events.on('routeChangeComplete', () => {
       const urlSearchParams = new URLSearchParams(window.location.search)
       const params = Object.fromEntries(urlSearchParams.entries())

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { getAuth, signOut } from 'firebase/auth'
 import { useUser } from 'utils/useUser'
 import { Role } from 'types'
+import { EventName, track } from 'utils/segment'
 
 const Navbar = ({
   removeBackdropAndNavbar,
@@ -430,7 +431,10 @@ const Navbar = ({
         <ul className="pb-1 px-3">
           <li>
             <button
-              onClick={() => signOut(auth)}
+              onClick={() => {
+                track(EventName.USER_SIGNED_OUT)
+                signOut(auth)
+              }}
               className="w-full hover:bg-gray-50 rounded-md group flex items-center justify-between p-2 font-medium text-gray-600 hover:text-gray-800"
             >
               <span className="flex items-center whitespace-nowrap">
