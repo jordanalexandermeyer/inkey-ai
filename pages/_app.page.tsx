@@ -9,10 +9,11 @@ import { MyUserContextProvider } from 'utils/useUser'
 import { ReferralContextProvider } from 'utils/useReferral'
 import { useEffect } from 'react'
 import Router from 'next/router'
-import { page } from 'utils/segment'
+import { EventName, page, track } from 'utils/segment'
 
 function MyApp({ Component, pageProps: { ...pageProps } }: AppProps) {
   useEffect(() => {
+    window.addEventListener('beforeunload', (e) => track(EventName.USER_LEFT))
     Router.events.on('routeChangeComplete', () => {
       const urlSearchParams = new URLSearchParams(window.location.search)
       const params = Object.fromEntries(urlSearchParams.entries())
