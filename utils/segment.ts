@@ -63,6 +63,7 @@ export enum EventName {
   PROMPT_SUBMITTED = 'Prompt Submitted',
   OUTPUT_GENERATED = 'Output Generated',
   USER_LEFT = 'User Left',
+  USER_SIGNED_OUT = 'User Signed Out',
   // Upgrade Page
   SUBSCRIPTION_LENGTH_SELECTED = 'Subscription Length Selected',
   GET_PREMIUM_BUTTON_CLICKED = 'Get Premium Button Clicked',

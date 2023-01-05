@@ -132,7 +132,7 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case 'ask-inkey':
-      openaiPrompt = `You are Inkey, an AI assistant for students. Reply to the following prompt: """\n${prompt}\n"""`
+      openaiPrompt = `You are Inkey, an AI assistant. You can help write essays, solve coding questions, help with homework, and help with job applications. You cannot access the internet. Reply to the following conversation: """\n${prompt}\n"""`
       model = 'text-davinci-003'
       temperature = 0.25
       break
