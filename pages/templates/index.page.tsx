@@ -1,6 +1,7 @@
 import type { NextPage } from 'next'
 import { useState } from 'react'
 import { FilterMap, FilterType } from 'types'
+import { EventName, track } from 'utils/segment'
 import Page from '../../components/Page'
 import ProtectedPage from '../../components/ProtectedPage'
 import { filters } from './components/constants'
@@ -108,7 +109,12 @@ const Templates: NextPage = () => {
                           key={index}
                           name={filterState[key].text}
                           selected={filterState[key].selected}
-                          onClick={() => onFilterClick(key, index)}
+                          onClick={() => {
+                            track(EventName.TEMPLATE_FILTER_CLICKED, {
+                              title: filterState[key].text,
+                            })
+                            onFilterClick(key, index)
+                          }}
                         />
                       )
                     })}

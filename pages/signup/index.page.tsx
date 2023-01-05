@@ -14,6 +14,7 @@ import {
 import classNames from 'classnames'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import toast, { Toaster } from 'react-hot-toast'
+import { EventName, track } from 'utils/segment'
 
 const Signup: NextPage = () => {
   const auth = getAuth()
@@ -49,8 +50,15 @@ const Signup: NextPage = () => {
     setIsDisabled(false)
   }
 
-  const signInWithGoogle = () => {
-    signInWithPopup(auth, new GoogleAuthProvider())
+  const signUpWithGoogle = async () => {
+    const userCredentials = await signInWithPopup(
+      auth,
+      new GoogleAuthProvider(),
+    )
+
+    if (userCredentials) {
+      track(EventName.SIGNED_UP_WITH_GOOGLE)
+    }
   }
 
   useEffect(() => {
@@ -69,7 +77,10 @@ const Signup: NextPage = () => {
         signInWithEmailLink(auth, urlEmail, window.location.href),
         {
           loading: 'Signing up',
-          success: 'Done!',
+          success: () => {
+            track(EventName.SIGNED_UP_WITH_EMAIL)
+            return 'Done!'
+          },
           error: 'Email link is expired',
         },
         {
@@ -143,7 +154,10 @@ const Signup: NextPage = () => {
             <div className="mt-8">
               <button
                 type="submit"
-                onClick={signInWithGoogle}
+                onClick={() => {
+                  track(EventName.SIGN_UP_WITH_GOOGLE_BUTTON_CLICKED)
+                  signUpWithGoogle()
+                }}
                 className="relative inline-flex items-center justify-center overflow-hidden font-semibold transition duration-100 ease-in-out rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 sm:px-6 px-4 h-14 text-lg sm:text-lg leading-5 tracking-tight text-white bg-blue-600 shadow-sm hover:bg-blue-400 selectionRing active:bg-blue-700 w-full"
               >
                 <span
@@ -208,6 +222,7 @@ const Signup: NextPage = () => {
                   data-gtm-form-interact-id="0"
                   onSubmit={(e) => {
                     e.preventDefault()
+                    track(EventName.SIGN_UP_WITH_EMAIL_BUTTON_CLICKED)
                     handleEmailSignIn()
                   }}
                 >

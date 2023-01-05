@@ -1,3 +1,5 @@
+import { EventName, track } from 'utils/segment'
+
 const Output = ({
   toast,
   text,
@@ -15,6 +17,7 @@ const Output = ({
         <button
           className="mr-3"
           onClick={(e) => {
+            track(EventName.COPY_OUTPUT_BUTTON_CLICKED)
             navigator.clipboard.writeText(textElementRef.current.textContent)
             toast.success('Copied to clipboard!')
           }}

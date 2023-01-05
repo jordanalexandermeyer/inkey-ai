@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { ReactElement } from 'react'
+import { EventName, track } from 'utils/segment'
 
 const TemplateCard = ({
   title,
@@ -18,7 +19,10 @@ const TemplateCard = ({
 }) => {
   return (
     <div id="template-card">
-      <Link href={href}>
+      <Link
+        href={href}
+        onClick={() => track(EventName.TEMPLATE_PANEL_CLICKED, { title })}
+      >
         <div className="relative p-6 transition-all h-full focus:ring-gray-400 focus:shadow-xl duration-150 rounded-2xl shadow-sm hover:shadow-lg hover:ring-gray-300 hover:ring-2 ring-1 ring-gray-200 group flex flex-col bg-white">
           {/* <div className="absolute top-4 right-4 hidden group-hover:block">
             <button className="p-2 transition duration-150 rounded-md hover:text-yellow-400 text-gray-200 hover:bg-gray-200/50">
