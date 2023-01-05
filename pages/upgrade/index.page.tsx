@@ -21,6 +21,7 @@ import {
   ultimateFeatures,
 } from './components/constants'
 import SuccessModal from './components/SuccessModal'
+import { EventName, track } from 'utils/segment'
 
 const getBillFromRole = (
   product: Role,
@@ -61,7 +62,12 @@ const UpgradePage: NextPage = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   useEffect(() => {
-    if (router.query.success) setShowSuccessModal(true)
+    if (router.query.success) {
+      track(EventName.UPGRADED, {
+        subscription: subscription?.role,
+      })
+      setShowSuccessModal(true)
+    }
   }, [router.query.success])
 
   const premiumPrice = roundToTwoDecimals(
@@ -169,7 +175,12 @@ const UpgradePage: NextPage = () => {
               <div>
                 <select
                   value={billingPeriod}
-                  onChange={(e) => setBillingPeriod(e.target.value)}
+                  onChange={(e) => {
+                    track(EventName.SUBSCRIPTION_LENGTH_SELECTED, {
+                      value: e.target.value,
+                    })
+                    setBillingPeriod(e.target.value)
+                  }}
                   className="block w-full py-2 pl-3 pr-10 text-base border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-blue-400 sm:text-sm"
                 >
                   <option value={BillingPeriod.ANNUALLY}>Annually</option>
@@ -205,6 +216,7 @@ const UpgradePage: NextPage = () => {
                   className="relative inline-flex items-center justify-center overflow-hidden font-semibold transition duration-100 ease-in-out rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center w-full space-x-2 sm:px-6 px-4 h-14 text-lg sm:text-lg leading-5 tracking-tight text-white bg-blue-600 shadow-sm hover:bg-blue-400 active:bg-blue-700"
                   disabled={premiumLoading}
                   onClick={() => {
+                    track(EventName.GET_PREMIUM_BUTTON_CLICKED)
                     if (!subscription) handlePremiumButtonClick()
                     if (subscription?.role == Role.ULTIMATE)
                       handleSwitchToPremiumClick()
@@ -275,6 +287,7 @@ const UpgradePage: NextPage = () => {
                   className="relative inline-flex items-center justify-center overflow-hidden font-semibold transition duration-100 ease-in-out rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center w-full space-x-2 sm:px-6 px-4 h-14 text-lg sm:text-lg leading-5 tracking-tight text-white bg-blue-600 shadow-sm hover:bg-blue-400 active:bg-blue-700"
                   disabled={ultimateLoading}
                   onClick={() => {
+                    track(EventName.GET_ULTIMATE_BUTTON_CLICKED)
                     if (!subscription) handleUltimateButtonClick()
                     if (subscription?.role == Role.PREMIUM)
                       handleSwitchToUltimateClick()

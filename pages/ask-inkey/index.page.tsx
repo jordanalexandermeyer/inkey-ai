@@ -8,6 +8,7 @@ import { useUser } from 'utils/useUser'
 import UpgradeModal from 'components/UpgradeModal'
 import { Agent, Output } from 'types'
 import { updateUserWordsGenerated } from 'utils/db'
+import { EventName, track } from 'utils/segment'
 
 const Home: NextPage = () => {
   const [prompt, setPrompt] = useState('')
@@ -18,6 +19,9 @@ const Home: NextPage = () => {
   const bottomElementRef = useRef<any>(null)
   const { user, usageDetails } = useUser()
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const [reader, setReader] = useState<ReadableStreamDefaultReader<
+    Uint8Array
+  > | null>(null)
 
   const scrollToBottom = () => {
     bottomElementRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -60,6 +64,7 @@ const Home: NextPage = () => {
     readableStream: ReadableStream<Uint8Array>,
   ) {
     const reader = readableStream.getReader()
+    setReader(reader)
     const decoder = new TextDecoder()
     setOutputs((outputs) => [...outputs, { agent: Agent.INKEY, text: '' }])
     let newOutput = ''
@@ -74,6 +79,10 @@ const Home: NextPage = () => {
         ]
       })
     }
+    setReader(null)
+    track(EventName.OUTPUT_GENERATED, {
+      output: newOutput,
+    })
     await updateUserWordsGenerated(
       user!.uid,
       Math.round(newOutput.length / 4.5),
@@ -99,6 +108,9 @@ const Home: NextPage = () => {
       setShowUpgradeModal(true)
       return
     }
+    track(EventName.PROMPT_SUBMITTED, {
+      prompt,
+    })
     logEvent(`ask-inkey`)
     let context: Output[] = [...outputs, { agent: Agent.USER, text: prompt }]
     setOutputs((outputs) => {
@@ -129,7 +141,7 @@ const Home: NextPage = () => {
 
   return (
     <ProtectedPage>
-      <Page title={'Ask Inkey - Inkey'}>
+      <Page title="Ask Inkey - Inkey">
         {showUpgradeModal && (
           <UpgradeModal setShowUpgradeModal={setShowUpgradeModal} />
         )}

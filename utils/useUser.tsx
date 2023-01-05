@@ -15,6 +15,7 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 
 import { UsageDetails } from 'types'
 import { Subscription } from 'types'
+import { identify } from './segment'
 
 type UserContextType = {
   user: User | null | undefined
@@ -77,6 +78,12 @@ export const MyUserContextProvider = (props: Props) => {
       return newUsageDetails
     }
   }
+
+  useEffect(() => {
+    if (user) {
+      identify(user.uid, user.displayName, user.email)
+    }
+  }, [user, isLoadingUser])
 
   useEffect(() => {
     const unsub =

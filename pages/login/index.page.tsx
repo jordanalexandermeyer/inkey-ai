@@ -14,6 +14,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import toast, { Toaster } from 'react-hot-toast'
+import { EventName, track } from 'utils/segment'
 
 const Login: NextPage = () => {
   const router = useRouter()
@@ -22,8 +23,14 @@ const Login: NextPage = () => {
   const [email, setEmail] = useState('')
   const [isDisabled, setIsDisabled] = useState(false)
 
-  const signInWithGoogle = () => {
-    signInWithPopup(auth, new GoogleAuthProvider())
+  const signInWithGoogle = async () => {
+    const userCredentials = await signInWithPopup(
+      auth,
+      new GoogleAuthProvider(),
+    )
+    if (userCredentials) {
+      track(EventName.LOGGED_IN_WITH_GOOGLE)
+    }
   }
 
   const handleEmailSignIn = async () => {
@@ -69,7 +76,10 @@ const Login: NextPage = () => {
         signInWithEmailLink(auth, urlEmail, window.location.href),
         {
           loading: 'Logging in',
-          success: 'Done!',
+          success: () => {
+            track(EventName.LOGGED_IN_WITH_EMAIL)
+            return 'Done!'
+          },
           error: 'Email link is expired',
         },
         {
@@ -140,7 +150,10 @@ const Login: NextPage = () => {
             <div className="mt-8">
               <button
                 type="submit"
-                onClick={signInWithGoogle}
+                onClick={() => {
+                  track(EventName.LOG_IN_WITH_GOOGLE_BUTTON_CLICKED)
+                  signInWithGoogle()
+                }}
                 className="relative inline-flex items-center justify-center overflow-hidden font-semibold transition duration-100 ease-in-out rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 sm:px-6 px-4 h-14 text-lg sm:text-lg leading-5 tracking-tight text-white bg-blue-600 shadow-sm hover:bg-blue-400 selectionRing active:bg-blue-700 w-full"
               >
                 <span
@@ -204,6 +217,7 @@ const Login: NextPage = () => {
                 <form
                   onSubmit={(e) => {
                     e.preventDefault()
+                    track(EventName.LOG_IN_WITH_EMAIL_BUTTON_CLICKED)
                     handleEmailSignIn()
                   }}
                 >

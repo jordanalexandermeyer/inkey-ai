@@ -7,6 +7,7 @@ import { useReferral } from 'utils/useReferral'
 import { useUser } from 'utils/useUser'
 import Page from '../components/Page'
 import ProtectedPage from '../components/ProtectedPage'
+import { EventName, track } from 'utils/segment'
 
 const Home: NextPage = () => {
   const db = getFirestore()
@@ -48,6 +49,9 @@ const Home: NextPage = () => {
                   <Link
                     href={'/templates'}
                     className="inline-flex items-center justify-center font-medium text-white bg-blue-500 hover:bg-opacity-80 px-5 py-2 text-md overflow-hidden ease-in-out focus:outline-none focus:ring-offset-2 transition-all duration-150 relative rounded-lg space-x-2 ring-opacity-20 border-none focus:ring-0"
+                    onClick={() =>
+                      track(EventName.SEE_TEMPLATES_BUTTON_CLICKED)
+                    }
                   >
                     See templates
                   </Link>
@@ -89,6 +93,9 @@ const Home: NextPage = () => {
                   <Link
                     href={'/ask-inkey'}
                     className="inline-flex items-center justify-center font-medium text-white bg-blue-500 hover:bg-opacity-80 px-5 py-2 text-md overflow-hidden ease-in-out focus:outline-none focus:ring-2 transition-all duration-150 relative rounded-lg space-x-2 ring-opacity-20 border-none focus:ring-0"
+                    onClick={() =>
+                      track(EventName.ASK_A_QUESTION_BUTTON_CLICKED)
+                    }
                   >
                     Ask a question
                   </Link>
@@ -121,6 +128,7 @@ const Home: NextPage = () => {
                         'https://app.inkey.ai/signup?referral_code=' +
                           referralCode?.id,
                       )
+                      track(EventName.SHARE_LINK_COPIED)
                       toast.success('Copied to clipboard!')
                     }}
                   >
@@ -174,7 +182,10 @@ const Home: NextPage = () => {
                     onClick={() => {
                       toast.promise(submitFeedback(), {
                         loading: 'Submitting feedback',
-                        success: 'Feedback submitted. Thank you!',
+                        success: () => {
+                          track(EventName.FEEDBACK_SUBMITTED)
+                          return 'Feedback submitted. Thank you!'
+                        },
                         error:
                           'Something went wrong! Please refresh the page and try again.',
                       })

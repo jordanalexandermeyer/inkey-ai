@@ -21,6 +21,7 @@ import {
 } from 'types'
 import { languages, tones } from './constants'
 import { updateUserWordsGenerated } from 'utils/db'
+import { EventName, track } from 'utils/segment'
 
 const TemplatePage = ({
   id,
@@ -123,6 +124,10 @@ const TemplatePage = ({
       newOutput += decoder.decode(value)
       setOutput(newOutput)
     }
+    setReader(null)
+    track(EventName.OUTPUT_GENERATED, {
+      output: newOutput,
+    })
     await updateUserWordsGenerated(
       user!.uid,
       Math.round(newOutput.length / 4.5),
@@ -138,6 +143,9 @@ const TemplatePage = ({
       setShowUpgradeModal(true)
       return
     }
+    track(EventName.PROMPT_SUBMITTED, {
+      prompt,
+    })
     logEvent(`generate-${id}`)
     const toastId = toast.loading('✍️')
     setGenerateIsLoading(true)
@@ -153,6 +161,7 @@ const TemplatePage = ({
     setTone('professional')
     setPointOfView(PointOfView.THIRD)
     setSummaryMethod(SummaryMethod.PARAGRAPH)
+    setCodingLanguage(CodingLanguages.PYTHON)
     setLanguage('English')
     setAddQuotes(false)
     setQuotes({})
@@ -230,6 +239,7 @@ const TemplatePage = ({
                           setPrompt(e.target.value)
                           setNumberOfCharacters(e.target.value.length)
                         }}
+                        onClick={() => track(EventName.PROMPT_INPUT_CLICKED)}
                       ></textarea>
                     </div>
                     {supportExamplePrompt && (
@@ -238,6 +248,7 @@ const TemplatePage = ({
                           className="inline-flex items-center overflow-hidden ease-in-out outline-none focus:outline-none focus:ring-2 justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-gray-700 bg-white border border-black-300 shadow-sm hover:text-gray-500 selectionRing active:bg-gray-50 active:text-gray-800 px-3 py-2 text-sm leading-3"
                           type="button"
                           onClick={() => {
+                            track(EventName.TRY_EXAMPLE_PROMPT_BUTTON_CLICKED)
                             setPrompt(promptPlaceholder)
                             setNumberOfCharacters(promptPlaceholder.length)
                           }}
@@ -261,6 +272,9 @@ const TemplatePage = ({
                       value={poemType}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       onChange={(event) => {
+                        track(EventName.POEM_TYPE_SELECTED, {
+                          value: event.target.value,
+                        })
                         const poemType = event.target.value as PoemType
                         setPoemType(poemType)
                       }}
@@ -288,6 +302,9 @@ const TemplatePage = ({
                       value={requestedLength}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       onChange={(event) => {
+                        track(EventName.LENGTH_SELECTED, {
+                          value: event.target.value,
+                        })
                         if (!subscription?.role) {
                           setRequestedLength(EssayLength.SHORT)
                         } else {
@@ -318,6 +335,9 @@ const TemplatePage = ({
                       value={tone}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       onChange={(event) => {
+                        track(EventName.TONE_SELECTED, {
+                          value: event.target.value,
+                        })
                         setTone(event.target.value)
                       }}
                     >
@@ -345,6 +365,9 @@ const TemplatePage = ({
                       value={pointOfView}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       onChange={(event) => {
+                        track(EventName.POV_SELECTED, {
+                          value: event.target.value,
+                        })
                         const pov = event.target.value as PointOfView
                         setPointOfView(pov)
                       }}
@@ -372,6 +395,9 @@ const TemplatePage = ({
                       value={summaryMethod}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       onChange={(event) => {
+                        track(EventName.SUMMARY_METHOD_SELECTED, {
+                          value: event.target.value,
+                        })
                         const method = event.target.value as SummaryMethod
                         setSummaryMethod(method)
                       }}
@@ -399,6 +425,9 @@ const TemplatePage = ({
                       value={language}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       onChange={(event) => {
+                        track(EventName.LANGUAGE_SELECTED, {
+                          value: event.target.value,
+                        })
                         setLanguage(event.target.value)
                       }}
                     >
@@ -425,6 +454,9 @@ const TemplatePage = ({
                       value={codingLanguage}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       onChange={(event) => {
+                        track(EventName.CODING_LANGUAGE_SELECTED, {
+                          value: event.target.value,
+                        })
                         const codingLanguage = event.target
                           .value as CodingLanguages
                         setCodingLanguage(codingLanguage)
@@ -478,6 +510,7 @@ const TemplatePage = ({
                       />
                       <div
                         onClick={(e) => {
+                          track(EventName.ADD_QUOTES_TOGGLE_CLICKED)
                           if (addQuotes) setQuotes({})
                           else setQuotes({ '0': { value: '' } })
                           setAddQuotes(!addQuotes)
@@ -637,6 +670,9 @@ const TemplatePage = ({
                           setContent(e.target.value)
                           setNumberOfContentCharacters(e.target.value.length)
                         }}
+                        onClick={() =>
+                          track(EventName.CONTENT_TO_INCLUDE_INPUT_CLICKED)
+                        }
                       ></textarea>
                     </div>
                   </div>
@@ -647,7 +683,10 @@ const TemplatePage = ({
                   <button
                     className="inline-flex items-center overflow-hidden ease-in-out outline-none focus:outline-none focus:ring-2 justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-gray-700 bg-white border border-black-300 shadow-sm hover:text-gray-500 selectionRing active:bg-gray-50 active:text-gray-800 px-3 py-2 text-sm leading-3"
                     type="button"
-                    onClick={clearInputs}
+                    onClick={() => {
+                      track(EventName.CLEAR_INPUTS_BUTTON_CLICKED)
+                      clearInputs()
+                    }}
                   >
                     Clear inputs
                   </button>
@@ -661,7 +700,10 @@ const TemplatePage = ({
                         },
                       )}
                       disabled={!generateIsLoading}
-                      onClick={() => reader?.cancel()}
+                      onClick={() => {
+                        track(EventName.CANCEL_BUTTON_CLICKED)
+                        reader?.cancel()
+                      }}
                     >
                       <div>Cancel</div>
                     </button>
@@ -675,7 +717,10 @@ const TemplatePage = ({
                         },
                       )}
                       disabled={disabled()}
-                      onClick={handleGenerateClick}
+                      onClick={() => {
+                        track(EventName.GENERATE_BUTTON_CLICKED)
+                        handleGenerateClick()
+                      }}
                     >
                       <div
                         className={classNames({
@@ -724,7 +769,10 @@ const TemplatePage = ({
                 </nav>
                 <div>
                   <button
-                    onClick={clearOutputs}
+                    onClick={() => {
+                      track(EventName.CLEAR_OUTPUT_BUTTON_CLICKED)
+                      clearOutputs()
+                    }}
                     className="relative transition-all duration-150 before:transition-all before:duration-150 before:absolute before:inset-0 px-3 py-2 text-xs font-medium leading-4 text-gray-400 hover:text-gray-600 before:bg-gray-100 before:rounded-lg before:scale-50 before:opacity-0 hover:before:scale-100 hover:before:opacity-100"
                   >
                     <span className="relative">Clear</span>
