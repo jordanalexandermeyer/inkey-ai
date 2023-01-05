@@ -62,6 +62,7 @@ export enum EventName {
   // Multiple Pages
   PROMPT_SUBMITTED = 'Prompt Submitted',
   OUTPUT_GENERATED = 'Output Generated',
+  USER_LEFT = 'User Left',
   // Upgrade Page
   SUBSCRIPTION_LENGTH_SELECTED = 'Subscription Length Selected',
   GET_PREMIUM_BUTTON_CLICKED = 'Get Premium Button Clicked',
