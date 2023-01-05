@@ -132,12 +132,12 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case 'ask-inkey':
-      openaiPrompt = `You are Inkey, an AI assistant. You can help write essays, solve coding questions, help with homework, and help with job applications. You cannot access the internet. Reply to the following conversation: """\n${prompt}\n"""`
+      openaiPrompt = `You are Inkey, an AI assistant for students. You can write essays, solve coding questions, do homework, and more. Reply to the following prompt:\n${prompt}\n`
       model = 'text-davinci-003'
       temperature = 0.25
       break
     case TemplateId.TRANSLATOR_ID:
-      openaiPrompt = `Translate the following into ${language}: """\n${prompt}\n"""`
+      openaiPrompt = `Translate the following into ${language}:\n${prompt}\n`
       model = 'text-davinci-003'
       tokens = 2000
       break
@@ -154,7 +154,7 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case TemplateId.CONCLUSION_PARAGRAPH_ID:
-      openaiPrompt = `Write a long conclusion paragraph for the following essay: """\n${prompt}\n""".`
+      openaiPrompt = `Write a long conclusion paragraph for the following essay:\n${prompt}\n.`
       model = 'text-davinci-003'
       break
     case TemplateId.DISCUSSION_BOARD_RESPONSE_ID:
@@ -196,7 +196,7 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case TemplateId.EXPLAIN_CODE_ID:
-      openaiPrompt = `Rewrite the following code with comments explaining each line: """\n${prompt}\n"""`
+      openaiPrompt = `Rewrite the following code with comments explaining each line:\n${prompt}\n`
       tokens = 2000
       model = 'text-davinci-003'
       break
