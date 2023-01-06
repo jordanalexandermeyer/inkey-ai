@@ -392,6 +392,7 @@ export const templates: TemplateMap = {
       'Inkey will rewrite your text. Start by writing or pasting something here and then press "Generate".',
     supportExamplePrompt: false,
     supportRequestedLength: false,
+    supportPointOfView: false,
     href: `/${TemplateId.PARAPHRASER_ID}`,
     attribute: FilterType.WRITING_TOOLS,
   },
