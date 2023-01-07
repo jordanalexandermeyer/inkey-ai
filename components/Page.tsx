@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
 import { Toaster } from 'react-hot-toast'
 import { useReferral } from 'utils/useReferral'
 import Banner from './Banner'
@@ -8,6 +8,8 @@ import ReferralModal from './ReferralModal'
 
 const Page = ({ title, children }: { title: string; children: ReactNode }) => {
   const { showReferralModal, setShowReferralModal } = useReferral()
+  const [showBanner, setShowBanner] = useState(true)
+
   return (
     <>
       <Head>
@@ -44,7 +46,7 @@ const Page = ({ title, children }: { title: string; children: ReactNode }) => {
         <ReferralModal setShowReferralModal={setShowReferralModal} />
       )}
       <div className="lg:ml-56">
-        <Banner />
+        {showBanner && <Banner setShowBanner={setShowBanner} />}
         {children}
       </div>
     </>
