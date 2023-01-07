@@ -165,7 +165,7 @@ const Home: NextPage = () => {
                       </div>
                       <div className="relative flex flex-col w-full lg:w-[calc(100%-115px)]">
                         <div className="min-h-[20px] flex flex-col items-start gap-4">
-                          <div className="break-words whitespace-pre-line w-full">
+                          <div className="break-words whitespace-pre-wrap w-full">
                             {output.text}
                           </div>
                         </div>
@@ -241,7 +241,7 @@ const Home: NextPage = () => {
                       </div>
                       <div className="relative flex flex-col w-full lg:w-[calc(100%-115px)]">
                         <div className="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap">
-                          <div className="break-words whitespace-pre-line w-full">
+                          <div className="break-words whitespace-pre-wrap w-full">
                             {output.text}
                           </div>
                         </div>

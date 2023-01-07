@@ -2,6 +2,7 @@ import Head from 'next/head'
 import { ReactNode } from 'react'
 import { Toaster } from 'react-hot-toast'
 import { useReferral } from 'utils/useReferral'
+import Banner from './Banner'
 import Navigation from './Navigation'
 import ReferralModal from './ReferralModal'
 
@@ -42,7 +43,10 @@ const Page = ({ title, children }: { title: string; children: ReactNode }) => {
       {showReferralModal && (
         <ReferralModal setShowReferralModal={setShowReferralModal} />
       )}
-      <div className="lg:ml-56">{children}</div>
+      <div className="lg:ml-56">
+        <Banner />
+        {children}
+      </div>
     </>
   )
 }
