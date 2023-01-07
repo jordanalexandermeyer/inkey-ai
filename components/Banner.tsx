@@ -21,19 +21,19 @@ const Banner = ({ setShowBanner }: { setShowBanner: CallableFunction }) => {
                 />
               </svg>
             </span>
-            <p className="ml-3 truncate font-medium text-white">
+            <p className="mx-2 truncate font-medium text-white">
               <span className="md:hidden">
-                Inkey is down. We are fixing it now!
+                Inkey is tired. Please be patient with generations.
               </span>
               <span className="hidden md:inline">
-                Inkey is having technical difficulties and we are working to fix
-                it!
+                Inkey is slower than normal right now. Please be patient with
+                generations.
               </span>
             </p>
           </div>
           <button
             type="button"
-            className="mx-2 flex rounded-md p-2 hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-white"
+            className="flex rounded-md p-2 hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-white"
             onClick={() => {
               setShowBanner(false)
               window.localStorage.setItem('showErrorBanner', '0')
