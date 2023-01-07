@@ -34,7 +34,10 @@ const Banner = ({ setShowBanner }: { setShowBanner: CallableFunction }) => {
           <button
             type="button"
             className="mx-2 flex rounded-md p-2 hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-white"
-            onClick={() => setShowBanner(false)}
+            onClick={() => {
+              setShowBanner(false)
+              window.localStorage.setItem('showErrorBanner', '0')
+            }}
           >
             <span className="sr-only">Dismiss</span>
             <svg
