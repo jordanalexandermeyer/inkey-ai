@@ -23,3 +23,8 @@ export const capitalizeFirstLetter = (word: string) => {
 export const roundToTwoDecimals = (input: number) => {
   return Math.floor(input * 100) / 100
 }
+
+export const strip = (html: string) => {
+  let doc = new DOMParser().parseFromString(html, 'text/html')
+  return doc.body.textContent || ''
+}

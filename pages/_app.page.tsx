@@ -1,5 +1,3 @@
-initializeFirebaseApp()
-initializeAmplitude()
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import initializeFirebaseApp from '../utils/initializeFirebase'
@@ -10,6 +8,9 @@ import { ReferralContextProvider } from 'utils/useReferral'
 import { useEffect } from 'react'
 import Router from 'next/router'
 import { EventName, page, track } from 'utils/segment'
+
+initializeFirebaseApp()
+initializeAmplitude()
 
 function MyApp({ Component, pageProps: { ...pageProps } }: AppProps) {
   useEffect(() => {

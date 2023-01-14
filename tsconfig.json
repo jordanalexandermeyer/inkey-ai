@@ -15,7 +15,11 @@
     "jsx": "preserve",
     "incremental": true,
     "downlevelIteration": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@/db/*": ["db/*"],
+      "@/utils/*": ["utils/*"]
+    }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", "functions"]
