@@ -43,7 +43,7 @@ export const prices = {
 }
 
 export const basicFeatures: Feature[] = [
-  { included: true, text: '1,000 words/month', color: 'gray-400' },
+  { included: true, text: '5,000 words/month', color: 'gray-400' },
   { included: true, text: 'Shorter template generations', color: 'gray-400' },
 ]
 

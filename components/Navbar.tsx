@@ -245,7 +245,7 @@ const Navbar = ({
                 </svg>
                 Ask Inkey
               </span>
-              <span className="px-2 text-xs font-bold rounded-full border border-2 border-green-500 text-green-500">
+              <span className="px-2 text-xs font-bold rounded-full border-2 border-green-500 text-green-500">
                 NEW
               </span>
             </Link>
