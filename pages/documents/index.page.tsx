@@ -80,6 +80,7 @@ const DocumentsPage: NextPage = () => {
     const newDocument = await saveDocumentToDb(user!.uid, options)
     setNewDocumentLoading(false)
     addNewDocumentToDocuments(newDocument)
+    return newDocument
   }
 
   const deleteDocument = async (documentId: string) => {
@@ -121,7 +122,10 @@ const DocumentsPage: NextPage = () => {
               <div className="flex w-full gap-x-28">
                 <div className="flex flex-col items-center gap-2 font-medium">
                   <button
-                    onClick={() => createDocument()}
+                    onClick={async () => {
+                      const document = await createDocument()
+                      window.location.href = `/documents/${document.id}`
+                    }}
                     className="flex justify-center items-center text-gray-300 border rounded-md border-gray-300 hover:border-blue-700 hover:text-blue-700 h-40 w-32 bg-white"
                   >
                     <svg
