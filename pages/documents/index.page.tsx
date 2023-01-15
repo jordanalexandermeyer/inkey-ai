@@ -216,9 +216,7 @@ const DocumentsPage: NextPage = () => {
                       {showSortPanel && (
                         <div className="z-10 absolute right-0 bg-white w-52 flex flex-col border rounded-md text-gray-600">
                           <button
-                            onClick={(e) => {
-                              e.preventDefault()
-                              setShowSortPanel(false)
+                            onClick={() => {
                               setDocuments((documents) =>
                                 sortDocumentsByName(documents),
                               )
@@ -241,9 +239,7 @@ const DocumentsPage: NextPage = () => {
                             <p>Sort by name</p>
                           </button>
                           <button
-                            onClick={(e) => {
-                              e.preventDefault()
-                              setShowSortPanel(false)
+                            onClick={() => {
                               setDocuments((documents) =>
                                 sortDocumentsByDateModified(documents),
                               )
@@ -510,9 +506,9 @@ const DocumentTable = ({
     <table className="table-auto w-full border-collapse">
       <thead>
         <tr className="border-b">
-          <th className="text-left px-4 py-4 text-gray-900">Title</th>
-          <th className="text-left px-4 py-4 text-gray-900">Size</th>
-          <th className="text-left px-4 py-4 text-gray-900">Date</th>
+          <th className="text-left px-4 py-4 text-gray-500">Title</th>
+          <th className="text-left px-4 py-4 text-gray-500">Size</th>
+          <th className="text-left px-4 py-4 text-gray-500">Date</th>
           <th></th>
         </tr>
       </thead>

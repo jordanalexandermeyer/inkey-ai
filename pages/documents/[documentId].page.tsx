@@ -170,7 +170,7 @@ const DocumentPage: NextPage = () => {
                   })
                 },
                 skin_url: '/assets/skins/ui/CUSTOM',
-                content_css: '/assets/skins/content/CUSTOM/content.css',
+                content_css: '/assets/skins/content/CUSTOM/content.min.css',
                 menubar: 'file edit insert format tools',
                 menu: {
                   file: {
