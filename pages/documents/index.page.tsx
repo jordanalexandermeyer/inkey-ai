@@ -292,7 +292,7 @@ const DocumentsPage: NextPage = () => {
           </div>
         </BrowserView>
         <MobileView>
-          <div className="flex flex-col w-full h-screen justify-center items-center pb-16 px-8 gap-8">
+          <div className="flex flex-col w-full justify-center items-center pt-24 px-8 gap-8">
             <h1 className="text-3xl text-center">
               This product is only available on desktop.
             </h1>
@@ -339,7 +339,7 @@ const DocumentsPage: NextPage = () => {
               <p className="text-xl">Meanwhile, try this 👇</p>
               <Link
                 href="/templates/general-essay"
-                className="flex justify-center items-center px-6 py-3 text-xl font-bold rounded-md text-white bg-blue-700 hover:bg-blue-800 active:bg-blue-900"
+                className="flex justify-center items-center px-6 py-3 text-xl font-bold rounded-md text-white bg-blue-700"
               >
                 Essay Writer
               </Link>
