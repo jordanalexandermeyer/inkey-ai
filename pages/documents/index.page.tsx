@@ -293,7 +293,7 @@ const DocumentsPage: NextPage = () => {
         </BrowserView>
         <MobileView>
           <div className="flex flex-col w-full justify-center items-center pt-24 px-8 gap-8">
-            <h1 className="text-3xl text-center">
+            <h1 className="text-3xl font-medium text-center">
               This product is only available on desktop.
             </h1>
             <svg
@@ -339,7 +339,7 @@ const DocumentsPage: NextPage = () => {
               <p className="text-xl">Meanwhile, try this 👇</p>
               <Link
                 href="/templates/general-essay"
-                className="flex justify-center items-center px-6 py-3 text-xl font-bold rounded-md text-white bg-blue-700"
+                className="flex justify-center items-center px-6 py-3 text-xl font-semibold rounded-md text-white bg-blue-700"
               >
                 Essay Writer
               </Link>
