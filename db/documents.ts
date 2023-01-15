@@ -53,7 +53,6 @@ export const createDocument = async (
     content: '',
     numberOfWords: 0,
     citations: [],
-    totalStorageUsed: 0,
     citationStyleId: CitationStyle.MLA,
     modifiedDate: Date.now(),
     creationDate: Date.now(),
@@ -92,9 +91,7 @@ export interface Document extends DocumentWithoutId {
 export interface DocumentWithoutId {
   title: string
   content: string
-  numberOfWords: number
   citations?: Citation[]
-  totalStorageUsed: number
   citationStyleId: string
   owner: string
   modifiedDate: number
@@ -105,9 +102,7 @@ export interface DocumentWithoutId {
 export interface DocumentFields {
   title?: string
   content?: string
-  numberOfWords?: number
   citations?: Citation[]
-  totalStorageUsed?: number
   citationStyleId?: string
 }
 

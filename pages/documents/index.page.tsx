@@ -14,7 +14,12 @@ import {
 import { useUser } from '@/utils/useUser'
 import { useEffect, createRef } from 'react'
 import Link from 'next/link'
-import { strip } from '@/utils/helpers'
+import {
+  convertBytesToKilobytes,
+  roundToTwoDecimals,
+  strip,
+} from '@/utils/helpers'
+import sizeof from 'firestore-size'
 
 enum DocumentView {
   LIST = 'list',
@@ -28,74 +33,46 @@ const DocumentsPage: NextPage = () => {
   const [documents, setDocuments] = useState<Document[]>([])
   const [documentView, setDocumentView] = useState(DocumentView.PANELS)
   const [showSortPanel, setShowSortPanel] = useState(false)
-  const sortPanelRef = createRef<any>()
-
-  useEffect(() => {
-    function handleClickOutside(event: any) {
-      if (
-        sortPanelRef.current &&
-        !sortPanelRef.current.contains(event.target)
-      ) {
-        setShowSortPanel(false)
-      }
-    }
-    window.document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      window.document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [sortPanelRef])
 
   const switchDocumentView = () => {
     if (documentView == DocumentView.PANELS) setDocumentView(DocumentView.LIST)
     if (documentView == DocumentView.LIST) setDocumentView(DocumentView.PANELS)
   }
 
-  const sortDocumentsByName = () => {
-    setDocuments((documents) => {
-      const documentsCopy: Document[] = JSON.parse(JSON.stringify(documents))
-      documentsCopy.sort((documentA, documentB) => {
-        if (documentA.title < documentB.title) return -1
-        if (documentA.title > documentB.title) return 1
+  const sortDocumentsByName = (documents: Document[]) => {
+    const documentsCopy: Document[] = JSON.parse(JSON.stringify(documents))
+    documentsCopy.sort((documentA, documentB) => {
+      if (documentA.title < documentB.title) return -1
+      if (documentA.title > documentB.title) return 1
+      return 0
+    })
+    if (JSON.stringify(documents) == JSON.stringify(documentsCopy)) {
+      return documentsCopy.sort((documentA, documentB) => {
+        if (documentA.title < documentB.title) return 1
+        if (documentA.title > documentB.title) return -1
         return 0
       })
-      if (JSON.stringify(documents) == JSON.stringify(documentsCopy)) {
-        return documentsCopy.sort((documentA, documentB) => {
-          if (documentA.title < documentB.title) return 1
-          if (documentA.title > documentB.title) return -1
-          return 0
-        })
-      } else {
-        return documentsCopy.sort((documentA, documentB) => {
-          if (documentA.title < documentB.title) return -1
-          if (documentA.title > documentB.title) return 1
-          return 0
-        })
-      }
-    })
+    } else {
+      return documentsCopy
+    }
   }
 
-  const sortDocumentsByDateModified = () => {
-    setDocuments((documents) => {
-      const documentsCopy: Document[] = JSON.parse(JSON.stringify(documents))
-      documentsCopy.sort((documentA, documentB) => {
+  const sortDocumentsByDateModified = (documents: Document[]) => {
+    const documentsCopy: Document[] = JSON.parse(JSON.stringify(documents))
+    documentsCopy.sort((documentA, documentB) => {
+      if (documentA.modifiedDate < documentB.modifiedDate) return 1
+      if (documentA.modifiedDate > documentB.modifiedDate) return -1
+      return 0
+    })
+    if (JSON.stringify(documents) == JSON.stringify(documentsCopy)) {
+      return documentsCopy.sort((documentA, documentB) => {
         if (documentA.modifiedDate < documentB.modifiedDate) return -1
         if (documentA.modifiedDate > documentB.modifiedDate) return 1
         return 0
       })
-      if (JSON.stringify(documents) == JSON.stringify(documentsCopy)) {
-        return documentsCopy.sort((documentA, documentB) => {
-          if (documentA.modifiedDate < documentB.modifiedDate) return 1
-          if (documentA.modifiedDate > documentB.modifiedDate) return -1
-          return 0
-        })
-      } else {
-        return documentsCopy.sort((documentA, documentB) => {
-          if (documentA.modifiedDate < documentB.modifiedDate) return -1
-          if (documentA.modifiedDate > documentB.modifiedDate) return 1
-          return 0
-        })
-      }
-    })
+    } else {
+      return documentsCopy
+    }
   }
 
   const createDocument = async (options: CreateDocumentOptions = {}) => {
@@ -111,7 +88,7 @@ const DocumentsPage: NextPage = () => {
   }
 
   const addNewDocumentToDocuments = (newDocument: Document) => {
-    documents.push(newDocument)
+    documents.unshift(newDocument)
   }
 
   const removeDocumentFromDocuments = (documentId: string) => {
@@ -125,7 +102,8 @@ const DocumentsPage: NextPage = () => {
     const loadDocuments = async () => {
       setIsLoading(true)
       const documents = await getDocumentsFromDb(user!.uid)
-      setDocuments(documents)
+      const sortedDocuments = sortDocumentsByDateModified(documents)
+      setDocuments(sortedDocuments)
       setIsLoading(false)
     }
     if (user) loadDocuments()
@@ -228,15 +206,14 @@ const DocumentsPage: NextPage = () => {
                       </svg>
                     </div>
                     {showSortPanel && (
-                      <div
-                        ref={sortPanelRef}
-                        className="z-10 absolute right-0 bg-white w-52 flex flex-col border rounded-md text-gray-600"
-                      >
+                      <div className="z-10 absolute right-0 bg-white w-52 flex flex-col border rounded-md text-gray-600">
                         <button
                           onClick={(e) => {
                             e.preventDefault()
                             setShowSortPanel(false)
-                            sortDocumentsByName()
+                            setDocuments((documents) =>
+                              sortDocumentsByName(documents),
+                            )
                           }}
                           className="flex items-center gap-2 w-full p-2 hover:bg-gray-50"
                         >
@@ -259,7 +236,9 @@ const DocumentsPage: NextPage = () => {
                           onClick={(e) => {
                             e.preventDefault()
                             setShowSortPanel(false)
-                            sortDocumentsByDateModified()
+                            setDocuments((documents) =>
+                              sortDocumentsByDateModified(documents),
+                            )
                           }}
                           className="flex items-center gap-2 w-full p-2 hover:bg-gray-50"
                         >
@@ -320,19 +299,25 @@ const DocumentPanel = ({
   deleteDocument: CallableFunction
 }) => {
   const [showPanel, setShowPanel] = useState(false)
-  const actionsRef = createRef<any>()
+  const actionsPanelRef = createRef<any>()
+  const actionsButtonRef = createRef<any>()
 
   useEffect(() => {
     function handleClickOutside(event: any) {
-      if (actionsRef.current && !actionsRef.current.contains(event.target)) {
+      if (
+        actionsPanelRef.current &&
+        actionsButtonRef.current &&
+        !actionsPanelRef.current.contains(event.target) &&
+        !actionsButtonRef.current.contains(event.target)
+      ) {
         setShowPanel(false)
       }
     }
-    window.document.addEventListener('mousedown', handleClickOutside)
+    window.document.addEventListener('mouseup', handleClickOutside)
     return () => {
-      window.document.removeEventListener('mousedown', handleClickOutside)
+      window.document.removeEventListener('mouseup', handleClickOutside)
     }
-  }, [actionsRef])
+  }, [actionsPanelRef])
 
   return (
     <Link
@@ -360,6 +345,7 @@ const DocumentPanel = ({
           </p>
           <div>
             <button
+              ref={actionsButtonRef}
               onClick={(e) => {
                 e.preventDefault()
                 setShowPanel(!showPanel)
@@ -382,7 +368,7 @@ const DocumentPanel = ({
             </button>
             {showPanel && (
               <div
-                ref={actionsRef}
+                ref={actionsPanelRef}
                 className="absolute -translate-x-10 bg-white flex-col border rounded-md text-gray-600"
               >
                 <button
@@ -415,9 +401,7 @@ const DocumentPanel = ({
                     createDocument({
                       title: document.title + ' Copy',
                       content: document.content,
-                      numberOfWords: document.numberOfWords,
                       citations: document.citations,
-                      totalStorageUsed: document.totalStorageUsed,
                       citationStyleId: document.citationStyleId,
                     })
                   }}
@@ -469,6 +453,7 @@ const DocumentTable = ({
         </tr>
       </thead>
       <tbody>
+        {newDocumentLoading && <DocumentRowLoading />}
         {documents.map((document, index) => {
           return (
             <DocumentRow
@@ -479,7 +464,6 @@ const DocumentTable = ({
             />
           )
         })}
-        {newDocumentLoading && <DocumentRowLoading />}
       </tbody>
     </table>
   )
@@ -498,6 +482,7 @@ const DocumentPanels = ({
 }) => {
   return (
     <div className="flex flex-wrap w-full justify-start gap-x-16 gap-y-12">
+      {newDocumentLoading && <DocumentPanelLoading />}
       {documents.map((document, index) => {
         return (
           <DocumentPanel
@@ -508,7 +493,6 @@ const DocumentPanels = ({
           />
         )
       })}
-      {newDocumentLoading && <DocumentPanelLoading />}
     </div>
   )
 }
@@ -523,19 +507,25 @@ const DocumentRow = ({
   deleteDocument: CallableFunction
 }) => {
   const [showPanel, setShowPanel] = useState(false)
-  const actionsRef = createRef<any>()
+  const actionsPanelRef = createRef<any>()
+  const actionsButtonRef = createRef<any>()
 
   useEffect(() => {
     function handleClickOutside(event: any) {
-      if (actionsRef.current && !actionsRef.current.contains(event.target)) {
+      if (
+        actionsPanelRef.current &&
+        actionsButtonRef.current &&
+        !actionsPanelRef.current.contains(event.target) &&
+        !actionsButtonRef.current.contains(event.target)
+      ) {
         setShowPanel(false)
       }
     }
-    window.document.addEventListener('mousedown', handleClickOutside)
+    window.document.addEventListener('mouseup', handleClickOutside)
     return () => {
-      window.document.removeEventListener('mousedown', handleClickOutside)
+      window.document.removeEventListener('mouseup', handleClickOutside)
     }
-  }, [actionsRef])
+  }, [actionsPanelRef])
 
   return (
     <tr className="border-t">
@@ -545,7 +535,7 @@ const DocumentRow = ({
         </Link>
       </td>
       <td className="whitespace-nowrap px-4 py-6 text-gray-700">
-        {document.totalStorageUsed} KB
+        {roundToTwoDecimals(convertBytesToKilobytes(sizeof(document)))} KB
       </td>
       <td className="whitespace-nowrap px-4 py-6 text-gray-700">
         {new Date(document.modifiedDate).toLocaleString(undefined, {
@@ -559,6 +549,7 @@ const DocumentRow = ({
       <td>
         <div>
           <button
+            ref={actionsButtonRef}
             onClick={(e) => {
               e.preventDefault()
               setShowPanel(!showPanel)
@@ -581,7 +572,7 @@ const DocumentRow = ({
           </button>
           {showPanel && (
             <div
-              ref={actionsRef}
+              ref={actionsPanelRef}
               className="z-10 absolute -translate-x-10  bg-white flex-col border rounded-md text-gray-600"
             >
               <button
@@ -614,9 +605,7 @@ const DocumentRow = ({
                   createDocument({
                     title: document.title + ' Copy',
                     content: document.content,
-                    numberOfWords: document.numberOfWords,
                     citations: document.citations,
-                    totalStorageUsed: document.totalStorageUsed,
                     citationStyleId: document.citationStyleId,
                   })
                 }}
