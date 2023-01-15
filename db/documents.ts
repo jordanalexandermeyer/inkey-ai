@@ -68,9 +68,16 @@ export const createDocument = async (
   }
 }
 
-export const updateDocument = async (documentId: string, content: string) => {
+export const updateDocument = async (
+  documentId: string,
+  documentFields: DocumentFields,
+) => {
   const docRef = doc(db, 'documents', documentId)
-  await setDoc(docRef, { content, modifiedDate: Date.now() }, { merge: true })
+  await setDoc(
+    docRef,
+    { ...documentFields, modifiedDate: Date.now() },
+    { merge: true },
+  )
 }
 
 export const deleteDocument = async (id: string) => {
@@ -93,6 +100,15 @@ export interface DocumentWithoutId {
   modifiedDate: number
   creationDate: number
   deletionDate?: number
+}
+
+export interface DocumentFields {
+  title?: string
+  content?: string
+  numberOfWords?: number
+  citations?: Citation[]
+  totalStorageUsed?: number
+  citationStyleId?: string
 }
 
 export interface CreateDocumentOptions {

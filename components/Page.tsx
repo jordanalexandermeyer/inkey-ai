@@ -47,7 +47,7 @@ const Page = ({ title, children }: { title: string; children: ReactNode }) => {
       {showReferralModal && (
         <ReferralModal setShowReferralModal={setShowReferralModal} />
       )}
-      <div className="lg:ml-56">
+      <div className="lg:ml-56 relative">
         {/* {showBanner && <Banner setShowBanner={setShowBanner} />} */}
         {children}
       </div>

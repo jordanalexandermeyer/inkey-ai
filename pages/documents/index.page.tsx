@@ -180,7 +180,7 @@ const DocumentsPage: NextPage = () => {
           <div className="flex w-full justify-center px-6">
             <div className="flex flex-col w-full max-w-5xl gap-6 py-8">
               <div className="flex w-full justify-between items-center">
-                <h2 className="text-2xl text-gray-900">Recent documents</h2>
+                <h2 className="text-2xl text-gray-900">Your documents</h2>
                 <div className="flex gap-1 text-gray-700">
                   <button
                     onClick={switchDocumentView}

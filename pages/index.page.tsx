@@ -92,7 +92,7 @@ const Home: NextPage = () => {
                 <div className="flex flex-col w-full items-stretch md:items-start">
                   <Link
                     href={'/ask-inkey'}
-                    className="inline-flex items-center justify-center font-medium text-white bg-blue-500 hover:bg-opacity-80 px-5 py-2 text-md overflow-hidden ease-in-out focus:outline-none focus:ring-2 transition-all duration-150 relative rounded-lg space-x-2 ring-opacity-20 border-none focus:ring-0"
+                    className="inline-flex items-center justify-center font-medium text-white bg-blue-500 hover:bg-opacity-80 px-5 py-2 text-md overflow-hidden ease-in-out focus:outline-none transition-all duration-150 relative rounded-lg space-x-2 ring-opacity-20 border-none focus:ring-0"
                     onClick={() =>
                       track(EventName.ASK_A_QUESTION_BUTTON_CLICKED)
                     }
