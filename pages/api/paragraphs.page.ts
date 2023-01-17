@@ -9,14 +9,18 @@ export default async function handler(request: NextRequest) {
   const userId = body.userId
   const title = body.title
   const args: string[] = body.arguments
+  const prompts = args.map(
+    (arg) =>
+      `You are writing an essay titled, "${title}". Write an outline for a paragraph discussing this topic, "${arg}". Use the following format.\n\nI. Topic Sentences\nA.\nB.\n\nII. INSERT TOPIC HERE\nA.\nB.\nC.\n\nIII. INSERT TOPIC HERE\nA.\nB.\nC.\n\nIV. Concluding Sentences\nA.\nB.\n`,
+  )
 
   const responses = await Promise.all(
-    args.map(async (arg, index) => {
+    prompts.map(async (prompt) => {
       const response = await fetch('https://api.openai.com/v1/completions', {
         method: 'POST',
         body: JSON.stringify({
           model: 'text-davinci-003',
-          prompt: `You are writing an essay titled, "${title}". Write an outline for a paragraph discussing this topic, "${args[index]}". Use the following format.\n\nI. Topic Sentences\nA.\nB.\n\nII. INSERT TOPIC HERE\nA.\nB.\nC.\n\nIII. INSERT TOPIC HERE\nA.\nB.\nC.\n\nIV. Concluding Sentences\nA.\nB.\n`,
+          prompt,
           temperature: 1,
           top_p: 0.9,
           max_tokens: 1000,
@@ -42,6 +46,7 @@ export default async function handler(request: NextRequest) {
 }
 
 const getParagraphMapFromResponseBody = (body: any) => {
+  console.log(body)
   const text = body.choices[0].text.trim()
   const paragraphs = text.split('\n\n')
   const paragraphMap = paragraphs.map((paragraph: string) => {

@@ -6,7 +6,6 @@ import {
   useContext,
   useState,
 } from 'react'
-import { mockState } from './mockState'
 
 type NewEssayContext = {
   step: number

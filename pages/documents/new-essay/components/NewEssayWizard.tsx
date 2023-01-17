@@ -5,6 +5,7 @@ import Modal from 'components/Modal'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
+import { toast } from 'react-hot-toast'
 import BorderedInput from './BorderedInput'
 import { BackButton, NextButton } from './Buttons'
 import { Essay, Paragraphs, useNewEssay } from './NewEssayContextProvider'
@@ -65,12 +66,22 @@ const PromptStep = ({ componentStep }: { componentStep: number }) => {
   }
 
   const handleSubmit = async () => {
-    setIsLoading(true)
-    const title = await generateTitle(prompt)
-    setTitle(title)
+    if (!title) {
+      try {
+        setIsLoading(true)
+        const title = await generateTitle(prompt)
+        setTitle(title)
+        setIsLoading(false)
+      } catch (error) {
+        toast.error('Something went wrong, please try again!')
+        setIsLoading(false)
+        return
+      }
+    }
     setStep((step) => step + 1)
-    setIsLoading(false)
   }
+
+  const disabled = isLoading || prompt.trim() === ''
 
   return (
     <div
@@ -102,7 +113,7 @@ const PromptStep = ({ componentStep }: { componentStep: number }) => {
         <div className="flex w-full justify-end">
           <NextButton
             isLoading={isLoading}
-            disabled={prompt.trim() == ''}
+            disabled={disabled}
             onClick={() => handleSubmit()}
           />
         </div>
@@ -117,6 +128,7 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
     setStep,
     title,
     setTitle,
+    argumentsState,
     setArgumentsState,
   } = useNewEssay()
   const { user } = useUser()
@@ -131,12 +143,22 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
   }
 
   const handleSubmit = async () => {
-    setIsLoading(true)
-    const args = await generateArguments(title)
-    setArgumentsState(args)
+    if (argumentsState.length === 0) {
+      try {
+        setIsLoading(true)
+        const args = await generateArguments(title)
+        setArgumentsState(args)
+        setIsLoading(false)
+      } catch (error) {
+        toast.error('Something went wrong, please try again!')
+        setIsLoading(false)
+        return
+      }
+    }
     setStep((step) => step + 1)
-    setIsLoading(false)
   }
+
+  const disabled = isLoading || title.trim() === ''
 
   return (
     <div
@@ -166,8 +188,15 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
           />
         </div>
         <div className="flex w-full justify-between">
-          <BackButton onClick={() => setStep((step) => step - 1)} />
-          <NextButton isLoading={isLoading} onClick={() => handleSubmit()} />
+          <BackButton
+            disabled={isLoading}
+            onClick={() => setStep((step) => step - 1)}
+          />
+          <NextButton
+            disabled={disabled}
+            isLoading={isLoading}
+            onClick={() => handleSubmit()}
+          />
         </div>
       </div>
     </div>
@@ -181,6 +210,7 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
     title,
     argumentsState,
     setArgumentsState,
+    paragraphsState,
     setParagraphsState,
   } = useNewEssay()
   const { user } = useUser()
@@ -199,12 +229,22 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
   }
 
   const handleSubmit = async () => {
-    setIsLoading(true)
-    const paragraphs = await generateParagraphs(argumentsState)
-    setParagraphsState(paragraphs)
+    if (paragraphsState.length === 0) {
+      try {
+        setIsLoading(true)
+        const paragraphs = await generateParagraphs(argumentsState)
+        setParagraphsState(paragraphs)
+        setIsLoading(false)
+      } catch (error) {
+        toast.error('Something went wrong, please try again!')
+        setIsLoading(false)
+        return
+      }
+    }
     setStep((step) => step + 1)
-    setIsLoading(false)
   }
+
+  const disabled = isLoading || argumentsState.length === 0
 
   return (
     <div
@@ -342,8 +382,15 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
           </div>
         </div>
         <div className="flex w-full justify-between">
-          <BackButton onClick={() => setStep((step) => step - 1)} />
-          <NextButton isLoading={isLoading} onClick={() => handleSubmit()} />
+          <BackButton
+            disabled={isLoading}
+            onClick={() => setStep((step) => step - 1)}
+          />
+          <NextButton
+            disabled={disabled}
+            isLoading={isLoading}
+            onClick={() => handleSubmit()}
+          />
         </div>
       </div>
     </div>
@@ -428,6 +475,7 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
     setStep,
     title,
     paragraphsState,
+    essayState,
     setEssayState,
   } = useNewEssay()
   const { user } = useUser()
@@ -450,11 +498,19 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
   }
 
   const handleSubmit = async () => {
-    setIsLoading(true)
-    const essay = await generateEssay(paragraphsState)
-    setEssayState(essay)
+    if (essayState.body === '') {
+      try {
+        setIsLoading(true)
+        const essay = await generateEssay(paragraphsState)
+        setEssayState(essay)
+        setIsLoading(false)
+      } catch (error) {
+        toast.error('Something went wrong, please try again!')
+        setIsLoading(false)
+        return
+      }
+    }
     setStep((step) => step + 1)
-    setIsLoading(false)
   }
 
   return (
@@ -482,8 +538,15 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
           ))}
         </div>
         <div className="flex w-full justify-between">
-          <BackButton onClick={() => setStep((step) => step - 1)} />
-          <NextButton isLoading={isLoading} onClick={() => handleSubmit()} />
+          <BackButton
+            disabled={isLoading}
+            onClick={() => setStep((step) => step - 1)}
+          />
+          <NextButton
+            disabled={isLoading}
+            isLoading={isLoading}
+            onClick={() => handleSubmit()}
+          />
         </div>
       </div>
     </div>
@@ -807,14 +870,6 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
   const { user } = useUser()
   const [isLoading, setIsLoading] = useState(false)
 
-  // const generateTitle = async (prompt: string) => {
-  //   const response = await fetch(
-  //     `/api/title?userId=${user?.uid}&prompt=${prompt}`,
-  //   )
-  //   const body = await response.json()
-  //   return body.title
-  // }
-
   const handleSubmit = async () => {
     setIsLoading(true)
     const doc = await createDocument(user?.uid!, {
@@ -849,7 +904,7 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
       <div className="max-w-5xl w-full flex justify-between mt-10">
         <button
           onClick={() => setStep((step) => step - 1)}
-          className="flex justify-center items-center gap-1"
+          className="flex justify-center items-center gap-1 hover:bg-gray-200 active:bg-gray-300 rounded-lg p-2"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -866,7 +921,7 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
         </button>
         <button
           onClick={() => handleSubmit()}
-          className="flex justify-center items-center gap-1"
+          className="flex justify-center items-center gap-1 hover:bg-gray-200 active:bg-gray-300 rounded-lg p-2"
         >
           <span className="text-lg">Open in editor</span>
           <svg

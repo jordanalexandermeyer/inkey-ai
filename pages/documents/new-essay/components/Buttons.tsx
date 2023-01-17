@@ -14,7 +14,7 @@ export const NextButton = ({
     <button
       disabled={disabled}
       onClick={onClick}
-      className="flex items-center justify-center bg-blue-500 text-white rounded-lg transition-colors active:bg-blue-800 hover:bg-blue-300 disabled:bg-blue-300"
+      className="flex items-center justify-center bg-blue-500 text-white rounded-lg transition-colors active:bg-blue-800 hover:bg-blue-300 disabled:bg-blue-300 disabled:hover:cursor-not-allowed"
     >
       <div
         className={classNames(
@@ -64,14 +64,17 @@ export const NextButton = ({
 }
 
 export const BackButton = ({
+  disabled,
   onClick,
 }: {
+  disabled?: boolean
   onClick: MouseEventHandler<HTMLButtonElement>
 }) => {
   return (
     <button
+      disabled={disabled}
       onClick={onClick}
-      className="flex items-center gap-2 py-3 px-4 bg-white text-gray-700 border border-gray-300 rounded-lg transition-colors active:bg-gray-200 hover:bg-gray-50"
+      className="flex items-center gap-2 py-3 px-4 bg-white text-gray-700 border border-gray-300 rounded-lg transition-colors active:bg-gray-200 hover:bg-gray-50 disabled:bg-gray-50 disabled:hover:cursor-not-allowed"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

@@ -494,6 +494,34 @@ const DocumentPanel = ({
   )
 }
 
+const DocumentPanels = ({
+  documents,
+  newDocumentLoading,
+  createDocument,
+  deleteDocument,
+}: {
+  documents: Document[]
+  newDocumentLoading: boolean
+  deleteDocument: CallableFunction
+  createDocument: CallableFunction
+}) => {
+  return (
+    <div className="flex flex-wrap w-full justify-start gap-x-16 gap-y-12">
+      {newDocumentLoading && <DocumentPanelLoading />}
+      {documents.map((document, index) => {
+        return (
+          <DocumentPanel
+            key={index}
+            document={document}
+            createDocument={createDocument}
+            deleteDocument={deleteDocument}
+          />
+        )
+      })}
+    </div>
+  )
+}
+
 const DocumentTable = ({
   documents,
   newDocumentLoading,
@@ -532,34 +560,6 @@ const DocumentTable = ({
   )
 }
 
-const DocumentPanels = ({
-  documents,
-  newDocumentLoading,
-  createDocument,
-  deleteDocument,
-}: {
-  documents: Document[]
-  newDocumentLoading: boolean
-  deleteDocument: CallableFunction
-  createDocument: CallableFunction
-}) => {
-  return (
-    <div className="flex flex-wrap w-full justify-start gap-x-16 gap-y-12">
-      {newDocumentLoading && <DocumentPanelLoading />}
-      {documents.map((document, index) => {
-        return (
-          <DocumentPanel
-            key={index}
-            document={document}
-            createDocument={createDocument}
-            deleteDocument={deleteDocument}
-          />
-        )
-      })}
-    </div>
-  )
-}
-
 const DocumentRow = ({
   document,
   createDocument,
@@ -592,7 +592,7 @@ const DocumentRow = ({
 
   return (
     <tr className="border-t">
-      <td className="whitespace-nowrap px-4 py-6 text-gray-900 font-medium">
+      <td className="px-4 py-6 text-gray-900 font-medium">
         <Link href={`/documents/${document.id}`} className="hover:underline">
           {document.title}
         </Link>
