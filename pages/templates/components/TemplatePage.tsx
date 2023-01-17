@@ -710,7 +710,7 @@ const TemplatePage = ({
                     <button
                       type="submit"
                       className={classNames(
-                        'inline-flex items-center ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 inline-flex justify-center transition-all duration-150 relative font-medium rounded-lg text-white shadow-sm px-6 py-4 text-base w-full',
+                        'inline-flex items-center ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 justify-center transition-all duration-150 relative font-medium rounded-lg text-white shadow-sm px-6 py-4 text-base w-full',
                         {
                           'active:bg-blue-800 hover:bg-blue-400 bg-blue-500': !disabled(),
                           'bg-blue-400 hover:bg-blue-300 cursor-not-allowed': disabled(),

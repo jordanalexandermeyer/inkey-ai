@@ -23,7 +23,7 @@ const SuccessModal = () => {
               </div>
             </div>
             <button
-              className="inline-flex items-center overflow-hidden ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 inline-flex justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-white bg-blue-700 shadow-sm hover:bg-blue-300 selectionRing active:bg-blue-800 px-6 py-4 text-base w-full"
+              className="inline-flex items-center overflow-hidden ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-white bg-blue-700 shadow-sm hover:bg-blue-300 selectionRing active:bg-blue-800 px-6 py-4 text-base w-full"
               type="button"
               onClick={() => window.location.assign('/')}
             >

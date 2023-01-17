@@ -150,14 +150,17 @@ const DocumentsPage: NextPage = () => {
                     <h3>Blank</h3>
                   </div>
                   <div className="flex flex-col items-center gap-2 font-medium">
-                    <button className="flex justify-center items-center text-gray-300 border rounded-md border-gray-300 hover:border-blue-700 hover:text-blue-700 h-42 w-32 bg-white">
+                    <Link
+                      href={'/documents/new-essay'}
+                      className="flex justify-center items-center text-gray-300 border rounded-md border-gray-300 hover:border-blue-700 hover:text-blue-700 h-42 w-32 bg-white"
+                    >
                       <Image
                         priority
                         alt="picture of essay"
                         src={essayPicture}
                         className="rounded-md"
                       ></Image>
-                    </button>
+                    </Link>
                     <h3>Essay</h3>
                   </div>
                 </div>
