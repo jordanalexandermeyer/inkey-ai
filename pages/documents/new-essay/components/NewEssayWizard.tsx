@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import BorderedInput from './BorderedInput'
 import { BackButton, NextButton } from './Buttons'
-import { Paragraphs, useNewEssay } from './NewEssayContextProvider'
+import { Essay, Paragraphs, useNewEssay } from './NewEssayContextProvider'
 import OneLineInput from './OneLineInput'
 
 const getOpacityFromCurrentStep = (
@@ -35,6 +35,7 @@ const NewEssayWizard = () => {
         <TitleStep componentStep={2} />
         <ArgumentStep componentStep={3} />
         <ParagraphStep componentStep={4} />
+        <EssayStep componentStep={5} />
       </div>
     </div>
   )
@@ -424,31 +425,36 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
   const {
     step: currentStep,
     setStep,
+    title,
     paragraphsState,
-    setParagraphsState,
+    setEssayState,
   } = useNewEssay()
   const { user } = useUser()
   const [isLoading, setIsLoading] = useState(false)
 
-  // const generateParagraphs = async (args: string[]): Promise<Paragraphs> => {
-  //   const response = await fetch('/api/paragraphs', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({ userId: user?.uid, arguments: args }),
-  //   })
-  //   const body = await response.json()
-  //   return body.paragraphs
-  // }
+  const generateEssay = async (paragraphs: Paragraphs): Promise<Essay> => {
+    const response = await fetch('/api/essay', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: user?.uid,
+        title,
+        paragraphs,
+      }),
+    })
+    const body = await response.json()
+    return body
+  }
 
-  // const handleSubmit = async () => {
-  //   setIsLoading(true)
-  //   const paragraphs = await generateParagraphs(argumentsState)
-  //   setParagraphsState(paragraphs)
-  //   setStep((step) => step + 1)
-  //   setIsLoading(false)
-  // }
+  const handleSubmit = async () => {
+    setIsLoading(true)
+    const essay = await generateEssay(paragraphsState)
+    setEssayState(essay)
+    setStep((step) => step + 1)
+    setIsLoading(false)
+  }
 
   return (
     <div
@@ -471,15 +477,12 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
             Expand each argument to edit the content of each paragraph.
           </p>
           {paragraphsState.map((paragraph, index) => (
-            <ParagraphRow paragraphIndex={index} />
+            <ParagraphRow key={index} paragraphIndex={index} />
           ))}
         </div>
         <div className="flex w-full justify-between">
           <BackButton onClick={() => setStep((step) => step - 1)} />
-          <NextButton
-            isLoading={isLoading}
-            onClick={() => setStep((step) => step + 1)}
-          />
+          <NextButton isLoading={isLoading} onClick={() => handleSubmit()} />
         </div>
       </div>
     </div>
@@ -540,7 +543,10 @@ const ParagraphRow = ({ paragraphIndex }: { paragraphIndex: number }) => {
           {paragraphsState[paragraphIndex].paragraph.map(
             (paragraphComponent, paragraphComponentIndex) => {
               return (
-                <div className="flex flex-col gap-3 px-4 py-3">
+                <div
+                  key={paragraphComponentIndex}
+                  className="flex flex-col gap-3 px-4 py-3"
+                >
                   <h2 className="text-lg font-medium text-left">
                     {paragraphComponent.title}
                   </h2>
@@ -638,6 +644,7 @@ const ParagraphRow = ({ paragraphIndex }: { paragraphIndex: number }) => {
                               (sentences, sentenceIndex) => {
                                 return (
                                   <SentenceRow
+                                    key={sentenceIndex}
                                     paragraphIndex={paragraphIndex}
                                     paragraphComponentIndex={
                                       paragraphComponentIndex
@@ -791,6 +798,51 @@ const SentenceRow = ({
         </div>
       )}
     </Draggable>
+  )
+}
+
+const EssayStep = ({ componentStep }: { componentStep: number }) => {
+  const { step: currentStep, setStep, title, essayState } = useNewEssay()
+  const { user } = useUser()
+  const [isLoading, setIsLoading] = useState(false)
+
+  // const generateTitle = async (prompt: string) => {
+  //   const response = await fetch(
+  //     `/api/title?userId=${user?.uid}&prompt=${prompt}`,
+  //   )
+  //   const body = await response.json()
+  //   return body.title
+  // }
+
+  // const handleSubmit = async () => {
+  //   setIsLoading(true)
+  //   const title = await generateTitle(prompt)
+  //   setTitle(title)
+  //   setStep((step) => step + 1)
+  //   setIsLoading(false)
+  // }
+
+  return (
+    <div
+      style={{
+        transform: `translateX(${getTranslationFromCurrentStep(
+          currentStep,
+          componentStep,
+        )})`,
+        height: 'calc(100vh - 80px)',
+        opacity: getOpacityFromCurrentStep(currentStep, componentStep),
+      }}
+      className="flex flex-col items-center w-full fixed overflow-y-scroll scrollbar-hide transition-all ease-in-out duration-1000"
+    >
+      <div className="max-w-5xl px-28 py-32 my-10 bg-white rounded-lg border drop-shadow-xl">
+        <div className="flex flex-col gap-12">
+          <h1 className="text-2xl font-medium text-center">{title}</h1>
+          <p className="text-lg text-left whitespace-pre-wrap">
+            {essayState.body}
+          </p>
+        </div>
+      </div>
+    </div>
   )
 }
 

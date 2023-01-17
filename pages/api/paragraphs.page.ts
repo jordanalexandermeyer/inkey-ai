@@ -8,16 +8,15 @@ export default async function handler(request: NextRequest) {
   const body = await request.json()
   const userId = body.userId
   const title = body.title
-  const argument: string = body.arguments[0]
   const args: string[] = body.arguments
 
   const responses = await Promise.all(
-    args.map(async (arg) => {
+    args.map(async (arg, index) => {
       const response = await fetch('https://api.openai.com/v1/completions', {
         method: 'POST',
         body: JSON.stringify({
           model: 'text-davinci-003',
-          prompt: `You are writing an essay titled, "${title}". Write an outline for a paragraph discussing this topic, "${argument}". Use the following format.\n\nI. Topic Sentences\nA.\nB.\n\nII. INSERT TOPIC HERE\nA.\nB.\nC.\n\nIII. INSERT TOPIC HERE\nA.\nB.\nC.\n\nIV. Concluding Sentences\nA.\nB.\n`,
+          prompt: `You are writing an essay titled, "${title}". Write an outline for a paragraph discussing this topic, "${args[index]}". Use the following format.\n\nI. Topic Sentences\nA.\nB.\n\nII. INSERT TOPIC HERE\nA.\nB.\nC.\n\nIII. INSERT TOPIC HERE\nA.\nB.\nC.\n\nIV. Concluding Sentences\nA.\nB.\n`,
           temperature: 1,
           top_p: 0.9,
           max_tokens: 1000,

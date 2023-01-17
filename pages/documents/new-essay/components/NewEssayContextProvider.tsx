@@ -20,6 +20,8 @@ type NewEssayContext = {
   setArgumentsState: Dispatch<SetStateAction<string[]>>
   paragraphsState: Paragraphs
   setParagraphsState: Dispatch<SetStateAction<Paragraphs>>
+  essayState: Essay
+  setEssayState: Dispatch<SetStateAction<Essay>>
 }
 
 export type ParagraphComponent = {
@@ -32,16 +34,21 @@ export type Paragraph = {
   paragraph: ParagraphComponent[]
 }
 
+export type Essay = {
+  body: string
+}
+
 export type Paragraphs = Paragraph[]
 
 const NewEssayContext = createContext<NewEssayContext | undefined>(undefined)
 
 function NewEssayProvider({ children }: { children: ReactNode }) {
-  const [step, setStep] = useState(4)
+  const [step, setStep] = useState(1)
   const [prompt, setPrompt] = useState('')
   const [title, setTitle] = useState('')
   const [argumentsState, setArgumentsState] = useState<string[]>([])
-  const [paragraphsState, setParagraphsState] = useState<Paragraphs>(mockState)
+  const [paragraphsState, setParagraphsState] = useState<Paragraphs>([])
+  const [essayState, setEssayState] = useState<Essay>({ body: '' })
   const numberOfSteps = 5
 
   const value = {
@@ -56,6 +63,8 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
     setArgumentsState,
     paragraphsState,
     setParagraphsState,
+    essayState,
+    setEssayState,
   }
 
   return (
