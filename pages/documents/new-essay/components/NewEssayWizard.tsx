@@ -1,3 +1,4 @@
+import { createDocument } from '@/db/documents'
 import { useUser } from '@/utils/useUser'
 import classNames from 'classnames'
 import Modal from 'components/Modal'
@@ -814,13 +815,24 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
   //   return body.title
   // }
 
-  // const handleSubmit = async () => {
-  //   setIsLoading(true)
-  //   const title = await generateTitle(prompt)
-  //   setTitle(title)
-  //   setStep((step) => step + 1)
-  //   setIsLoading(false)
-  // }
+  const handleSubmit = async () => {
+    setIsLoading(true)
+    const doc = await createDocument(user?.uid!, {
+      title: title,
+      content: getDocumentContent(),
+    })
+    window.location.assign(`/documents/${doc.id}`)
+    setIsLoading(false)
+  }
+
+  const getDocumentContent = () => {
+    let documentContents = ''
+    documentContents += `<h3 style="text-align: center;">${title}</h3>`
+    essayState.body.split('\n\n').map((paragraph: string) => {
+      documentContents += `<p>${paragraph}</p>`
+    })
+    return documentContents
+  }
 
   return (
     <div
@@ -834,7 +846,43 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
       }}
       className="flex flex-col items-center w-full fixed overflow-y-scroll scrollbar-hide transition-all ease-in-out duration-1000"
     >
-      <div className="max-w-5xl px-28 py-32 my-10 bg-white rounded-lg border drop-shadow-xl">
+      <div className="max-w-5xl w-full flex justify-between mt-10">
+        <button
+          onClick={() => setStep((step) => step - 1)}
+          className="flex justify-center items-center gap-1"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 48 48"
+            stroke="currentColor"
+            className="h-6 w-6 text-gray-500"
+          >
+            <path
+              fill="currentColor"
+              d="M24 40 8 24 24 8l2.1 2.1-12.4 12.4H40v3H13.7l12.4 12.4Z"
+            />
+          </svg>
+          <span className="text-lg">Edit essay content</span>
+        </button>
+        <button
+          onClick={() => handleSubmit()}
+          className="flex justify-center items-center gap-1"
+        >
+          <span className="text-lg">Open in editor</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 48 48"
+            stroke="currentColor"
+            className="h-6 w-6 text-gray-500"
+          >
+            <path
+              fill="currentColor"
+              d="m24 40-2.1-2.15L34.25 25.5H8v-3h26.25L21.9 10.15 24 8l16 16Z"
+            />
+          </svg>
+        </button>
+      </div>
+      <div className="max-w-5xl w-full px-28 py-32 my-10 bg-white rounded-lg border drop-shadow-xl">
         <div className="flex flex-col gap-12">
           <h1 className="text-2xl font-medium text-center">{title}</h1>
           <p className="text-lg text-left whitespace-pre-wrap">

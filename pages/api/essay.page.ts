@@ -81,8 +81,8 @@ const convertIndexToParagraphComponentPrefix = (index: number) => {
   if (index === 1) return 'II. '
   if (index === 2) return 'III. '
   if (index === 3) return 'IV. '
-  if (index === 5) return 'V. '
-  throw { message: 'Cannot convert index to roman outline character' }
+  if (index === 4) return 'V. '
+  throw { message: 'Cannot convert index to roman outline character', index }
 }
 
 const convertIndexToSentencePrefix = (index: number) => {
@@ -90,6 +90,6 @@ const convertIndexToSentencePrefix = (index: number) => {
   if (index === 1) return 'B. '
   if (index === 2) return 'C. '
   if (index === 3) return 'D. '
-  if (index === 5) return 'E. '
-  throw { message: 'Cannot convert index to alpha outline character' }
+  if (index === 4) return 'E. '
+  throw { message: 'Cannot convert index to alpha outline character', index }
 }
