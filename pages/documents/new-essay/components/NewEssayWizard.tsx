@@ -3,7 +3,7 @@ import { useUser } from '@/utils/useUser'
 import classNames from 'classnames'
 import Modal from 'components/Modal'
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
+import { createRef, useEffect, useState } from 'react'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import { toast } from 'react-hot-toast'
 import BorderedInput from './BorderedInput'
@@ -73,6 +73,13 @@ const PromptStep = ({ componentStep }: { componentStep: number }) => {
     setStep((step) => step + 1)
   }
 
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault()
+      if (!isLoading && prompt.trim() != '') handleSubmit()
+    }
+  }
+
   return (
     <div
       style={{
@@ -96,6 +103,8 @@ const PromptStep = ({ componentStep }: { componentStep: number }) => {
           </p>
           <OneLineInput
             value={prompt}
+            focus={currentStep == componentStep}
+            onKeyDown={(e: any) => handleKeyDown(e)}
             onChange={(e: any) => setPrompt(e.target.value)}
             placeholder="Type your prompt here..."
           />
@@ -155,6 +164,13 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
     }
   }
 
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault()
+      if (!isLoading && title.trim() != '') handleNext()
+    }
+  }
+
   return (
     <div
       style={{
@@ -178,8 +194,10 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
           </p>
           <OneLineInput
             value={title}
+            onKeyDown={(e: any) => handleKeyDown(e)}
             onChange={(e: any) => setTitle(e.target.value)}
             placeholder="Type your title here..."
+            focus={currentStep == componentStep}
           />
         </div>
         <div className="flex w-full justify-between">
@@ -216,6 +234,11 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
   } = useNewEssay()
   const [isLoading, setIsLoading] = useState(false)
   const [isRegenerating, setIsRegenerating] = useState(false)
+  const nextButtonRef = createRef<any>()
+
+  useEffect(() => {
+    if (currentStep === componentStep) nextButtonRef.current.focus()
+  }, [currentStep])
 
   const handleNext = async () => {
     if (paragraphsState.length === 0) {
@@ -347,6 +370,7 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
                       <ArgumentRow
                         key={index}
                         index={index}
+                        isLoading={isRegenerating}
                         isDragging={snapshot.isUsingPlaceholder}
                       />
                     ))}
@@ -393,6 +417,7 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
             onClick={() => handleRegenerate()}
           />
           <NextButton
+            reference={nextButtonRef}
             disabled={
               isLoading || isRegenerating || argumentsState.length === 0
             }
@@ -408,21 +433,19 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
 const ArgumentRow = ({
   index,
   isDragging,
+  isLoading,
 }: {
   index: number
   isDragging: boolean
+  isLoading: boolean
 }) => {
   const { argumentsState, setArgumentsState } = useNewEssay()
 
   return (
-    <Draggable draggableId={String(index)} index={index}>
-      {(provided, snapshot) => (
-        <div
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          className="flex items-center gap-4 w-full mb-6"
-        >
-          <button {...provided.dragHandleProps}>
+    <>
+      {isLoading ? (
+        <div className="flex items-center gap-4 w-full mb-6">
+          <button className="invisible">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 48 48"
@@ -436,28 +459,11 @@ const ArgumentRow = ({
             </svg>
           </button>
           <BorderedInput
+            isLoading={isLoading}
             value={argumentsState[index]}
-            onChange={(e) => {
-              const arg = e.target.value
-              setArgumentsState((currentArgState) => {
-                const newArgState = JSON.parse(JSON.stringify(currentArgState))
-                newArgState[index] = arg
-                return newArgState
-              })
-            }}
+            onChange={(e) => {}}
           />
-          <button
-            onClick={() => {
-              setArgumentsState((currentArgState) => {
-                const newArgState = JSON.parse(JSON.stringify(currentArgState))
-                newArgState.splice(index, 1)
-                return newArgState
-              })
-            }}
-            className={classNames('p-1 hover:bg-gray-100 rounded-lg', {
-              invisible: isDragging,
-            })}
-          >
+          <button className="p-1 hover:bg-gray-100 rounded-lg invisible">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 48 48"
@@ -472,8 +478,72 @@ const ArgumentRow = ({
             </svg>
           </button>
         </div>
+      ) : (
+        <Draggable draggableId={String(index)} index={index}>
+          {(provided, snapshot) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.draggableProps}
+              className="flex items-center gap-4 w-full mb-6"
+            >
+              <button {...provided.dragHandleProps}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 48 48"
+                  stroke="currentColor"
+                  className="h-9 w-9 text-gray-500 hover:bg-gray-100 rounded-lg"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M17.5 40q-1.45 0-2.475-1.025Q14 37.95 14 36.5q0-1.45 1.025-2.475Q16.05 33 17.5 33q1.45 0 2.475 1.025Q21 35.05 21 36.5q0 1.45-1.025 2.475Q18.95 40 17.5 40Zm13 0q-1.45 0-2.475-1.025Q27 37.95 27 36.5q0-1.45 1.025-2.475Q29.05 33 30.5 33q1.45 0 2.475 1.025Q34 35.05 34 36.5q0 1.45-1.025 2.475Q31.95 40 30.5 40Zm-13-12.5q-1.45 0-2.475-1.025Q14 25.45 14 24q0-1.45 1.025-2.475Q16.05 20.5 17.5 20.5q1.45 0 2.475 1.025Q21 22.55 21 24q0 1.45-1.025 2.475Q18.95 27.5 17.5 27.5Zm13 0q-1.45 0-2.475-1.025Q27 25.45 27 24q0-1.45 1.025-2.475Q29.05 20.5 30.5 20.5q1.45 0 2.475 1.025Q34 22.55 34 24q0 1.45-1.025 2.475Q31.95 27.5 30.5 27.5ZM17.5 15q-1.45 0-2.475-1.025Q14 12.95 14 11.5q0-1.45 1.025-2.475Q16.05 8 17.5 8q1.45 0 2.475 1.025Q21 10.05 21 11.5q0 1.45-1.025 2.475Q18.95 15 17.5 15Zm13 0q-1.45 0-2.475-1.025Q27 12.95 27 11.5q0-1.45 1.025-2.475Q29.05 8 30.5 8q1.45 0 2.475 1.025Q34 10.05 34 11.5q0 1.45-1.025 2.475Q31.95 15 30.5 15Z"
+                  />
+                </svg>
+              </button>
+              <BorderedInput
+                value={argumentsState[index]}
+                onChange={(e) => {
+                  const arg = e.target.value
+                  setArgumentsState((currentArgState) => {
+                    const newArgState = JSON.parse(
+                      JSON.stringify(currentArgState),
+                    )
+                    newArgState[index] = arg
+                    return newArgState
+                  })
+                }}
+              />
+              <button
+                onClick={() => {
+                  setArgumentsState((currentArgState) => {
+                    const newArgState = JSON.parse(
+                      JSON.stringify(currentArgState),
+                    )
+                    newArgState.splice(index, 1)
+                    return newArgState
+                  })
+                }}
+                className={classNames('p-1 hover:bg-gray-100 rounded-lg', {
+                  invisible: isDragging,
+                })}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 48 48"
+                  stroke="currentColor"
+                  className="h-5 w-5 text-gray-400"
+                  fill="none"
+                >
+                  <path
+                    fill="currentColor"
+                    d="m12.45 37.65-2.1-2.1L21.9 24 10.35 12.45l2.1-2.1L24 21.9l11.55-11.55 2.1 2.1L26.1 24l11.55 11.55-2.1 2.1L24 26.1Z"
+                  />
+                </svg>
+              </button>
+            </div>
+          )}
+        </Draggable>
       )}
-    </Draggable>
+    </>
   )
 }
 
@@ -490,6 +560,11 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
   } = useNewEssay()
   const [isLoading, setIsLoading] = useState(false)
   const [isRegenerating, setIsRegenerating] = useState(false)
+  const nextButtonRef = createRef<any>()
+
+  useEffect(() => {
+    if (currentStep === componentStep) nextButtonRef.current.focus()
+  }, [currentStep])
 
   const handleNext = async () => {
     if (essay === '') {
@@ -542,7 +617,11 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
             paragraph contents.
           </p>
           {paragraphsState.map((paragraph, index) => (
-            <ParagraphRow key={index} paragraphIndex={index} />
+            <ParagraphRow
+              key={index}
+              paragraphIndex={index}
+              isLoading={isRegenerating}
+            />
           ))}
         </div>
         <div className="flex w-full justify-between">
@@ -556,6 +635,7 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
             onClick={() => handleRegenerate()}
           />
           <NextButton
+            reference={nextButtonRef}
             disabled={
               isLoading || isRegenerating || paragraphsState.length === 0
             }
@@ -568,11 +648,17 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
   )
 }
 
-const ParagraphRow = ({ paragraphIndex }: { paragraphIndex: number }) => {
+const ParagraphRow = ({
+  paragraphIndex,
+  isLoading,
+}: {
+  paragraphIndex: number
+  isLoading: boolean
+}) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const { paragraphsState, setParagraphsState } = useNewEssay()
   const [height, setHeight] = useState(0)
-  const ref = useRef<any>(null)
+  const ref = createRef<any>()
 
   useEffect(() => {
     if (isExpanded) setHeight(ref.current.clientHeight)
@@ -580,221 +666,230 @@ const ParagraphRow = ({ paragraphIndex }: { paragraphIndex: number }) => {
   }, [isExpanded])
 
   return (
-    <div className="flex flex-col justify-center w-full border border-gray-300 rounded-lg">
-      <div
-        className={classNames(
-          'flex items-center justify-center w-full gap-2 px-4 py-3 transition-colors duration-500',
-          {
-            'border-b border-b-gray-300': isExpanded,
-            'border-b border-b-white': !isExpanded,
-          },
-        )}
-      >
-        <h2 className="w-full text-lg font-medium">
-          {paragraphsState[paragraphIndex].argument}
-        </h2>
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="hover:bg-gray-100 rounded-lg"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 48 48"
-            stroke="currentColor"
-            className={`h-9 w-9 text-gray-500 transition-transform duration-500 ${
-              isExpanded && 'rotate-180'
-            }`}
-          >
-            <path
-              fill="currentColor"
-              d="m24 30.75-12-12 2.15-2.15L24 26.5l9.85-9.85L36 18.8Z"
-            />
-          </svg>
-        </button>
-      </div>
-      <div
-        className={classNames(
-          'transition-all ease-in-out duration-500 overflow-hidden',
-        )}
-        style={{ height: height }}
-      >
-        <div ref={ref} className="flex flex-col gap-4 w-full pt-4">
-          {paragraphsState[paragraphIndex].paragraph.map(
-            (paragraphComponent, paragraphComponentIndex) => {
-              return (
-                <div
-                  key={paragraphComponentIndex}
-                  className="flex flex-col gap-3 px-4 py-3"
-                >
-                  <h2 className="text-lg font-medium text-left">
-                    {paragraphComponent.title}
-                  </h2>
-
-                  <div>
-                    <DragDropContext
-                      onDragEnd={(result) => {
-                        const { destination, source, draggableId } = result
-
-                        if (!destination) {
-                          return
-                        }
-
-                        if (
-                          destination.droppableId === source.droppableId &&
-                          destination.index === source.index
-                        ) {
-                          return
-                        }
-
-                        setParagraphsState((currentParagraphsState) => {
-                          const newParagraphsState: Paragraphs = JSON.parse(
-                            JSON.stringify(currentParagraphsState),
-                          )
-                          newParagraphsState[paragraphIndex].paragraph[
-                            paragraphComponentIndex
-                          ].sentences.splice(source.index, 1)
-                          newParagraphsState[paragraphIndex].paragraph[
-                            paragraphComponentIndex
-                          ].sentences.splice(
-                            destination.index,
-                            0,
-                            currentParagraphsState[paragraphIndex].paragraph[
-                              paragraphComponentIndex
-                            ].sentences[Number(draggableId)],
-                          )
-                          return newParagraphsState
-                        })
-                      }}
-                    >
-                      <Droppable
-                        droppableId="arguments"
-                        renderClone={(provided, snapshot, rubric) => (
-                          <div
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            ref={provided.innerRef}
-                            className="flex items-center gap-4 w-full"
-                          >
-                            <button>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 48 48"
-                                stroke="currentColor"
-                                className="h-9 w-9 text-gray-500 bg-gray-100 rounded-lg"
-                              >
-                                <path
-                                  fill="currentColor"
-                                  d="M17.5 40q-1.45 0-2.475-1.025Q14 37.95 14 36.5q0-1.45 1.025-2.475Q16.05 33 17.5 33q1.45 0 2.475 1.025Q21 35.05 21 36.5q0 1.45-1.025 2.475Q18.95 40 17.5 40Zm13 0q-1.45 0-2.475-1.025Q27 37.95 27 36.5q0-1.45 1.025-2.475Q29.05 33 30.5 33q1.45 0 2.475 1.025Q34 35.05 34 36.5q0 1.45-1.025 2.475Q31.95 40 30.5 40Zm-13-12.5q-1.45 0-2.475-1.025Q14 25.45 14 24q0-1.45 1.025-2.475Q16.05 20.5 17.5 20.5q1.45 0 2.475 1.025Q21 22.55 21 24q0 1.45-1.025 2.475Q18.95 27.5 17.5 27.5Zm13 0q-1.45 0-2.475-1.025Q27 25.45 27 24q0-1.45 1.025-2.475Q29.05 20.5 30.5 20.5q1.45 0 2.475 1.025Q34 22.55 34 24q0 1.45-1.025 2.475Q31.95 27.5 30.5 27.5ZM17.5 15q-1.45 0-2.475-1.025Q14 12.95 14 11.5q0-1.45 1.025-2.475Q16.05 8 17.5 8q1.45 0 2.475 1.025Q21 10.05 21 11.5q0 1.45-1.025 2.475Q18.95 15 17.5 15Zm13 0q-1.45 0-2.475-1.025Q27 12.95 27 11.5q0-1.45 1.025-2.475Q29.05 8 30.5 8q1.45 0 2.475 1.025Q34 10.05 34 11.5q0 1.45-1.025 2.475Q31.95 15 30.5 15Z"
-                                />
-                              </svg>
-                            </button>
-                            <BorderedInput
-                              value={
-                                paragraphsState[paragraphIndex].paragraph[
-                                  paragraphComponentIndex
-                                ].sentences[rubric.source.index]
-                              }
-                              onChange={(e) => {}}
-                            />
-                            <button className="p-1 hover:bg-gray-100 rounded-lg invisible">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 48 48"
-                                stroke="currentColor"
-                                className="h-5 w-5 text-gray-400"
-                                fill="none"
-                              >
-                                <path
-                                  fill="currentColor"
-                                  d="m12.45 37.65-2.1-2.1L21.9 24 10.35 12.45l2.1-2.1L24 21.9l11.55-11.55 2.1 2.1L26.1 24l11.55 11.55-2.1 2.1L24 26.1Z"
-                                />
-                              </svg>
-                            </button>
-                          </div>
-                        )}
-                      >
-                        {(provided, snapshot) => (
-                          <div
-                            className="flex flex-col"
-                            {...provided.droppableProps}
-                            ref={provided.innerRef}
-                          >
-                            {paragraphComponent.sentences.map(
-                              (sentences, sentenceIndex) => {
-                                return (
-                                  <SentenceRow
-                                    key={sentenceIndex}
-                                    paragraphIndex={paragraphIndex}
-                                    paragraphComponentIndex={
-                                      paragraphComponentIndex
-                                    }
-                                    sentenceIndex={sentenceIndex}
-                                    isDragging={snapshot.isUsingPlaceholder}
-                                  />
-                                )
-                              },
-                            )}
-                            {provided.placeholder}
-                          </div>
-                        )}
-                      </Droppable>
-                    </DragDropContext>
-                    {paragraphsState[paragraphIndex].paragraph[
-                      paragraphComponentIndex
-                    ].sentences.length < 5 && (
-                      <button
-                        onClick={() => {
-                          setParagraphsState((currentParagraphsState) => {
-                            const newParagraphsState: Paragraphs = JSON.parse(
-                              JSON.stringify(currentParagraphsState),
-                            )
-                            newParagraphsState[paragraphIndex].paragraph[
-                              paragraphComponentIndex
-                            ].sentences.push('')
-
-                            return newParagraphsState
-                          })
-                        }}
-                        className="flex items-center justify-center self-start text-lg font-medium text-blue-700"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 48 48"
-                          stroke="currentColor"
-                          className="h-5 w-5"
-                        >
-                          <path
-                            fill="currentColor"
-                            d="M22.5 38V25.5H10v-3h12.5V10h3v12.5H38v3H25.5V38Z"
-                          />
-                        </svg>
-                        Add sentence
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )
-            },
-          )}
-          <button
-            onClick={() => setIsExpanded(false)}
-            className="flex items-center justify-center border-t border-t-gray-300 hover:bg-gray-100"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 48 48"
-              stroke="currentColor"
-              className="h-9 w-9 text-gray-500"
-            >
-              <path
-                fill="currentColor"
-                d="M14.15 30.75 12 28.6l12-12 12 11.95-2.15 2.15L24 20.85Z"
-              />
-            </svg>
-          </button>
+    <>
+      {isLoading ? (
+        <div className="flex flex-col w-full p-2 border border-gray-300 rounded-lg bg-white">
+          <div className="animate-pulse h-5 m-3 bg-gray-300 rounded-lg"></div>
         </div>
-      </div>
-    </div>
+      ) : (
+        <div className="flex flex-col justify-center w-full border border-gray-300 rounded-lg">
+          <div
+            className={classNames(
+              'flex items-center justify-center w-full gap-2 px-4 py-3 transition-colors duration-500',
+              {
+                'border-b border-b-gray-300': isExpanded,
+                'border-b border-b-white': !isExpanded,
+              },
+            )}
+          >
+            <h2 className="w-full text-lg font-medium">
+              {paragraphsState[paragraphIndex].argument}
+            </h2>
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="hover:bg-gray-100 rounded-lg"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 48 48"
+                stroke="currentColor"
+                className={`h-9 w-9 text-gray-500 transition-transform duration-500 ${
+                  isExpanded && 'rotate-180'
+                }`}
+              >
+                <path
+                  fill="currentColor"
+                  d="m24 30.75-12-12 2.15-2.15L24 26.5l9.85-9.85L36 18.8Z"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            className={classNames(
+              'transition-all ease-in-out duration-500 overflow-hidden',
+            )}
+            style={{ height: height }}
+          >
+            <div ref={ref} className="flex flex-col gap-4 w-full pt-4">
+              {paragraphsState[paragraphIndex].paragraph.map(
+                (paragraphComponent, paragraphComponentIndex) => {
+                  return (
+                    <div
+                      key={paragraphComponentIndex}
+                      className="flex flex-col gap-3 px-4 py-3"
+                    >
+                      <h2 className="text-lg font-medium text-left">
+                        {paragraphComponent.title}
+                      </h2>
+
+                      <div>
+                        <DragDropContext
+                          onDragEnd={(result) => {
+                            const { destination, source, draggableId } = result
+
+                            if (!destination) {
+                              return
+                            }
+
+                            if (
+                              destination.droppableId === source.droppableId &&
+                              destination.index === source.index
+                            ) {
+                              return
+                            }
+
+                            setParagraphsState((currentParagraphsState) => {
+                              const newParagraphsState: Paragraphs = JSON.parse(
+                                JSON.stringify(currentParagraphsState),
+                              )
+                              newParagraphsState[paragraphIndex].paragraph[
+                                paragraphComponentIndex
+                              ].sentences.splice(source.index, 1)
+                              newParagraphsState[paragraphIndex].paragraph[
+                                paragraphComponentIndex
+                              ].sentences.splice(
+                                destination.index,
+                                0,
+                                currentParagraphsState[paragraphIndex]
+                                  .paragraph[paragraphComponentIndex].sentences[
+                                  Number(draggableId)
+                                ],
+                              )
+                              return newParagraphsState
+                            })
+                          }}
+                        >
+                          <Droppable
+                            droppableId="arguments"
+                            renderClone={(provided, snapshot, rubric) => (
+                              <div
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                ref={provided.innerRef}
+                                className="flex items-center gap-4 w-full"
+                              >
+                                <button>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 48 48"
+                                    stroke="currentColor"
+                                    className="h-9 w-9 text-gray-500 bg-gray-100 rounded-lg"
+                                  >
+                                    <path
+                                      fill="currentColor"
+                                      d="M17.5 40q-1.45 0-2.475-1.025Q14 37.95 14 36.5q0-1.45 1.025-2.475Q16.05 33 17.5 33q1.45 0 2.475 1.025Q21 35.05 21 36.5q0 1.45-1.025 2.475Q18.95 40 17.5 40Zm13 0q-1.45 0-2.475-1.025Q27 37.95 27 36.5q0-1.45 1.025-2.475Q29.05 33 30.5 33q1.45 0 2.475 1.025Q34 35.05 34 36.5q0 1.45-1.025 2.475Q31.95 40 30.5 40Zm-13-12.5q-1.45 0-2.475-1.025Q14 25.45 14 24q0-1.45 1.025-2.475Q16.05 20.5 17.5 20.5q1.45 0 2.475 1.025Q21 22.55 21 24q0 1.45-1.025 2.475Q18.95 27.5 17.5 27.5Zm13 0q-1.45 0-2.475-1.025Q27 25.45 27 24q0-1.45 1.025-2.475Q29.05 20.5 30.5 20.5q1.45 0 2.475 1.025Q34 22.55 34 24q0 1.45-1.025 2.475Q31.95 27.5 30.5 27.5ZM17.5 15q-1.45 0-2.475-1.025Q14 12.95 14 11.5q0-1.45 1.025-2.475Q16.05 8 17.5 8q1.45 0 2.475 1.025Q21 10.05 21 11.5q0 1.45-1.025 2.475Q18.95 15 17.5 15Zm13 0q-1.45 0-2.475-1.025Q27 12.95 27 11.5q0-1.45 1.025-2.475Q29.05 8 30.5 8q1.45 0 2.475 1.025Q34 10.05 34 11.5q0 1.45-1.025 2.475Q31.95 15 30.5 15Z"
+                                    />
+                                  </svg>
+                                </button>
+                                <BorderedInput
+                                  value={
+                                    paragraphsState[paragraphIndex].paragraph[
+                                      paragraphComponentIndex
+                                    ].sentences[rubric.source.index]
+                                  }
+                                  onChange={(e) => {}}
+                                />
+                                <button className="p-1 hover:bg-gray-100 rounded-lg invisible">
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 48 48"
+                                    stroke="currentColor"
+                                    className="h-5 w-5 text-gray-400"
+                                    fill="none"
+                                  >
+                                    <path
+                                      fill="currentColor"
+                                      d="m12.45 37.65-2.1-2.1L21.9 24 10.35 12.45l2.1-2.1L24 21.9l11.55-11.55 2.1 2.1L26.1 24l11.55 11.55-2.1 2.1L24 26.1Z"
+                                    />
+                                  </svg>
+                                </button>
+                              </div>
+                            )}
+                          >
+                            {(provided, snapshot) => (
+                              <div
+                                className="flex flex-col"
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}
+                              >
+                                {paragraphComponent.sentences.map(
+                                  (sentences, sentenceIndex) => {
+                                    return (
+                                      <SentenceRow
+                                        key={sentenceIndex}
+                                        paragraphIndex={paragraphIndex}
+                                        paragraphComponentIndex={
+                                          paragraphComponentIndex
+                                        }
+                                        sentenceIndex={sentenceIndex}
+                                        isDragging={snapshot.isUsingPlaceholder}
+                                      />
+                                    )
+                                  },
+                                )}
+                                {provided.placeholder}
+                              </div>
+                            )}
+                          </Droppable>
+                        </DragDropContext>
+                        {paragraphsState[paragraphIndex].paragraph[
+                          paragraphComponentIndex
+                        ].sentences.length < 5 && (
+                          <button
+                            onClick={() => {
+                              setParagraphsState((currentParagraphsState) => {
+                                const newParagraphsState: Paragraphs = JSON.parse(
+                                  JSON.stringify(currentParagraphsState),
+                                )
+                                newParagraphsState[paragraphIndex].paragraph[
+                                  paragraphComponentIndex
+                                ].sentences.push('')
+
+                                return newParagraphsState
+                              })
+                            }}
+                            className="flex items-center justify-center self-start text-lg font-medium text-blue-700"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 48 48"
+                              stroke="currentColor"
+                              className="h-5 w-5"
+                            >
+                              <path
+                                fill="currentColor"
+                                d="M22.5 38V25.5H10v-3h12.5V10h3v12.5H38v3H25.5V38Z"
+                              />
+                            </svg>
+                            Add sentence
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )
+                },
+              )}
+              <button
+                onClick={() => setIsExpanded(false)}
+                className="flex items-center justify-center border-t border-t-gray-300 hover:bg-gray-100"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 48 48"
+                  stroke="currentColor"
+                  className="h-9 w-9 text-gray-500"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M14.15 30.75 12 28.6l12-12 12 11.95-2.15 2.15L24 20.85Z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   )
 }
 
@@ -897,6 +992,11 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
   const { user } = useUser()
   const [isLoading, setIsLoading] = useState(false)
   const [isRegenerating, setIsRegenerating] = useState(false)
+  const nextButtonRef = createRef<any>()
+
+  useEffect(() => {
+    if (currentStep === componentStep) nextButtonRef.current.focus()
+  }, [currentStep])
 
   const handleRegenerate = async () => {
     try {
@@ -980,6 +1080,7 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
           </svg>
         </button>
         <button
+          ref={nextButtonRef}
           disabled={isLoading || isRegenerating}
           onClick={() => handleNext()}
           className="flex justify-center items-center gap-1 hover:bg-gray-200 active:bg-gray-300 disabled:hover:bg-gray-50 disabled:hover:cursor-not-allowed rounded-lg p-2"

@@ -16,15 +16,6 @@ const BorderedInput = ({
 }) => {
   const textAreaRef = useRef<any>()
 
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'Enter' && value.trim() == '') {
-      event.preventDefault()
-    } else if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault()
-      // move to next step here
-    }
-  }
-
   useEffect(() => {
     const target = textAreaRef.current as HTMLTextAreaElement
     if (target) {
@@ -37,8 +28,7 @@ const BorderedInput = ({
     <div className="flex flex-col w-full p-2 border border-gray-300 rounded-lg bg-white">
       {isLoading ? (
         <>
-          <div className="animate-pulse h-2 m-3 bg-gray-500 rounded-lg"></div>
-          <div className="animate-pulse h-2 m-3 bg-gray-500 rounded-lg"></div>
+          <div className="animate-pulse h-4 m-3 bg-gray-300 rounded-lg"></div>
         </>
       ) : (
         <textarea

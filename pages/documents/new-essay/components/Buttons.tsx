@@ -5,13 +5,16 @@ export const NextButton = ({
   onClick,
   disabled,
   isLoading,
+  reference,
 }: {
   onClick: MouseEventHandler<HTMLButtonElement>
   disabled?: boolean
   isLoading?: boolean
+  reference?: any
 }) => {
   return (
     <button
+      ref={reference}
       disabled={disabled}
       onClick={onClick}
       className="flex items-center justify-center bg-blue-500 text-white rounded-lg transition-colors active:bg-blue-800 hover:bg-blue-300 disabled:bg-blue-300 disabled:hover:cursor-not-allowed"
