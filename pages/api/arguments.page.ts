@@ -16,8 +16,8 @@ export default async function handler(request: NextRequest) {
       body: JSON.stringify({
         model: 'text-davinci-003',
         prompt: `Write five talking points for an essay with the title, "${title}". Use the following format.\n\n1.\n2.\n3.\n4.\n5.\n`,
-        temperature: 1,
-        top_p: 0.9,
+        temperature: 0.7,
+        top_p: 1,
         max_tokens: 1000,
         user: userId || '',
       }),

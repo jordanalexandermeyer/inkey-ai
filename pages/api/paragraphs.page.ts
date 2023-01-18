@@ -9,10 +9,15 @@ export default async function handler(request: NextRequest) {
   const userId = body.userId
   const title = body.title
   const args: string[] = body.arguments
-  const prompts = args.map(
-    (arg) =>
-      `You are writing an essay titled, "${title}". Write an outline for a paragraph discussing this topic, "${arg}". Use the following format.\n\nI. Topic Sentences\nA.\nB.\n\nII. INSERT TOPIC HERE\nA.\nB.\nC.\n\nIII. INSERT TOPIC HERE\nA.\nB.\nC.\n\nIV. Concluding Sentences\nA.\nB.\n`,
-  )
+  const prompts = args.map((arg, index) => {
+    if (index == 0) {
+      return `I. Topic Sentences\nA. \nB. \n\nII. Evidence and Analysis\nA. \nB. \nC. \nD. \nE. \n\nIII. Summary Sentences\nA. \nB. \n\nYou are writing an essay titled, "${title}". Using the above format, write an outline for a paragraph discussing the topic, "${arg}"\n\n.`
+    } else {
+      return `I. Transition Sentence\nA. \n\nII. Topic Sentences\nA.\nB.\n\nIII. Evidence and Analysis\nA. \nB. \nC. \nD. \nE. \n\nIV. Summary Sentences\nA. \nB. \n\nYou are writing an essay titled, "${title}". The previous paragraph discussed, "${
+        args[index - 1]
+      }". Using the above format, write an outline for a paragraph discussing the topic, "${arg}".\n\n`
+    }
+  })
 
   const responses = await Promise.all(
     prompts.map(async (prompt) => {
@@ -21,8 +26,8 @@ export default async function handler(request: NextRequest) {
         body: JSON.stringify({
           model: 'text-davinci-003',
           prompt,
-          temperature: 1,
-          top_p: 0.9,
+          temperature: 0.25,
+          top_p: 1,
           max_tokens: 1000,
           user: userId || '',
         }),
@@ -46,7 +51,6 @@ export default async function handler(request: NextRequest) {
 }
 
 const getParagraphMapFromResponseBody = (body: any) => {
-  console.log(body)
   const text = body.choices[0].text.trim()
   const paragraphs = text.split('\n\n')
   const paragraphMap = paragraphs.map((paragraph: string) => {
@@ -56,7 +60,7 @@ const getParagraphMapFromResponseBody = (body: any) => {
       sentences: [],
     }
     for (let i = 1; i < sentences.length; i++) {
-      parsed.sentences.push(sentences[i].replace(/[A-D]\.\s/, ''))
+      parsed.sentences.push(sentences[i].replace(/[A-F]\.\s/, ''))
     }
     return parsed
   })

@@ -7,8 +7,8 @@ import { useEffect, useRef, useState } from 'react'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import { toast } from 'react-hot-toast'
 import BorderedInput from './BorderedInput'
-import { BackButton, NextButton } from './Buttons'
-import { Essay, Paragraphs, useNewEssay } from './NewEssayContextProvider'
+import { BackButton, NextButton, RegenerateButton } from './Buttons'
+import { Paragraphs, useNewEssay } from './NewEssayContextProvider'
 import OneLineInput from './OneLineInput'
 
 const getOpacityFromCurrentStep = (
@@ -53,23 +53,15 @@ const PromptStep = ({ componentStep }: { componentStep: number }) => {
     setPrompt,
     title,
     setTitle,
+    generateTitle,
   } = useNewEssay()
-  const { user } = useUser()
   const [isLoading, setIsLoading] = useState(false)
-
-  const generateTitle = async (prompt: string) => {
-    const response = await fetch(
-      `/api/title?userId=${user?.uid}&prompt=${prompt}`,
-    )
-    const body = await response.json()
-    return body.title
-  }
 
   const handleSubmit = async () => {
     if (!title) {
       try {
         setIsLoading(true)
-        const title = await generateTitle(prompt)
+        const title = await generateTitle()
         setTitle(title)
         setIsLoading(false)
       } catch (error) {
@@ -80,8 +72,6 @@ const PromptStep = ({ componentStep }: { componentStep: number }) => {
     }
     setStep((step) => step + 1)
   }
-
-  const disabled = isLoading || prompt.trim() === ''
 
   return (
     <div
@@ -113,7 +103,7 @@ const PromptStep = ({ componentStep }: { componentStep: number }) => {
         <div className="flex w-full justify-end">
           <NextButton
             isLoading={isLoading}
-            disabled={disabled}
+            disabled={isLoading || prompt.trim() === ''}
             onClick={() => handleSubmit()}
           />
         </div>
@@ -128,25 +118,19 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
     setStep,
     title,
     setTitle,
+    generateTitle,
     argumentsState,
     setArgumentsState,
+    generateArguments,
   } = useNewEssay()
-  const { user } = useUser()
   const [isLoading, setIsLoading] = useState(false)
+  const [isRegenerating, setIsRegenerating] = useState(false)
 
-  const generateArguments = async (title: string) => {
-    const response = await fetch(
-      `/api/arguments?userId=${user?.uid}&title=${title}`,
-    )
-    const body = await response.json()
-    return body.arguments
-  }
-
-  const handleSubmit = async () => {
+  const handleNext = async () => {
     if (argumentsState.length === 0) {
       try {
         setIsLoading(true)
-        const args = await generateArguments(title)
+        const args = await generateArguments()
         setArgumentsState(args)
         setIsLoading(false)
       } catch (error) {
@@ -158,7 +142,18 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
     setStep((step) => step + 1)
   }
 
-  const disabled = isLoading || title.trim() === ''
+  const handleRegenerate = async () => {
+    try {
+      setIsRegenerating(true)
+      const title = await generateTitle()
+      setTitle(title)
+      setIsRegenerating(false)
+    } catch (error) {
+      toast.error('Something went wrong, please try again!')
+      setIsRegenerating(false)
+      return
+    }
+  }
 
   return (
     <div
@@ -189,13 +184,18 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
         </div>
         <div className="flex w-full justify-between">
           <BackButton
-            disabled={isLoading}
+            disabled={isLoading || isRegenerating}
             onClick={() => setStep((step) => step - 1)}
           />
+          <RegenerateButton
+            disabled={isLoading || isRegenerating}
+            isLoading={isRegenerating}
+            onClick={() => handleRegenerate()}
+          />
           <NextButton
-            disabled={disabled}
+            disabled={isLoading || isRegenerating || title.trim() === ''}
             isLoading={isLoading}
-            onClick={() => handleSubmit()}
+            onClick={() => handleNext()}
           />
         </div>
       </div>
@@ -207,32 +207,21 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
   const {
     step: currentStep,
     setStep,
-    title,
     argumentsState,
     setArgumentsState,
+    generateArguments,
     paragraphsState,
     setParagraphsState,
+    generateParagraphs,
   } = useNewEssay()
-  const { user } = useUser()
   const [isLoading, setIsLoading] = useState(false)
+  const [isRegenerating, setIsRegenerating] = useState(false)
 
-  const generateParagraphs = async (args: string[]): Promise<Paragraphs> => {
-    const response = await fetch('/api/paragraphs', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userId: user?.uid, title, arguments: args }),
-    })
-    const body = await response.json()
-    return body.paragraphs
-  }
-
-  const handleSubmit = async () => {
+  const handleNext = async () => {
     if (paragraphsState.length === 0) {
       try {
         setIsLoading(true)
-        const paragraphs = await generateParagraphs(argumentsState)
+        const paragraphs = await generateParagraphs()
         setParagraphsState(paragraphs)
         setIsLoading(false)
       } catch (error) {
@@ -244,7 +233,18 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
     setStep((step) => step + 1)
   }
 
-  const disabled = isLoading || argumentsState.length === 0
+  const handleRegenerate = async () => {
+    try {
+      setIsRegenerating(true)
+      const args = await generateArguments()
+      setArgumentsState(args)
+      setIsRegenerating(false)
+    } catch (error) {
+      toast.error('Something went wrong, please try again!')
+      setIsRegenerating(false)
+      return
+    }
+  }
 
   return (
     <div
@@ -261,10 +261,11 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
       <div className="w-full max-w-4xl flex flex-col items-center px-16 py-12 my-10 gap-8 bg-white rounded-lg border drop-shadow-xl">
         <div className="w-full flex flex-col gap-6">
           <h2 className="text-2xl font-medium text-center">
-            Choose your arguments
+            Choose your paragraphs
           </h2>
           <p className="text-lg text-gray-500 text-center">
-            Here are a few suggested talking points. Feel free to change them.
+            These points will become your paragraphs. Add more for a longer
+            essay or remove some for a shorter essay. Feel free to change them.
           </p>
           <div>
             <DragDropContext
@@ -377,19 +378,26 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
                   d="M22.5 38V25.5H10v-3h12.5V10h3v12.5H38v3H25.5V38Z"
                 />
               </svg>
-              Add argument
+              Add paragraph
             </button>
           </div>
         </div>
         <div className="flex w-full justify-between">
           <BackButton
-            disabled={isLoading}
+            disabled={isLoading || isRegenerating}
             onClick={() => setStep((step) => step - 1)}
           />
+          <RegenerateButton
+            disabled={isLoading || isRegenerating}
+            isLoading={isRegenerating}
+            onClick={() => handleRegenerate()}
+          />
           <NextButton
-            disabled={disabled}
+            disabled={
+              isLoading || isRegenerating || argumentsState.length === 0
+            }
             isLoading={isLoading}
-            onClick={() => handleSubmit()}
+            onClick={() => handleNext()}
           />
         </div>
       </div>
@@ -473,36 +481,22 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
   const {
     step: currentStep,
     setStep,
-    title,
     paragraphsState,
-    essayState,
-    setEssayState,
+    setParagraphsState,
+    generateParagraphs,
+    essay,
+    setEssay,
+    generateEssay,
   } = useNewEssay()
-  const { user } = useUser()
   const [isLoading, setIsLoading] = useState(false)
+  const [isRegenerating, setIsRegenerating] = useState(false)
 
-  const generateEssay = async (paragraphs: Paragraphs): Promise<Essay> => {
-    const response = await fetch('/api/essay', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId: user?.uid,
-        title,
-        paragraphs,
-      }),
-    })
-    const body = await response.json()
-    return body
-  }
-
-  const handleSubmit = async () => {
-    if (essayState.body === '') {
+  const handleNext = async () => {
+    if (essay === '') {
       try {
         setIsLoading(true)
-        const essay = await generateEssay(paragraphsState)
-        setEssayState(essay)
+        const essay = await generateEssay()
+        setEssay(essay)
         setIsLoading(false)
       } catch (error) {
         toast.error('Something went wrong, please try again!')
@@ -511,6 +505,19 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
       }
     }
     setStep((step) => step + 1)
+  }
+
+  const handleRegenerate = async () => {
+    try {
+      setIsRegenerating(true)
+      const paragraphs = await generateParagraphs()
+      setParagraphsState(paragraphs)
+      setIsRegenerating(false)
+    } catch (error) {
+      toast.error('Something went wrong, please try again!')
+      setIsRegenerating(false)
+      return
+    }
   }
 
   return (
@@ -528,10 +535,11 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
       <div className="w-full max-w-4xl flex flex-col items-center px-16 py-12 my-10 gap-8 bg-white rounded-lg border drop-shadow-xl">
         <div className="w-full flex flex-col gap-6">
           <h2 className="text-2xl font-medium text-center">
-            Edit essay content
+            Edit paragraph contents
           </h2>
           <p className="text-lg text-gray-500 text-center">
-            Expand each argument to edit the content of each paragraph.
+            Each panel represents a paragraph. Expand panels to edit the
+            paragraph contents.
           </p>
           {paragraphsState.map((paragraph, index) => (
             <ParagraphRow key={index} paragraphIndex={index} />
@@ -539,13 +547,20 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
         </div>
         <div className="flex w-full justify-between">
           <BackButton
-            disabled={isLoading}
+            disabled={isLoading || isRegenerating}
             onClick={() => setStep((step) => step - 1)}
           />
+          <RegenerateButton
+            disabled={isLoading || isRegenerating}
+            isLoading={isRegenerating}
+            onClick={() => handleRegenerate()}
+          />
           <NextButton
-            disabled={isLoading}
+            disabled={
+              isLoading || isRegenerating || paragraphsState.length === 0
+            }
             isLoading={isLoading}
-            onClick={() => handleSubmit()}
+            onClick={() => handleNext()}
           />
         </div>
       </div>
@@ -724,33 +739,38 @@ const ParagraphRow = ({ paragraphIndex }: { paragraphIndex: number }) => {
                         )}
                       </Droppable>
                     </DragDropContext>
-                    <button
-                      onClick={() => {
-                        setParagraphsState((currentParagraphsState) => {
-                          const newParagraphsState: Paragraphs = JSON.parse(
-                            JSON.stringify(currentParagraphsState),
-                          )
-                          newParagraphsState[paragraphIndex].paragraph[
-                            paragraphComponentIndex
-                          ].sentences.push('')
-                          return newParagraphsState
-                        })
-                      }}
-                      className="flex items-center justify-center self-start text-lg font-medium text-blue-700"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 48 48"
-                        stroke="currentColor"
-                        className="h-5 w-5"
+                    {paragraphsState[paragraphIndex].paragraph[
+                      paragraphComponentIndex
+                    ].sentences.length < 5 && (
+                      <button
+                        onClick={() => {
+                          setParagraphsState((currentParagraphsState) => {
+                            const newParagraphsState: Paragraphs = JSON.parse(
+                              JSON.stringify(currentParagraphsState),
+                            )
+                            newParagraphsState[paragraphIndex].paragraph[
+                              paragraphComponentIndex
+                            ].sentences.push('')
+
+                            return newParagraphsState
+                          })
+                        }}
+                        className="flex items-center justify-center self-start text-lg font-medium text-blue-700"
                       >
-                        <path
-                          fill="currentColor"
-                          d="M22.5 38V25.5H10v-3h12.5V10h3v12.5H38v3H25.5V38Z"
-                        />
-                      </svg>
-                      Add argument
-                    </button>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 48 48"
+                          stroke="currentColor"
+                          className="h-5 w-5"
+                        >
+                          <path
+                            fill="currentColor"
+                            d="M22.5 38V25.5H10v-3h12.5V10h3v12.5H38v3H25.5V38Z"
+                          />
+                        </svg>
+                        Add sentence
+                      </button>
+                    )}
                   </div>
                 </div>
               )
@@ -866,11 +886,32 @@ const SentenceRow = ({
 }
 
 const EssayStep = ({ componentStep }: { componentStep: number }) => {
-  const { step: currentStep, setStep, title, essayState } = useNewEssay()
+  const {
+    step: currentStep,
+    setStep,
+    title,
+    essay,
+    setEssay,
+    generateEssay,
+  } = useNewEssay()
   const { user } = useUser()
   const [isLoading, setIsLoading] = useState(false)
+  const [isRegenerating, setIsRegenerating] = useState(false)
 
-  const handleSubmit = async () => {
+  const handleRegenerate = async () => {
+    try {
+      setIsRegenerating(true)
+      const essay = await generateEssay()
+      setEssay(essay)
+      setIsRegenerating(false)
+    } catch (error) {
+      toast.error('Something went wrong, please try again!')
+      setIsRegenerating(false)
+      return
+    }
+  }
+
+  const handleNext = async () => {
     setIsLoading(true)
     const doc = await createDocument(user?.uid!, {
       title: title,
@@ -883,7 +924,7 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
   const getDocumentContent = () => {
     let documentContents = ''
     documentContents += `<h3 style="text-align: center;">${title}</h3>`
-    essayState.body.split('\n\n').map((paragraph: string) => {
+    essay.split('\n\n').map((paragraph: string) => {
       documentContents += `<p>${paragraph}</p>`
     })
     return documentContents
@@ -903,8 +944,9 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
     >
       <div className="max-w-5xl w-full flex justify-between mt-10">
         <button
+          disabled={isLoading || isRegenerating}
           onClick={() => setStep((step) => step - 1)}
-          className="flex justify-center items-center gap-1 hover:bg-gray-200 active:bg-gray-300 rounded-lg p-2"
+          className="flex justify-center items-center gap-1 hover:bg-gray-200 active:bg-gray-300 disabled:hover:bg-gray-50 disabled:hover:cursor-not-allowed rounded-lg p-2"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -917,11 +959,30 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
               d="M24 40 8 24 24 8l2.1 2.1-12.4 12.4H40v3H13.7l12.4 12.4Z"
             />
           </svg>
-          <span className="text-lg">Edit essay content</span>
+          <span className="text-lg">Edit content</span>
         </button>
         <button
-          onClick={() => handleSubmit()}
-          className="flex justify-center items-center gap-1 hover:bg-gray-200 active:bg-gray-300 rounded-lg p-2"
+          disabled={isLoading || isRegenerating}
+          onClick={() => handleRegenerate()}
+          className="flex justify-center items-center gap-2 hover:bg-gray-200 active:bg-gray-300 disabled:hover:bg-gray-50 disabled:hover:cursor-not-allowed rounded-lg p-2"
+        >
+          <span className="text-lg">Regenerate</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 -5 48 48"
+            stroke="currentColor"
+            className="h-6 w-6 text-gray-500"
+          >
+            <path
+              fill="currentColor"
+              d="M17.6 39q-5.95-2-9.8-7.15Q3.95 26.7 3.95 20q0-1.6.25-3.2t.8-3.15L1.8 15.5.3 12.95l8.65-5 5 8.6-2.6 1.5-2.9-4.95q-.7 1.65-1.075 3.4T7 20.05q0 5.8 3.425 10.25t8.725 6.05ZM32 13v-3h5.75q-2.4-3.3-6.025-5.15Q28.1 3 24 3q-3.45 0-6.425 1.25Q14.6 5.5 12.3 7.7L10.75 5q2.7-2.35 6.05-3.675Q20.15 0 23.95 0q4.4 0 8.3 1.775Q36.15 3.55 39 6.8V3h3v10Zm-2.25 31-8.65-5 5-8.6 2.55 1.5-2.9 5.05q6.5-.65 10.875-5.475Q41 26.65 41 20.05 41 19 40.875 18q-.125-1-.375-2h3.1q.2 1 .3 2 .1 1 .1 2 0 7.15-4.475 12.65T28.1 39.6l3.15 1.85Z"
+            />
+          </svg>
+        </button>
+        <button
+          disabled={isLoading || isRegenerating}
+          onClick={() => handleNext()}
+          className="flex justify-center items-center gap-1 hover:bg-gray-200 active:bg-gray-300 disabled:hover:bg-gray-50 disabled:hover:cursor-not-allowed rounded-lg p-2"
         >
           <span className="text-lg">Open in editor</span>
           <svg
@@ -938,12 +999,28 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
         </button>
       </div>
       <div className="max-w-5xl w-full px-28 py-32 my-10 bg-white rounded-lg border drop-shadow-xl">
-        <div className="flex flex-col gap-12">
-          <h1 className="text-2xl font-medium text-center">{title}</h1>
-          <p className="text-lg text-left whitespace-pre-wrap">
-            {essayState.body}
-          </p>
-        </div>
+        {isRegenerating ? (
+          <div className="flex flex-col gap-16 animate-pulse">
+            <div className="h-7 bg-gray-300 w-3/4 rounded-lg self-center"></div>
+            {[...Array(5)].map((e, index) => (
+              <div className="flex flex-col gap-6">
+                {[...Array(8)].map((e, index) => (
+                  <div
+                    key={index}
+                    className="h-4 bg-gray-300 w-full rounded-lg"
+                  ></div>
+                ))}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-12">
+            <h1 className="text-2xl font-medium text-center">{title}</h1>
+            <p className="text-lg text-left whitespace-pre-wrap leading-loose">
+              {essay}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   )

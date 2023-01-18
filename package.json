@@ -27,6 +27,7 @@
     "react-firebase-hooks": "^5.1.0",
     "react-hot-toast": "^2.4.0",
     "react-tooltip": "^4.5.1",
+    "romans": "^2.0.8",
     "stripe": "^11.0.0",
     "tailwind-scrollbar-hide": "^1.1.7"
   },

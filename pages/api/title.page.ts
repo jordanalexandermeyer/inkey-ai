@@ -17,8 +17,8 @@ export default async function handler(request: NextRequest) {
         model: 'text-davinci-003',
         prompt:
           'Write a title for an essay with the following prompt.\n' + prompt,
-        temperature: 1,
-        top_p: 0.9,
+        temperature: 0.7,
+        top_p: 1,
         max_tokens: 1000,
         user: userId || '',
       }),
@@ -29,7 +29,7 @@ export default async function handler(request: NextRequest) {
     })
 
     const body = await response.json()
-    const text = body.choices[0].text.trim()
+    const text = body.choices[0].text.trim().replace(/['"]+/g, '')
 
     return NextResponse.json({ title: text })
   } catch (error) {

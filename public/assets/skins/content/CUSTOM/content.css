@@ -23,7 +23,7 @@ body {
       drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
     box-sizing: border-box;
     margin: 3rem auto 7rem;
-    max-width: 820px;
+    max-width: 896px;
     min-height: calc(100vh - 1rem);
     padding: 6rem 6rem 6rem 6rem;
     border-radius: 8px;
