@@ -19,11 +19,10 @@ const DocumentPage: NextPage = () => {
   const [documentState, setDocumentState] = useState<Document | undefined>(
     undefined,
   )
-  const [editorContent, setEditorContent] = useState('')
-  const [documentTitle, setDocumentTitle] = useState(documentState?.title ?? '')
   const [isSavingDocument, setIsSavingDocument] = useState(false)
   const [isEditorLoading, setIsEditorLoading] = useState(true)
-  let typingTimer: NodeJS.Timeout
+  const [isDocumentCurrent, setIsDocumentCurrent] = useState(true)
+  const [typingTimer, setTypingTimer] = useState<NodeJS.Timeout>()
 
   useEffect(() => {
     const loadDocument = async () => {
@@ -35,26 +34,21 @@ const DocumentPage: NextPage = () => {
     if (documentId && user) loadDocument()
   }, [documentId, user])
 
-  useEffect(() => setEditorContent(documentState?.content ?? ''), [
-    documentState?.content,
-  ])
-  useEffect(() => setDocumentTitle(documentState?.title ?? ''), [
-    documentState?.title,
-  ])
-
   const autosaveDocument = (editorContent: string) => {
-    clearTimeout(typingTimer)
-    typingTimer = setTimeout(async () => {
+    setTypingTimer((timer) => {
+      clearTimeout(timer)
+      return timer
+    })
+    const timeoutId = setTimeout(async () => {
       await persistDocumentChanges({ content: editorContent })
+      setIsDocumentCurrent(true)
     }, 5000)
+    setTypingTimer(timeoutId)
   }
 
   const persistDocumentChanges = async (documentFields: DocumentFields) => {
     if (documentState) {
       setIsSavingDocument(true)
-      setDocumentState((currentDocumentState) => {
-        return { ...currentDocumentState, ...documentFields } as Document
-      })
       await updateDocument(documentState.id, documentFields)
       setIsSavingDocument(false)
     }
@@ -89,10 +83,18 @@ const DocumentPage: NextPage = () => {
                 <div className="z-20 flex gap-2 justify-center items-center">
                   <input
                     className="w-40 text-ellipsis px-2 bg-transparent text-center border border-transparent rounded-md hover:border hover:border-gray-300"
-                    value={documentTitle}
-                    onChange={(e) => setDocumentTitle(e.target.value)}
+                    value={documentState.title}
+                    onChange={(e) => {
+                      setDocumentState((currentDocumentState) => {
+                        const currentState: Document = JSON.parse(
+                          JSON.stringify(currentDocumentState),
+                        )
+                        currentState.title = e.target.value
+                        return currentState
+                      })
+                    }}
                     onBlur={() =>
-                      persistDocumentChanges({ title: documentTitle })
+                      persistDocumentChanges({ title: documentState.title })
                     }
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
@@ -128,7 +130,7 @@ const DocumentPage: NextPage = () => {
                       stroke="currentColor"
                       className="h-6 w-6"
                     >
-                      {documentState.content == editorContent ? (
+                      {isDocumentCurrent ? (
                         <path
                           fill="currentColor"
                           d="m20.6 34.05 11.5-11.5-2-2L20.65 30l-5-5-2.05 2.05ZM12.55 40q-4.4 0-7.475-3.075Q2 33.85 2 29.45q0-3.9 2.5-6.85 2.5-2.95 6.35-3.55 1-4.85 4.7-7.925T24.1 8.05q5.6 0 9.45 4.075Q37.4 16.2 37.4 21.9v1.2q3.6-.1 6.1 2.325Q46 27.85 46 31.55q0 3.45-2.5 5.95T37.55 40Zm0-3h25q2.25 0 3.85-1.6t1.6-3.85q0-2.25-1.6-3.85t-3.85-1.6H34.4v-4.2q0-4.55-3.05-7.7-3.05-3.15-7.45-3.15t-7.475 3.15q-3.075 3.15-3.075 7.7h-.95q-3.1 0-5.25 2.175T5 29.45q0 3.15 2.2 5.35Q9.4 37 12.55 37ZM24 24Z"
@@ -146,8 +148,18 @@ const DocumentPage: NextPage = () => {
             )}
             <Editor
               apiKey={process.env.NEXT_PUBLIC_TINY_MCE_API_KEY}
-              value={editorContent}
-              onEditorChange={(newValue, editor) => setEditorContent(newValue)}
+              value={documentState.content}
+              onEditorChange={(newValue, editor) => {
+                setDocumentState((currentDocumentState) => {
+                  const newDocumentState: Document = JSON.parse(
+                    JSON.stringify(currentDocumentState),
+                  )
+                  newDocumentState.content = newValue
+                  return newDocumentState
+                })
+                setIsDocumentCurrent(false)
+                autosaveDocument(editor.getContent())
+              }}
               init={{
                 height: '100vh',
                 statusbar: false,
@@ -158,15 +170,12 @@ const DocumentPage: NextPage = () => {
                   })
 
                   editor.addShortcut('meta+s', 'Save document.', () => {
+                    setTypingTimer((timer) => {
+                      clearTimeout(timer)
+                      return timer
+                    })
                     persistDocumentChanges({ content: editor.getContent() })
-                  })
-
-                  editor.on('keyup', () => {
-                    autosaveDocument(editor.getContent())
-                  })
-
-                  editor.on('Change', () => {
-                    autosaveDocument(editor.getContent())
+                    setIsDocumentCurrent(true)
                   })
                 },
                 skin_url: '/assets/skins/ui/CUSTOM',
