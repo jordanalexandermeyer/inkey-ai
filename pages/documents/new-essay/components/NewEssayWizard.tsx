@@ -803,7 +803,7 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
       }}
       className="flex flex-col items-center w-full px-4 fixed overflow-y-scroll scrollbar-hide transition-all ease-in-out duration-1000"
     >
-      <div className="max-w-5xl w-full flex flex-col md:flex-row gap-2 justify-between mt-10 mb-32">
+      <div className="max-w-5xl w-full flex flex-col md:flex-row gap-2 justify-between mt-10">
         <button
           disabled={isLoading || isRegenerating}
           onClick={() => setStep((step) => step - 1)}
