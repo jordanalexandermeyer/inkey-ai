@@ -19,7 +19,7 @@ import {
   QuoteMap,
   SummaryMethod,
 } from 'types'
-import { languages, tones } from './constants'
+import { tones } from './constants'
 import { updateUserWordsGenerated } from 'utils/db'
 import { EventName, track } from 'utils/segment'
 
@@ -39,10 +39,9 @@ const TemplatePage = ({
   supportRequestedLength = true,
   supportTone = true,
   supportPointOfView = true,
-  supportLanguages = false,
   supportCodingLanguages = false,
   supportContent = false,
-  contentCharacterLimit = 10000,
+  contentCharacterLimit = 500,
 }: Template) => {
   const [prompt, setPrompt] = useState('')
   const [output, setOutput] = useState('')
@@ -53,7 +52,6 @@ const TemplatePage = ({
   const [quotes, setQuotes] = useState<QuoteMap>({})
   const [requestedLength, setRequestedLength] = useState(EssayLength.SHORT)
   const [tone, setTone] = useState('professional')
-  const [language, setLanguage] = useState('English')
   const [codingLanguage, setCodingLanguage] = useState(CodingLanguages.PYTHON)
   const [pointOfView, setPointOfView] = useState(PointOfView.THIRD)
   const [summaryMethod, setSummaryMethod] = useState(SummaryMethod.PARAGRAPH)
@@ -89,7 +87,6 @@ const TemplatePage = ({
           ...(supportRequestedLength && { length: requestedLength }),
           ...(supportTone && { tone: tone }),
           ...(supportPointOfView && { point_of_view: pointOfView }),
-          ...(supportLanguages && { language: language }),
           ...(supportCodingLanguages && { coding_language: codingLanguage }),
           ...(supportContent && content.trim() && { content: content.trim() }),
           ...(id == TemplateId.SUMMARIZER_ID && {
@@ -162,7 +159,6 @@ const TemplatePage = ({
     setPointOfView(PointOfView.THIRD)
     setSummaryMethod(SummaryMethod.PARAGRAPH)
     setCodingLanguage(CodingLanguages.PYTHON)
-    setLanguage('English')
     setAddQuotes(false)
     setQuotes({})
     setContent('')
@@ -412,35 +408,6 @@ const TemplatePage = ({
                     </select>
                   </div>
                 )}
-                {supportLanguages && (
-                  <div>
-                    <label
-                      htmlFor="language"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      Language
-                    </label>
-                    <select
-                      id="language"
-                      value={language}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      onChange={(event) => {
-                        track(EventName.LANGUAGE_SELECTED, {
-                          value: event.target.value,
-                        })
-                        setLanguage(event.target.value)
-                      }}
-                    >
-                      {Object.keys(languages).map((key, index) => {
-                        return (
-                          <option key={index} value={key}>
-                            {languages[key as keyof typeof languages]}
-                          </option>
-                        )
-                      })}
-                    </select>
-                  </div>
-                )}
                 {supportCodingLanguages && (
                   <div>
                     <label
@@ -660,9 +627,9 @@ const TemplatePage = ({
                     <div className="relative flex items-center mb-2">
                       <textarea
                         maxLength={contentCharacterLimit}
-                        rows={10}
+                        rows={5}
                         placeholder={
-                          'Paste content you want incorporated here.'
+                          'Write content you want incorporated here.'
                         }
                         className="px-3 py-2 w-full block text-sm text-gray-600 placeholder-gray-400 transition-shadow duration-150 ease-in-out bg-white border border-gray-200 rounded shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500"
                         value={content}

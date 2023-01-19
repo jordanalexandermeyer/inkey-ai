@@ -17,7 +17,7 @@ export const NextButton = ({
       ref={reference}
       disabled={disabled}
       onClick={onClick}
-      className="flex items-center justify-center bg-blue-500 text-white rounded-lg transition-colors active:bg-blue-800 hover:bg-blue-300 disabled:bg-blue-300 disabled:hover:cursor-not-allowed"
+      className="flex items-center justify-center bg-blue-500 text-white rounded-lg transition-colors hover:bg-blue-600 active:bg-blue-300 disabled:bg-blue-300 disabled:hover:cursor-not-allowed"
     >
       <div
         className={classNames(
@@ -79,7 +79,7 @@ export const RegenerateButton = ({
     <button
       disabled={disabled}
       onClick={onClick}
-      className="flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg transition-colors active:from-blue-600 active:to-purple-600 hover:from-blue-300 hover:to-purple-300 disabled:from-blue-300 disabled:to-purple-300 disabled:hover:cursor-not-allowed"
+      className="flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg transition-colors hover:from-blue-600 hover:to-purple-600 active:from-blue-300 active:to-purple-300 disabled:from-blue-300 disabled:to-purple-300 disabled:hover:cursor-not-allowed"
     >
       <div
         className={classNames(
@@ -129,31 +129,38 @@ export const RegenerateButton = ({
 }
 
 export const BackButton = ({
-  disabled,
   onClick,
+  disabled,
+  isLoading,
+  reference,
 }: {
-  disabled?: boolean
   onClick: MouseEventHandler<HTMLButtonElement>
+  disabled?: boolean
+  isLoading?: boolean
+  reference?: any
 }) => {
   return (
     <button
+      ref={reference}
       disabled={disabled}
       onClick={onClick}
-      className="flex items-center gap-2 py-3 px-4 bg-white text-gray-700 border border-gray-300 rounded-lg transition-colors active:bg-gray-200 hover:bg-gray-50 disabled:bg-gray-50 disabled:hover:cursor-not-allowed"
+      className="flex items-center justify-center bg-white text-gray-700 rounded-lg transition-colors border border-gray-300 active:bg-gray-100 disabled:hover:cursor-not-allowed"
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 48 48"
-        stroke="currentColor"
-        strokeWidth="4"
-        className="h-4 w-4"
-      >
-        <path
-          fill="currentColor"
-          d="M20 44 0 24 20 4l2.8 2.85L5.65 24 22.8 41.15Z"
-        />
-      </svg>
-      <span className="text-lg font-semibold">Back</span>
+      <div className="flex items-center justify-center gap-1 py-3 px-4">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 48 48"
+          stroke="currentColor"
+          strokeWidth="4"
+          className="h-4 w-4"
+        >
+          <path
+            fill="currentColor"
+            d="M20 44 0 24 20 4l2.8 2.85L5.65 24 22.8 41.15Z"
+          />
+        </svg>
+        <span className="text-lg font-semibold">Back</span>
+      </div>
     </button>
   )
 }

@@ -1,10 +1,7 @@
-import { createDocument } from '@/db/documents'
-import { useUser } from '@/utils/useUser'
 import classNames from 'classnames'
 import Modal from 'components/Modal'
 import Link from 'next/link'
-import { createRef, useEffect, useState } from 'react'
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
+import { useRef, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import BorderedInput from './BorderedInput'
 import { BackButton, NextButton, RegenerateButton } from './Buttons'
@@ -51,17 +48,19 @@ const PromptStep = ({ componentStep }: { componentStep: number }) => {
     setStep,
     prompt,
     setPrompt,
-    title,
+    titleGenerated,
+    setTitleGenerated,
     setTitle,
     generateTitle,
   } = useNewEssay()
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = async () => {
-    if (!title) {
+    if (!titleGenerated) {
       try {
         setIsLoading(true)
         const title = await generateTitle()
+        setTitleGenerated(true)
         setTitle(title)
         setIsLoading(false)
       } catch (error) {
@@ -89,10 +88,11 @@ const PromptStep = ({ componentStep }: { componentStep: number }) => {
         )})`,
         height: 'calc(100vh - 80px)',
         opacity: getOpacityFromCurrentStep(currentStep, componentStep),
+        ...(currentStep != componentStep && { userSelect: 'none' }),
       }}
-      className="flex flex-col items-center w-full fixed overflow-y-scroll scrollbar-hide transition-all ease-in-out duration-1000"
+      className="flex flex-col items-center w-full px-4 fixed overflow-y-scroll scrollbar-hide transition-all ease-in-out duration-1000"
     >
-      <div className="max-w-2xl flex flex-col items-center px-16 py-12 my-10 gap-6 bg-white rounded-lg border drop-shadow-xl">
+      <div className="max-w-2xl flex flex-col items-center p-6 md:px-16 md:py-12 my-10 gap-8 bg-white rounded-lg border drop-shadow-xl">
         <div className="flex flex-col gap-6">
           <h2 className="text-2xl font-medium text-center">
             What's your essay prompt?
@@ -128,18 +128,20 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
     title,
     setTitle,
     generateTitle,
-    argumentsState,
     setArgumentsState,
     generateArguments,
+    argumentsGenerated,
+    setArgumentsGenerated,
   } = useNewEssay()
   const [isLoading, setIsLoading] = useState(false)
   const [isRegenerating, setIsRegenerating] = useState(false)
 
   const handleNext = async () => {
-    if (argumentsState.length === 0) {
+    if (!argumentsGenerated) {
       try {
         setIsLoading(true)
         const args = await generateArguments()
+        setArgumentsGenerated(true)
         setArgumentsState(args)
         setIsLoading(false)
       } catch (error) {
@@ -149,6 +151,9 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
       }
     }
     setStep((step) => step + 1)
+    try {
+      ;(document.activeElement as HTMLElement).blur()
+    } catch (e) {}
   }
 
   const handleRegenerate = async () => {
@@ -180,10 +185,11 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
         )})`,
         height: 'calc(100vh - 80px)',
         opacity: getOpacityFromCurrentStep(currentStep, componentStep),
+        ...(currentStep != componentStep && { userSelect: 'none' }),
       }}
-      className="flex flex-col items-center w-full fixed overflow-y-scroll scrollbar-hide transition-all ease-in-out duration-1000"
+      className="flex flex-col items-center w-full px-4 fixed overflow-y-scroll scrollbar-hide transition-all ease-in-out duration-1000"
     >
-      <div className="max-w-2xl flex flex-col items-center px-16 py-12 my-10 gap-6 bg-white rounded-lg border drop-shadow-xl">
+      <div className="max-w-2xl flex flex-col items-center p-6 md:px-16 md:py-12 my-10 gap-8 bg-white rounded-lg border drop-shadow-xl">
         <div className="flex flex-col gap-6">
           <h2 className="text-2xl font-medium text-center">
             What do you want the title to be?
@@ -200,7 +206,7 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
             focus={currentStep == componentStep}
           />
         </div>
-        <div className="flex w-full justify-between">
+        <div className="flex flex-col gap-3 md:flex-row w-full justify-between">
           <BackButton
             disabled={isLoading || isRegenerating}
             onClick={() => setStep((step) => step - 1)}
@@ -228,23 +234,20 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
     argumentsState,
     setArgumentsState,
     generateArguments,
-    paragraphsState,
     setParagraphsState,
     generateParagraphs,
+    paragraphsGenerated,
+    setParagraphsGenerated,
   } = useNewEssay()
   const [isLoading, setIsLoading] = useState(false)
   const [isRegenerating, setIsRegenerating] = useState(false)
-  const nextButtonRef = createRef<any>()
-
-  useEffect(() => {
-    if (currentStep === componentStep) nextButtonRef.current.focus()
-  }, [currentStep])
 
   const handleNext = async () => {
-    if (paragraphsState.length === 0) {
+    if (!paragraphsGenerated) {
       try {
         setIsLoading(true)
         const paragraphs = await generateParagraphs()
+        setParagraphsGenerated(true)
         setParagraphsState(paragraphs)
         setIsLoading(false)
       } catch (error) {
@@ -254,6 +257,9 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
       }
     }
     setStep((step) => step + 1)
+    try {
+      ;(document.activeElement as HTMLElement).blur()
+    } catch (e) {}
   }
 
   const handleRegenerate = async () => {
@@ -269,6 +275,21 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
     }
   }
 
+  const disabled = () => {
+    let isArgumentEmpty = false
+    argumentsState.map((arg) => {
+      if (arg.trim() === '') isArgumentEmpty = true
+      return arg
+    })
+
+    return (
+      isLoading ||
+      isRegenerating ||
+      argumentsState.length === 0 ||
+      isArgumentEmpty
+    )
+  }
+
   return (
     <div
       style={{
@@ -276,12 +297,13 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
           currentStep,
           componentStep,
         )})`,
-        opacity: getOpacityFromCurrentStep(currentStep, componentStep),
         height: 'calc(100vh - 80px)',
+        opacity: getOpacityFromCurrentStep(currentStep, componentStep),
+        ...(currentStep != componentStep && { userSelect: 'none' }),
       }}
-      className="flex flex-col items-center w-full fixed overflow-y-scroll scrollbar-hide transition-all ease-in-out duration-1000"
+      className="flex flex-col items-center w-full px-4 fixed overflow-y-scroll scrollbar-hide transition-all ease-in-out duration-1000"
     >
-      <div className="w-full max-w-4xl flex flex-col items-center px-16 py-12 my-10 gap-8 bg-white rounded-lg border drop-shadow-xl">
+      <div className="w-full max-w-4xl flex flex-col items-center p-6 md:px-16 md:py-12 my-10 gap-8 bg-white rounded-lg border drop-shadow-xl">
         <div className="w-full flex flex-col gap-6">
           <h2 className="text-2xl font-medium text-center">
             Choose your paragraphs
@@ -291,94 +313,16 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
             essay or remove some for a shorter essay. Feel free to change them.
           </p>
           <div>
-            <DragDropContext
-              onDragEnd={(result) => {
-                const { destination, source, draggableId } = result
-
-                if (!destination) {
-                  return
-                }
-
-                if (
-                  destination.droppableId === source.droppableId &&
-                  destination.index === source.index
-                ) {
-                  return
-                }
-
-                const newArgState = Array.from(argumentsState)
-                newArgState.splice(source.index, 1)
-                newArgState.splice(
-                  destination.index,
-                  0,
-                  argumentsState[Number(draggableId)],
-                )
-
-                setArgumentsState(newArgState)
-              }}
-            >
-              <Droppable
-                droppableId="arguments"
-                renderClone={(provided, snapshot, rubric) => (
-                  <div
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                    ref={provided.innerRef}
-                    className="flex items-center gap-4 w-full"
-                  >
-                    <button>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 48 48"
-                        stroke="currentColor"
-                        className="h-9 w-9 text-gray-500 bg-gray-100 rounded-lg"
-                      >
-                        <path
-                          fill="currentColor"
-                          d="M17.5 40q-1.45 0-2.475-1.025Q14 37.95 14 36.5q0-1.45 1.025-2.475Q16.05 33 17.5 33q1.45 0 2.475 1.025Q21 35.05 21 36.5q0 1.45-1.025 2.475Q18.95 40 17.5 40Zm13 0q-1.45 0-2.475-1.025Q27 37.95 27 36.5q0-1.45 1.025-2.475Q29.05 33 30.5 33q1.45 0 2.475 1.025Q34 35.05 34 36.5q0 1.45-1.025 2.475Q31.95 40 30.5 40Zm-13-12.5q-1.45 0-2.475-1.025Q14 25.45 14 24q0-1.45 1.025-2.475Q16.05 20.5 17.5 20.5q1.45 0 2.475 1.025Q21 22.55 21 24q0 1.45-1.025 2.475Q18.95 27.5 17.5 27.5Zm13 0q-1.45 0-2.475-1.025Q27 25.45 27 24q0-1.45 1.025-2.475Q29.05 20.5 30.5 20.5q1.45 0 2.475 1.025Q34 22.55 34 24q0 1.45-1.025 2.475Q31.95 27.5 30.5 27.5ZM17.5 15q-1.45 0-2.475-1.025Q14 12.95 14 11.5q0-1.45 1.025-2.475Q16.05 8 17.5 8q1.45 0 2.475 1.025Q21 10.05 21 11.5q0 1.45-1.025 2.475Q18.95 15 17.5 15Zm13 0q-1.45 0-2.475-1.025Q27 12.95 27 11.5q0-1.45 1.025-2.475Q29.05 8 30.5 8q1.45 0 2.475 1.025Q34 10.05 34 11.5q0 1.45-1.025 2.475Q31.95 15 30.5 15Z"
-                        />
-                      </svg>
-                    </button>
-                    <BorderedInput
-                      value={argumentsState[rubric.source.index]}
-                      onChange={(e) => {}}
-                    />
-                    <button className="p-1 hover:bg-gray-100 rounded-lg invisible">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 48 48"
-                        stroke="currentColor"
-                        className="h-5 w-5 text-gray-400"
-                        fill="none"
-                      >
-                        <path
-                          fill="currentColor"
-                          d="m12.45 37.65-2.1-2.1L21.9 24 10.35 12.45l2.1-2.1L24 21.9l11.55-11.55 2.1 2.1L26.1 24l11.55 11.55-2.1 2.1L24 26.1Z"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                )}
-              >
-                {(provided, snapshot) => (
-                  <div
-                    className="flex flex-col"
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                  >
-                    {argumentsState.map((arg, index) => (
-                      <ArgumentRow
-                        key={index}
-                        index={index}
-                        isLoading={isRegenerating}
-                        isDragging={snapshot.isUsingPlaceholder}
-                      />
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
+            <div className="flex flex-col">
+              {argumentsState.map((arg, index) => (
+                <ArgumentRow
+                  key={index}
+                  index={index}
+                  isLoading={isRegenerating}
+                  isDragging={false}
+                />
+              ))}
+            </div>
             <button
               onClick={() => {
                 setArgumentsState((currentArgState) => {
@@ -406,7 +350,7 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
             </button>
           </div>
         </div>
-        <div className="flex w-full justify-between">
+        <div className="flex flex-col gap-3 md:flex-row w-full justify-between">
           <BackButton
             disabled={isLoading || isRegenerating}
             onClick={() => setStep((step) => step - 1)}
@@ -417,10 +361,7 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
             onClick={() => handleRegenerate()}
           />
           <NextButton
-            reference={nextButtonRef}
-            disabled={
-              isLoading || isRegenerating || argumentsState.length === 0
-            }
+            disabled={disabled()}
             isLoading={isLoading}
             onClick={() => handleNext()}
           />
@@ -445,25 +386,37 @@ const ArgumentRow = ({
     <>
       {isLoading ? (
         <div className="flex items-center gap-4 w-full mb-6">
-          <button className="invisible">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 48 48"
-              stroke="currentColor"
-              className="h-9 w-9 text-gray-500 hover:bg-gray-100 rounded-lg"
-            >
-              <path
-                fill="currentColor"
-                d="M17.5 40q-1.45 0-2.475-1.025Q14 37.95 14 36.5q0-1.45 1.025-2.475Q16.05 33 17.5 33q1.45 0 2.475 1.025Q21 35.05 21 36.5q0 1.45-1.025 2.475Q18.95 40 17.5 40Zm13 0q-1.45 0-2.475-1.025Q27 37.95 27 36.5q0-1.45 1.025-2.475Q29.05 33 30.5 33q1.45 0 2.475 1.025Q34 35.05 34 36.5q0 1.45-1.025 2.475Q31.95 40 30.5 40Zm-13-12.5q-1.45 0-2.475-1.025Q14 25.45 14 24q0-1.45 1.025-2.475Q16.05 20.5 17.5 20.5q1.45 0 2.475 1.025Q21 22.55 21 24q0 1.45-1.025 2.475Q18.95 27.5 17.5 27.5Zm13 0q-1.45 0-2.475-1.025Q27 25.45 27 24q0-1.45 1.025-2.475Q29.05 20.5 30.5 20.5q1.45 0 2.475 1.025Q34 22.55 34 24q0 1.45-1.025 2.475Q31.95 27.5 30.5 27.5ZM17.5 15q-1.45 0-2.475-1.025Q14 12.95 14 11.5q0-1.45 1.025-2.475Q16.05 8 17.5 8q1.45 0 2.475 1.025Q21 10.05 21 11.5q0 1.45-1.025 2.475Q18.95 15 17.5 15Zm13 0q-1.45 0-2.475-1.025Q27 12.95 27 11.5q0-1.45 1.025-2.475Q29.05 8 30.5 8q1.45 0 2.475 1.025Q34 10.05 34 11.5q0 1.45-1.025 2.475Q31.95 15 30.5 15Z"
-              />
-            </svg>
-          </button>
           <BorderedInput
             isLoading={isLoading}
             value={argumentsState[index]}
             onChange={(e) => {}}
           />
-          <button className="p-1 hover:bg-gray-100 rounded-lg invisible">
+        </div>
+      ) : (
+        <div className="flex items-center gap-3 md:gap-4 w-full mb-6">
+          <BorderedInput
+            value={argumentsState[index]}
+            onChange={(e) => {
+              const arg = e.target.value
+              setArgumentsState((currentArgState) => {
+                const newArgState = JSON.parse(JSON.stringify(currentArgState))
+                newArgState[index] = arg
+                return newArgState
+              })
+            }}
+          />
+          <button
+            onClick={() => {
+              setArgumentsState((currentArgState) => {
+                const newArgState = JSON.parse(JSON.stringify(currentArgState))
+                newArgState.splice(index, 1)
+                return newArgState
+              })
+            }}
+            className={classNames('md:p-1 hover:bg-gray-100 rounded-lg', {
+              invisible: isDragging,
+            })}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 48 48"
@@ -478,70 +431,6 @@ const ArgumentRow = ({
             </svg>
           </button>
         </div>
-      ) : (
-        <Draggable draggableId={String(index)} index={index}>
-          {(provided, snapshot) => (
-            <div
-              ref={provided.innerRef}
-              {...provided.draggableProps}
-              className="flex items-center gap-4 w-full mb-6"
-            >
-              <button {...provided.dragHandleProps}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 48 48"
-                  stroke="currentColor"
-                  className="h-9 w-9 text-gray-500 hover:bg-gray-100 rounded-lg"
-                >
-                  <path
-                    fill="currentColor"
-                    d="M17.5 40q-1.45 0-2.475-1.025Q14 37.95 14 36.5q0-1.45 1.025-2.475Q16.05 33 17.5 33q1.45 0 2.475 1.025Q21 35.05 21 36.5q0 1.45-1.025 2.475Q18.95 40 17.5 40Zm13 0q-1.45 0-2.475-1.025Q27 37.95 27 36.5q0-1.45 1.025-2.475Q29.05 33 30.5 33q1.45 0 2.475 1.025Q34 35.05 34 36.5q0 1.45-1.025 2.475Q31.95 40 30.5 40Zm-13-12.5q-1.45 0-2.475-1.025Q14 25.45 14 24q0-1.45 1.025-2.475Q16.05 20.5 17.5 20.5q1.45 0 2.475 1.025Q21 22.55 21 24q0 1.45-1.025 2.475Q18.95 27.5 17.5 27.5Zm13 0q-1.45 0-2.475-1.025Q27 25.45 27 24q0-1.45 1.025-2.475Q29.05 20.5 30.5 20.5q1.45 0 2.475 1.025Q34 22.55 34 24q0 1.45-1.025 2.475Q31.95 27.5 30.5 27.5ZM17.5 15q-1.45 0-2.475-1.025Q14 12.95 14 11.5q0-1.45 1.025-2.475Q16.05 8 17.5 8q1.45 0 2.475 1.025Q21 10.05 21 11.5q0 1.45-1.025 2.475Q18.95 15 17.5 15Zm13 0q-1.45 0-2.475-1.025Q27 12.95 27 11.5q0-1.45 1.025-2.475Q29.05 8 30.5 8q1.45 0 2.475 1.025Q34 10.05 34 11.5q0 1.45-1.025 2.475Q31.95 15 30.5 15Z"
-                  />
-                </svg>
-              </button>
-              <BorderedInput
-                value={argumentsState[index]}
-                onChange={(e) => {
-                  const arg = e.target.value
-                  setArgumentsState((currentArgState) => {
-                    const newArgState = JSON.parse(
-                      JSON.stringify(currentArgState),
-                    )
-                    newArgState[index] = arg
-                    return newArgState
-                  })
-                }}
-              />
-              <button
-                onClick={() => {
-                  setArgumentsState((currentArgState) => {
-                    const newArgState = JSON.parse(
-                      JSON.stringify(currentArgState),
-                    )
-                    newArgState.splice(index, 1)
-                    return newArgState
-                  })
-                }}
-                className={classNames('p-1 hover:bg-gray-100 rounded-lg', {
-                  invisible: isDragging,
-                })}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 48 48"
-                  stroke="currentColor"
-                  className="h-5 w-5 text-gray-400"
-                  fill="none"
-                >
-                  <path
-                    fill="currentColor"
-                    d="m12.45 37.65-2.1-2.1L21.9 24 10.35 12.45l2.1-2.1L24 21.9l11.55-11.55 2.1 2.1L26.1 24l11.55 11.55-2.1 2.1L24 26.1Z"
-                  />
-                </svg>
-              </button>
-            </div>
-          )}
-        </Draggable>
       )}
     </>
   )
@@ -554,23 +443,20 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
     paragraphsState,
     setParagraphsState,
     generateParagraphs,
-    essay,
     setEssay,
     generateEssay,
+    essayGenerated,
+    setEssayGenerated,
   } = useNewEssay()
   const [isLoading, setIsLoading] = useState(false)
   const [isRegenerating, setIsRegenerating] = useState(false)
-  const nextButtonRef = createRef<any>()
-
-  useEffect(() => {
-    if (currentStep === componentStep) nextButtonRef.current.focus()
-  }, [currentStep])
 
   const handleNext = async () => {
-    if (essay === '') {
+    if (!essayGenerated) {
       try {
         setIsLoading(true)
         const essay = await generateEssay()
+        setEssayGenerated(true)
         setEssay(essay)
         setIsLoading(false)
       } catch (error) {
@@ -580,6 +466,9 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
       }
     }
     setStep((step) => step + 1)
+    try {
+      ;(document.activeElement as HTMLElement).blur()
+    } catch (e) {}
   }
 
   const handleRegenerate = async () => {
@@ -602,12 +491,13 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
           currentStep,
           componentStep,
         )})`,
-        opacity: getOpacityFromCurrentStep(currentStep, componentStep),
         height: 'calc(100vh - 80px)',
+        opacity: getOpacityFromCurrentStep(currentStep, componentStep),
+        ...(currentStep != componentStep && { userSelect: 'none' }),
       }}
-      className="flex flex-col items-center w-full fixed overflow-y-scroll scrollbar-hide transition-all ease-in-out duration-1000"
+      className="flex flex-col items-center w-full px-4 fixed overflow-y-scroll scrollbar-hide transition-all ease-in-out duration-1000"
     >
-      <div className="w-full max-w-4xl flex flex-col items-center px-16 py-12 my-10 gap-8 bg-white rounded-lg border drop-shadow-xl">
+      <div className="w-full max-w-4xl flex flex-col items-center p-6 md:px-16 md:py-12 my-10 gap-8 bg-white rounded-lg border drop-shadow-xl">
         <div className="w-full flex flex-col gap-6">
           <h2 className="text-2xl font-medium text-center">
             Edit paragraph contents
@@ -624,7 +514,7 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
             />
           ))}
         </div>
-        <div className="flex w-full justify-between">
+        <div className="flex flex-col gap-3 md:flex-row w-full justify-between">
           <BackButton
             disabled={isLoading || isRegenerating}
             onClick={() => setStep((step) => step - 1)}
@@ -635,7 +525,6 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
             onClick={() => handleRegenerate()}
           />
           <NextButton
-            reference={nextButtonRef}
             disabled={
               isLoading || isRegenerating || paragraphsState.length === 0
             }
@@ -658,12 +547,12 @@ const ParagraphRow = ({
   const [isExpanded, setIsExpanded] = useState(false)
   const { paragraphsState, setParagraphsState } = useNewEssay()
   const [height, setHeight] = useState(0)
-  const ref = createRef<any>()
+  const ref = useRef<any>()
 
   useEffect(() => {
     if (isExpanded) setHeight(ref.current.clientHeight)
     if (!isExpanded) setHeight(0)
-  }, [isExpanded])
+  }, [isExpanded, paragraphsState])
 
   return (
     <>
@@ -721,117 +610,24 @@ const ParagraphRow = ({
                       <h2 className="text-lg font-medium text-left">
                         {paragraphComponent.title}
                       </h2>
-
                       <div>
-                        <DragDropContext
-                          onDragEnd={(result) => {
-                            const { destination, source, draggableId } = result
-
-                            if (!destination) {
-                              return
-                            }
-
-                            if (
-                              destination.droppableId === source.droppableId &&
-                              destination.index === source.index
-                            ) {
-                              return
-                            }
-
-                            setParagraphsState((currentParagraphsState) => {
-                              const newParagraphsState: Paragraphs = JSON.parse(
-                                JSON.stringify(currentParagraphsState),
-                              )
-                              newParagraphsState[paragraphIndex].paragraph[
-                                paragraphComponentIndex
-                              ].sentences.splice(source.index, 1)
-                              newParagraphsState[paragraphIndex].paragraph[
-                                paragraphComponentIndex
-                              ].sentences.splice(
-                                destination.index,
-                                0,
-                                currentParagraphsState[paragraphIndex]
-                                  .paragraph[paragraphComponentIndex].sentences[
-                                  Number(draggableId)
-                                ],
-                              )
-                              return newParagraphsState
-                            })
-                          }}
-                        >
-                          <Droppable
-                            droppableId="arguments"
-                            renderClone={(provided, snapshot, rubric) => (
-                              <div
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                ref={provided.innerRef}
-                                className="flex items-center gap-4 w-full"
-                              >
-                                <button>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 48 48"
-                                    stroke="currentColor"
-                                    className="h-9 w-9 text-gray-500 bg-gray-100 rounded-lg"
-                                  >
-                                    <path
-                                      fill="currentColor"
-                                      d="M17.5 40q-1.45 0-2.475-1.025Q14 37.95 14 36.5q0-1.45 1.025-2.475Q16.05 33 17.5 33q1.45 0 2.475 1.025Q21 35.05 21 36.5q0 1.45-1.025 2.475Q18.95 40 17.5 40Zm13 0q-1.45 0-2.475-1.025Q27 37.95 27 36.5q0-1.45 1.025-2.475Q29.05 33 30.5 33q1.45 0 2.475 1.025Q34 35.05 34 36.5q0 1.45-1.025 2.475Q31.95 40 30.5 40Zm-13-12.5q-1.45 0-2.475-1.025Q14 25.45 14 24q0-1.45 1.025-2.475Q16.05 20.5 17.5 20.5q1.45 0 2.475 1.025Q21 22.55 21 24q0 1.45-1.025 2.475Q18.95 27.5 17.5 27.5Zm13 0q-1.45 0-2.475-1.025Q27 25.45 27 24q0-1.45 1.025-2.475Q29.05 20.5 30.5 20.5q1.45 0 2.475 1.025Q34 22.55 34 24q0 1.45-1.025 2.475Q31.95 27.5 30.5 27.5ZM17.5 15q-1.45 0-2.475-1.025Q14 12.95 14 11.5q0-1.45 1.025-2.475Q16.05 8 17.5 8q1.45 0 2.475 1.025Q21 10.05 21 11.5q0 1.45-1.025 2.475Q18.95 15 17.5 15Zm13 0q-1.45 0-2.475-1.025Q27 12.95 27 11.5q0-1.45 1.025-2.475Q29.05 8 30.5 8q1.45 0 2.475 1.025Q34 10.05 34 11.5q0 1.45-1.025 2.475Q31.95 15 30.5 15Z"
-                                    />
-                                  </svg>
-                                </button>
-                                <BorderedInput
-                                  value={
-                                    paragraphsState[paragraphIndex].paragraph[
-                                      paragraphComponentIndex
-                                    ].sentences[rubric.source.index]
+                        <div className="flex flex-col">
+                          {paragraphComponent.sentences.map(
+                            (sentences, sentenceIndex) => {
+                              return (
+                                <SentenceRow
+                                  key={sentenceIndex}
+                                  paragraphIndex={paragraphIndex}
+                                  paragraphComponentIndex={
+                                    paragraphComponentIndex
                                   }
-                                  onChange={(e) => {}}
+                                  sentenceIndex={sentenceIndex}
+                                  isDragging={false}
                                 />
-                                <button className="p-1 hover:bg-gray-100 rounded-lg invisible">
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 48 48"
-                                    stroke="currentColor"
-                                    className="h-5 w-5 text-gray-400"
-                                    fill="none"
-                                  >
-                                    <path
-                                      fill="currentColor"
-                                      d="m12.45 37.65-2.1-2.1L21.9 24 10.35 12.45l2.1-2.1L24 21.9l11.55-11.55 2.1 2.1L26.1 24l11.55 11.55-2.1 2.1L24 26.1Z"
-                                    />
-                                  </svg>
-                                </button>
-                              </div>
-                            )}
-                          >
-                            {(provided, snapshot) => (
-                              <div
-                                className="flex flex-col"
-                                {...provided.droppableProps}
-                                ref={provided.innerRef}
-                              >
-                                {paragraphComponent.sentences.map(
-                                  (sentences, sentenceIndex) => {
-                                    return (
-                                      <SentenceRow
-                                        key={sentenceIndex}
-                                        paragraphIndex={paragraphIndex}
-                                        paragraphComponentIndex={
-                                          paragraphComponentIndex
-                                        }
-                                        sentenceIndex={sentenceIndex}
-                                        isDragging={snapshot.isUsingPlaceholder}
-                                      />
-                                    )
-                                  },
-                                )}
-                                {provided.placeholder}
-                              </div>
-                            )}
-                          </Droppable>
-                        </DragDropContext>
+                              )
+                            },
+                          )}
+                        </div>
                         {paragraphsState[paragraphIndex].paragraph[
                           paragraphComponentIndex
                         ].sentences.length < 5 && (
@@ -907,76 +703,55 @@ const SentenceRow = ({
   const { paragraphsState, setParagraphsState } = useNewEssay()
 
   return (
-    <Draggable draggableId={String(sentenceIndex)} index={sentenceIndex}>
-      {(provided, snapshot) => (
-        <div
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          className="flex items-center gap-4 w-full mb-6"
+    <div className="flex items-center gap-4 w-full mb-6">
+      <BorderedInput
+        value={
+          paragraphsState[paragraphIndex].paragraph[paragraphComponentIndex]
+            .sentences[sentenceIndex]
+        }
+        onChange={(e) => {
+          const sentence = e.target.value
+          setParagraphsState((currentParagraphsState) => {
+            const newParagraphState: Paragraphs = JSON.parse(
+              JSON.stringify(currentParagraphsState),
+            )
+            newParagraphState[paragraphIndex].paragraph[
+              paragraphComponentIndex
+            ].sentences[sentenceIndex] = sentence
+            return newParagraphState
+          })
+        }}
+      />
+      <button
+        onClick={() => {
+          setParagraphsState((currentParagraphsState) => {
+            const newParagraphState: Paragraphs = JSON.parse(
+              JSON.stringify(currentParagraphsState),
+            )
+            newParagraphState[paragraphIndex].paragraph[
+              paragraphComponentIndex
+            ].sentences.splice(sentenceIndex, 1)
+            return newParagraphState
+          })
+        }}
+        className={classNames('p-1 hover:bg-gray-100 rounded-lg', {
+          invisible: isDragging,
+        })}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 48 48"
+          stroke="currentColor"
+          className="h-5 w-5 text-gray-400"
+          fill="none"
         >
-          <button {...provided.dragHandleProps}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 48 48"
-              stroke="currentColor"
-              className="h-9 w-9 text-gray-500 hover:bg-gray-100 rounded-lg"
-            >
-              <path
-                fill="currentColor"
-                d="M17.5 40q-1.45 0-2.475-1.025Q14 37.95 14 36.5q0-1.45 1.025-2.475Q16.05 33 17.5 33q1.45 0 2.475 1.025Q21 35.05 21 36.5q0 1.45-1.025 2.475Q18.95 40 17.5 40Zm13 0q-1.45 0-2.475-1.025Q27 37.95 27 36.5q0-1.45 1.025-2.475Q29.05 33 30.5 33q1.45 0 2.475 1.025Q34 35.05 34 36.5q0 1.45-1.025 2.475Q31.95 40 30.5 40Zm-13-12.5q-1.45 0-2.475-1.025Q14 25.45 14 24q0-1.45 1.025-2.475Q16.05 20.5 17.5 20.5q1.45 0 2.475 1.025Q21 22.55 21 24q0 1.45-1.025 2.475Q18.95 27.5 17.5 27.5Zm13 0q-1.45 0-2.475-1.025Q27 25.45 27 24q0-1.45 1.025-2.475Q29.05 20.5 30.5 20.5q1.45 0 2.475 1.025Q34 22.55 34 24q0 1.45-1.025 2.475Q31.95 27.5 30.5 27.5ZM17.5 15q-1.45 0-2.475-1.025Q14 12.95 14 11.5q0-1.45 1.025-2.475Q16.05 8 17.5 8q1.45 0 2.475 1.025Q21 10.05 21 11.5q0 1.45-1.025 2.475Q18.95 15 17.5 15Zm13 0q-1.45 0-2.475-1.025Q27 12.95 27 11.5q0-1.45 1.025-2.475Q29.05 8 30.5 8q1.45 0 2.475 1.025Q34 10.05 34 11.5q0 1.45-1.025 2.475Q31.95 15 30.5 15Z"
-              />
-            </svg>
-          </button>
-          <BorderedInput
-            value={
-              paragraphsState[paragraphIndex].paragraph[paragraphComponentIndex]
-                .sentences[sentenceIndex]
-            }
-            onChange={(e) => {
-              const sentence = e.target.value
-              setParagraphsState((currentParagraphsState) => {
-                const newParagraphState: Paragraphs = JSON.parse(
-                  JSON.stringify(currentParagraphsState),
-                )
-                newParagraphState[paragraphIndex].paragraph[
-                  paragraphComponentIndex
-                ].sentences[sentenceIndex] = sentence
-                return newParagraphState
-              })
-            }}
+          <path
+            fill="currentColor"
+            d="m12.45 37.65-2.1-2.1L21.9 24 10.35 12.45l2.1-2.1L24 21.9l11.55-11.55 2.1 2.1L26.1 24l11.55 11.55-2.1 2.1L24 26.1Z"
           />
-          <button
-            onClick={() => {
-              setParagraphsState((currentParagraphsState) => {
-                const newParagraphState: Paragraphs = JSON.parse(
-                  JSON.stringify(currentParagraphsState),
-                )
-                newParagraphState[paragraphIndex].paragraph[
-                  paragraphComponentIndex
-                ].sentences.splice(sentenceIndex, 1)
-                return newParagraphState
-              })
-            }}
-            className={classNames('p-1 hover:bg-gray-100 rounded-lg', {
-              invisible: isDragging,
-            })}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 48 48"
-              stroke="currentColor"
-              className="h-5 w-5 text-gray-400"
-              fill="none"
-            >
-              <path
-                fill="currentColor"
-                d="m12.45 37.65-2.1-2.1L21.9 24 10.35 12.45l2.1-2.1L24 21.9l11.55-11.55 2.1 2.1L26.1 24l11.55 11.55-2.1 2.1L24 26.1Z"
-              />
-            </svg>
-          </button>
-        </div>
-      )}
-    </Draggable>
+        </svg>
+      </button>
+    </div>
   )
 }
 
@@ -989,13 +764,12 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
     setEssay,
     generateEssay,
   } = useNewEssay()
-  const { user } = useUser()
   const [isLoading, setIsLoading] = useState(false)
   const [isRegenerating, setIsRegenerating] = useState(false)
-  const nextButtonRef = createRef<any>()
+  const copyButtonRef = useRef<any>()
 
   useEffect(() => {
-    if (currentStep === componentStep) nextButtonRef.current.focus()
+    if (currentStep === componentStep) copyButtonRef.current.focus()
   }, [currentStep])
 
   const handleRegenerate = async () => {
@@ -1011,23 +785,9 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
     }
   }
 
-  const handleNext = async () => {
-    setIsLoading(true)
-    const doc = await createDocument(user?.uid!, {
-      title: title,
-      content: getDocumentContent(),
-    })
-    window.location.assign(`/documents/${doc.id}`)
-    setIsLoading(false)
-  }
-
-  const getDocumentContent = () => {
-    let documentContents = ''
-    documentContents += `<h3 style="text-align: center;">${title}</h3>`
-    essay.split('\n\n').map((paragraph: string) => {
-      documentContents += `<p>${paragraph}</p>`
-    })
-    return documentContents
+  const handleCopy = async () => {
+    navigator.clipboard.writeText(title + '\n\n' + essay)
+    toast.success('Copied to clipboard!')
   }
 
   return (
@@ -1039,14 +799,15 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
         )})`,
         height: 'calc(100vh - 80px)',
         opacity: getOpacityFromCurrentStep(currentStep, componentStep),
+        ...(currentStep != componentStep && { userSelect: 'none' }),
       }}
-      className="flex flex-col items-center w-full fixed overflow-y-scroll scrollbar-hide transition-all ease-in-out duration-1000"
+      className="flex flex-col items-center w-full px-4 fixed overflow-y-scroll scrollbar-hide transition-all ease-in-out duration-1000"
     >
-      <div className="max-w-5xl w-full flex justify-between mt-10">
+      <div className="max-w-5xl w-full flex flex-col md:flex-row gap-2 justify-between mt-10">
         <button
           disabled={isLoading || isRegenerating}
           onClick={() => setStep((step) => step - 1)}
-          className="flex justify-center items-center gap-1 hover:bg-gray-200 active:bg-gray-300 disabled:hover:bg-gray-50 disabled:hover:cursor-not-allowed rounded-lg p-2"
+          className="flex justify-center items-center gap-2 hover:bg-gray-200 active:bg-gray-300 disabled:hover:bg-gray-50 disabled:hover:cursor-not-allowed rounded-lg p-2"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -1066,7 +827,6 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
           onClick={() => handleRegenerate()}
           className="flex justify-center items-center gap-2 hover:bg-gray-200 active:bg-gray-300 disabled:hover:bg-gray-50 disabled:hover:cursor-not-allowed rounded-lg p-2"
         >
-          <span className="text-lg">Regenerate</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 -5 48 48"
@@ -1078,14 +838,14 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
               d="M17.6 39q-5.95-2-9.8-7.15Q3.95 26.7 3.95 20q0-1.6.25-3.2t.8-3.15L1.8 15.5.3 12.95l8.65-5 5 8.6-2.6 1.5-2.9-4.95q-.7 1.65-1.075 3.4T7 20.05q0 5.8 3.425 10.25t8.725 6.05ZM32 13v-3h5.75q-2.4-3.3-6.025-5.15Q28.1 3 24 3q-3.45 0-6.425 1.25Q14.6 5.5 12.3 7.7L10.75 5q2.7-2.35 6.05-3.675Q20.15 0 23.95 0q4.4 0 8.3 1.775Q36.15 3.55 39 6.8V3h3v10Zm-2.25 31-8.65-5 5-8.6 2.55 1.5-2.9 5.05q6.5-.65 10.875-5.475Q41 26.65 41 20.05 41 19 40.875 18q-.125-1-.375-2h3.1q.2 1 .3 2 .1 1 .1 2 0 7.15-4.475 12.65T28.1 39.6l3.15 1.85Z"
             />
           </svg>
+          <span className="text-lg">Regenerate</span>
         </button>
         <button
-          ref={nextButtonRef}
+          ref={copyButtonRef}
           disabled={isLoading || isRegenerating}
-          onClick={() => handleNext()}
-          className="flex justify-center items-center gap-1 hover:bg-gray-200 active:bg-gray-300 disabled:hover:bg-gray-50 disabled:hover:cursor-not-allowed rounded-lg p-2"
+          onClick={() => handleCopy()}
+          className="flex justify-center items-center gap-2 hover:bg-gray-200 active:bg-gray-300 disabled:hover:bg-gray-50 disabled:hover:cursor-not-allowed rounded-lg p-2"
         >
-          <span className="text-lg">Open in editor</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 48 48"
@@ -1094,17 +854,18 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
           >
             <path
               fill="currentColor"
-              d="m24 40-2.1-2.15L34.25 25.5H8v-3h26.25L21.9 10.15 24 8l16 16Z"
+              d="M39 40H13q-1.2 0-2.1-.9-.9-.9-.9-2.1V5q0-1.2.9-2.1.9-.9 2.1-.9h17.4L42 13.6V37q0 1.2-.9 2.1-.9.9-2.1.9ZM28.9 14.9V5H13v32h26V14.9ZM7 46q-1.2 0-2.1-.9Q4 44.2 4 43V12.05h3V43h24.9v3Zm6-41v9.9V5v32V5Z"
             />
           </svg>
+          <span className="text-lg">Copy essay</span>
         </button>
       </div>
-      <div className="max-w-5xl w-full px-28 py-32 my-10 bg-white rounded-lg border drop-shadow-xl">
+      <div className="max-w-5xl w-full px-6 py-12 md:px-28 md:py-32 my-10 bg-white rounded-lg border drop-shadow-xl">
         {isRegenerating ? (
           <div className="flex flex-col gap-16 animate-pulse">
             <div className="h-7 bg-gray-300 w-3/4 rounded-lg self-center"></div>
             {[...Array(5)].map((e, index) => (
-              <div className="flex flex-col gap-6">
+              <div key={index} className="flex flex-col gap-6">
                 {[...Array(8)].map((e, index) => (
                   <div
                     key={index}
@@ -1150,7 +911,7 @@ const ProgressBar = () => {
                 Take me back
               </button>
               <Link
-                href="/documents"
+                href="/"
                 className="flex justify-center p-2 bg-red-600 rounded-md text-white font-semibold"
               >
                 Delete my progress

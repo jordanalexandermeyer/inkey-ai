@@ -1,3 +1,4 @@
+import { mergeRefs } from '@/utils/helpers'
 import { useEffect, useRef } from 'react'
 import { ChangeEventHandler, KeyboardEventHandler } from 'react'
 
@@ -7,12 +8,14 @@ const BorderedInput = ({
   placeholder,
   onKeyDown,
   isLoading,
+  reference,
 }: {
   value: string
   onChange: ChangeEventHandler<HTMLTextAreaElement>
   placeholder?: string
   onKeyDown?: KeyboardEventHandler<HTMLTextAreaElement>
   isLoading?: boolean
+  reference?: any
 }) => {
   const textAreaRef = useRef<any>()
 
@@ -32,7 +35,7 @@ const BorderedInput = ({
         </>
       ) : (
         <textarea
-          ref={textAreaRef}
+          ref={reference ? mergeRefs(textAreaRef, reference) : textAreaRef}
           value={value}
           onChange={onChange}
           className="bg-transparent h-9 p-1 w-full overflow-hidden text-lg border-0 resize-none focus:ring-0 focus-visible:ring-0 placeholder-gray-300"

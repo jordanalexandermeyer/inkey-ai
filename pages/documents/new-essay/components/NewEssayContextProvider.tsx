@@ -9,23 +9,31 @@ import {
 } from 'react'
 
 type NewEssayContext = {
+  numberOfSteps: number
   step: number
   setStep: Dispatch<SetStateAction<number>>
   prompt: string
   setPrompt: Dispatch<SetStateAction<string>>
   title: string
   setTitle: Dispatch<SetStateAction<string>>
+  titleGenerated: boolean
+  setTitleGenerated: Dispatch<SetStateAction<boolean>>
   generateTitle: () => Promise<any>
-  numberOfSteps: number
   argumentsState: Array<string>
   setArgumentsState: Dispatch<SetStateAction<string[]>>
   generateArguments: () => Promise<string[]>
+  argumentsGenerated: boolean
+  setArgumentsGenerated: Dispatch<SetStateAction<boolean>>
   paragraphsState: Paragraphs
   setParagraphsState: Dispatch<SetStateAction<Paragraphs>>
   generateParagraphs: () => Promise<Paragraphs>
+  paragraphsGenerated: boolean
+  setParagraphsGenerated: Dispatch<SetStateAction<boolean>>
   essay: string
   setEssay: Dispatch<SetStateAction<string>>
   generateEssay: () => Promise<string>
+  essayGenerated: boolean
+  setEssayGenerated: Dispatch<SetStateAction<boolean>>
 }
 
 export type ParagraphComponent = {
@@ -47,9 +55,15 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
   const [step, setStep] = useState(1)
   const [prompt, setPrompt] = useState('')
   const [title, setTitle] = useState('')
-  const [argumentsState, setArgumentsState] = useState<string[]>([])
-  const [paragraphsState, setParagraphsState] = useState<Paragraphs>([])
+  const [argumentsState, setArgumentsState] = useState<string[]>([''])
+  const [paragraphsState, setParagraphsState] = useState<Paragraphs>([
+    { argument: '', paragraph: [{ title: '', sentences: [] }] },
+  ])
   const [essay, setEssay] = useState<string>('')
+  const [titleGenerated, setTitleGenerated] = useState(false)
+  const [argumentsGenerated, setArgumentsGenerated] = useState(false)
+  const [paragraphsGenerated, setParagraphsGenerated] = useState(false)
+  const [essayGenerated, setEssayGenerated] = useState(false)
   const numberOfSteps = 5
 
   const generateTitle = async () => {
@@ -119,6 +133,7 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
   }
 
   const value = {
+    numberOfSteps,
     step,
     setStep,
     prompt,
@@ -126,16 +141,23 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
     title,
     setTitle,
     generateTitle,
-    numberOfSteps,
+    titleGenerated,
+    setTitleGenerated,
     argumentsState,
     setArgumentsState,
     generateArguments,
+    argumentsGenerated,
+    setArgumentsGenerated,
     paragraphsState,
     setParagraphsState,
     generateParagraphs,
+    paragraphsGenerated,
+    setParagraphsGenerated,
     essay,
     setEssay,
     generateEssay,
+    essayGenerated,
+    setEssayGenerated,
   }
 
   return (

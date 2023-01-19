@@ -5,7 +5,6 @@ import { getAuth, signOut } from 'firebase/auth'
 import { useUser } from 'utils/useUser'
 import { Role } from 'types'
 import { EventName, track } from 'utils/segment'
-import { BrowserView } from 'react-device-detect'
 
 const Navbar = ({
   removeBackdropAndNavbar,
@@ -72,6 +71,17 @@ const Navbar = ({
         </a>
       </div>
       <nav className="my-5 flex-1 flex flex-col relative gap-2 pt-3 px-3">
+        <ul className="p-2">
+          <li>
+            <Link
+              href="/documents/new-essay"
+              className="p-2 flex items-center justify-center whitespace-nowrap font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600 active:bg-blue-300"
+              onClick={() => removeBackdropAndNavbar()}
+            >
+              Create New Essay
+            </Link>
+          </li>
+        </ul>
         <ul className="">
           <li>
             <Link
@@ -89,7 +99,7 @@ const Navbar = ({
                 <svg
                   viewBox="0 0 48 48"
                   fill="none"
-                  strokeWidth="2"
+                  strokeWidth="1"
                   stroke="currentColor"
                   xmlns="http://www.w3.org/2000/svg"
                   className={classNames('mr-2 flex-shrink-0 h-5 w-5', {
@@ -99,8 +109,7 @@ const Navbar = ({
                 >
                   <path
                     fill="currentColor"
-                    xmlns="http://www.w3.org/2000/svg"
-                    d="M11 39h7.5V26.5h11V39H37V19.5L24 9.75 11 19.5Zm-3 3V18L24 6l16 12v24H26.5V29.5h-5V42Zm16-17.65Z"
+                    d="M6 22.5V6h16.5v16.5ZM6 42V25.5h16.5V42Zm19.5-19.5V6H42v16.5Zm0 19.5V25.5H42V42ZM9 19.5h10.5V9H9Zm19.5 0H39V9H28.5Zm0 19.5H39V28.5H28.5ZM9 39h10.5V28.5H9Zm19.5-19.5Zm0 9Zm-9 0Zm0-9Z"
                   />
                 </svg>
                 Dashboard
@@ -108,86 +117,6 @@ const Navbar = ({
             </Link>
           </li>
         </ul>
-        <ul className="">
-          <li>
-            <Link
-              href="/templates"
-              className={classNames(
-                'w-full hover:bg-gray-50 rounded-md group flex items-center justify-between p-2 font-medium',
-                {
-                  'text-gray-600 hover:text-gray-800': !router.asPath.includes(
-                    '/templates',
-                  ),
-                  'text-blue-700': router.asPath.includes('/templates'),
-                },
-              )}
-              onClick={() => removeBackdropAndNavbar()}
-            >
-              <span className="flex items-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 48 48"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className={classNames('mr-2 flex-shrink-0 h-5 w-5', {
-                    'text-gray-400 group-hover:text-gray-600': !router.asPath.includes(
-                      '/templates',
-                    ),
-                  })}
-                >
-                  <path
-                    fill="currentColor"
-                    xmlns="http://www.w3.org/2000/svg"
-                    d="M9 22.5q-1.25 0-2.125-.875T6 19.5V9q0-1.25.875-2.125T9 6h10.5q1.25 0 2.125.875T22.5 9v10.5q0 1.25-.875 2.125T19.5 22.5ZM9 42q-1.25 0-2.125-.875T6 39V28.5q0-1.25.875-2.125T9 25.5h10.5q1.25 0 2.125.875T22.5 28.5V39q0 1.25-.875 2.125T19.5 42Zm19.5-19.5q-1.25 0-2.125-.875T25.5 19.5V9q0-1.25.875-2.125T28.5 6H39q1.25 0 2.125.875T42 9v10.5q0 1.25-.875 2.125T39 22.5Zm0 19.5q-1.25 0-2.125-.875T25.5 39V28.5q0-1.25.875-2.125T28.5 25.5H39q1.25 0 2.125.875T42 28.5V39q0 1.25-.875 2.125T39 42ZM9 19.5h10.5V9H9Zm19.5 0H39V9H28.5Zm0 19.5H39V28.5H28.5ZM9 39h10.5V28.5H9Zm19.5-19.5Zm0 9Zm-9 0Zm0-9Z"
-                  />
-                </svg>
-                Templates
-              </span>
-            </Link>
-          </li>
-        </ul>
-        <BrowserView>
-          <ul className="">
-            <li>
-              <Link
-                href="/documents"
-                className={classNames(
-                  'w-full hover:bg-gray-50 rounded-md group flex items-center justify-between p-2 font-medium',
-                  {
-                    'text-gray-600 hover:text-gray-800': !router.asPath.includes(
-                      '/documents',
-                    ),
-                    'text-blue-700': router.asPath.includes('/documents'),
-                  },
-                )}
-                onClick={() => removeBackdropAndNavbar()}
-              >
-                <span className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 48 48"
-                    strokeWidth="2"
-                    stroke="currentColor"
-                    className={classNames('mr-2 flex-shrink-0 h-5 w-5', {
-                      'text-gray-400 group-hover:text-gray-600': !router.asPath.includes(
-                        '/documents',
-                      ),
-                    })}
-                  >
-                    <path
-                      fill="currentColor"
-                      xmlns="http://www.w3.org/2000/svg"
-                      d="M17.45 35.5h13.1q.65 0 1.075-.425.425-.425.425-1.075 0-.65-.425-1.075-.425-.425-1.075-.425h-13.1q-.65 0-1.075.425-.425.425-.425 1.075 0 .65.425 1.075.425.425 1.075.425Zm0-8.5h13.1q.65 0 1.075-.425.425-.425.425-1.075 0-.65-.425-1.075Q31.2 24 30.55 24h-13.1q-.65 0-1.075.425-.425.425-.425 1.075 0 .65.425 1.075Q16.8 27 17.45 27ZM11 44q-1.2 0-2.1-.9Q8 42.2 8 41V7q0-1.2.9-2.1Q9.8 4 11 4h16.8q.6 0 1.175.25.575.25.975.65l9.15 9.15q.4.4.65.975T40 16.2V41q0 1.2-.9 2.1-.9.9-2.1.9Zm16.55-29.2V7H11v34h26V16.3h-7.95q-.65 0-1.075-.425-.425-.425-.425-1.075ZM11 7v9.3V7v34V7Z"
-                    />
-                  </svg>
-                  Documents
-                </span>
-              </Link>
-            </li>
-          </ul>
-        </BrowserView>
         <ul className="">
           <li>
             <Link
@@ -248,9 +177,6 @@ const Navbar = ({
                   />
                 </svg>
                 Ask Inkey
-              </span>
-              <span className="px-2 text-xs font-bold rounded-full border-2 border-green-500 text-green-500">
-                NEW
               </span>
             </Link>
           </li>
@@ -334,7 +260,6 @@ const Navbar = ({
           </li>
         </ul>
         <ul className="border-t border-gray-200"></ul>
-
         <ul className="">
           <li>
             <Link
