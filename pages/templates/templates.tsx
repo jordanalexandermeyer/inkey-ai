@@ -10,7 +10,7 @@ export interface Template {
   promptCharacterLimit?: number
   inputRows?: number
   promptName?: string
-  promptPlaceholder: string
+  promptPlaceholder?: string
   quotePlaceholder?: string
   supportExamplePrompt?: boolean
   supportTone?: boolean
@@ -28,6 +28,7 @@ export interface Template {
 
 export enum TemplateId {
   // Whole essays
+  MAGIC_ESSAY_ID = 'long-essay',
   GENERAL_ESSAY_ID = 'general-essay',
   COLLEGE_APP_ESSAY_ID = 'college-app-essay',
   PERSUASIVE_ESSAY_ID = 'persuasive-essay',
@@ -64,11 +65,22 @@ export type TemplateMap = {
 }
 
 export const templates: TemplateMap = {
+  [TemplateId.MAGIC_ESSAY_ID]: {
+    id: TemplateId.MAGIC_ESSAY_ID,
+    icon: '🪄',
+    title: 'Magic Essay Generator',
+    description:
+      'Works like magic. Generates multi-page essays 1000s of words long. Say goodbye to late nights and stress-filled days of essay writing.',
+    href: `/documents/new-essay`,
+    attribute: FilterType.WHOLE_ESSAYS,
+    new: true,
+  },
   [TemplateId.GENERAL_ESSAY_ID]: {
     id: TemplateId.GENERAL_ESSAY_ID,
     icon: '📝',
     title: 'General Essay',
-    description: 'Ask a prompt and receive a compelling essay.',
+    description:
+      'Ask a prompt and receive a compelling essay. Generates single-page essays that are around 250 to 500 words long.',
     promptPlaceholder:
       'What is the importance of investing money in space exploration?',
     quotePlaceholder:
@@ -119,7 +131,7 @@ export const templates: TemplateMap = {
     icon: '🤼‍♂️',
     title: 'Argumentative Essay',
     description:
-      "An argumentative essay presents the writer's point of view on a particular issue and provides evidence and arguments to support that point of view.",
+      'Generates an essay that presents a point of view on a particular issue and provides evidence and arguments to support that point of view.',
     promptPlaceholder:
       'Do you think middle schoolers should have jobs like babysitting or mowing lawns?',
     quotePlaceholder:
@@ -134,7 +146,7 @@ export const templates: TemplateMap = {
     icon: '✉️',
     title: 'Cover Letter',
     description:
-      'A document sent with a resume to provide additional information on your skills and experience.',
+      'Write a description of the job and paste your resume to get a personalized cover letter sure to help you land that job!',
     promptName: 'Resume',
     promptCharacterLimit: 5000,
     inputRows: 10,
@@ -300,7 +312,7 @@ export const templates: TemplateMap = {
     id: TemplateId.PARAPHRASER_ID,
     icon: '♻️',
     title: 'Paraphraser',
-    description: 'This template takes in text and paraphrases it.',
+    description: 'Paste text to have it rewritten using different words.',
     promptCharacterLimit: 2000,
     inputRows: 10,
     promptName: 'Text',
@@ -367,7 +379,7 @@ export const templates: TemplateMap = {
     icon: '🎓',
     title: 'College Application Essay',
     description:
-      'A college application essay is a written statement that is submitted as part of a college application, in which the writer presents their goals, experiences, and qualifications in order to demonstrate their suitability for admission to the college.',
+      'Get into your dream school! Generates a personal statement for your college applications.',
     promptPlaceholder:
       'Some students have a background, identity, interest, or talent that is so meaningful they believe their application would be incomplete without it. If this sounds like you, then please share your story.',
     quotePlaceholder: 'My father said, "You can\'t live here anymore."',

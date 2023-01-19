@@ -21,7 +21,7 @@ export const NextButton = ({
     >
       <div
         className={classNames(
-          'flex items-center justify-center  gap-2 py-3 px-4',
+          'flex items-center justify-center gap-2 py-3 px-4',
           {
             invisible: isLoading,
           },
@@ -42,13 +42,10 @@ export const NextButton = ({
         </svg>
       </div>
       <svg
-        className={classNames(
-          'absolute inline w-6 h-6 text-white animate-spin',
-          {
-            visible: isLoading,
-            invisible: !isLoading,
-          },
-        )}
+        className={classNames('absolute inline w-6 h-6 text-white', {
+          'animate-spin visible': isLoading,
+          invisible: !isLoading,
+        })}
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -83,7 +80,7 @@ export const RegenerateButton = ({
     >
       <div
         className={classNames(
-          'flex items-center justify-center  gap-2 py-3 px-4',
+          'flex items-center justify-center gap-2 py-3 px-4',
           {
             invisible: isLoading,
           },
@@ -104,13 +101,10 @@ export const RegenerateButton = ({
         </svg>
       </div>
       <svg
-        className={classNames(
-          'absolute inline w-6 h-6 text-white animate-spin',
-          {
-            visible: isLoading,
-            invisible: !isLoading,
-          },
-        )}
+        className={classNames('absolute inline w-6 h-6 text-white', {
+          'animate-spin visible': isLoading,
+          invisible: !isLoading,
+        })}
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -131,12 +125,10 @@ export const RegenerateButton = ({
 export const BackButton = ({
   onClick,
   disabled,
-  isLoading,
   reference,
 }: {
   onClick: MouseEventHandler<HTMLButtonElement>
   disabled?: boolean
-  isLoading?: boolean
   reference?: any
 }) => {
   return (

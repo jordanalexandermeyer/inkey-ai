@@ -32,7 +32,7 @@ const TemplatePage = ({
   promptCharacterLimit = 500,
   inputRows = 4,
   promptName = 'Prompt',
-  promptPlaceholder,
+  promptPlaceholder = '',
   quotePlaceholder = '"The true sign of intelligence is not knowledge but imagination." - Albert Einstein',
   supportExamplePrompt = true,
   supportQuotes = false,
@@ -226,6 +226,7 @@ const TemplatePage = ({
                     </div>
                     <div className="relative flex items-center mb-2">
                       <textarea
+                        autoFocus
                         maxLength={promptCharacterLimit}
                         rows={inputRows}
                         placeholder={promptPlaceholder}

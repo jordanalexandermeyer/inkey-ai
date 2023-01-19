@@ -550,6 +550,10 @@ const ParagraphRow = ({
   const ref = useRef<any>()
 
   useEffect(() => {
+    if (isLoading) setIsExpanded(false)
+  }, [isLoading])
+
+  useEffect(() => {
     if (isExpanded) setHeight(ref.current.clientHeight)
     if (!isExpanded) setHeight(0)
   }, [isExpanded, paragraphsState])

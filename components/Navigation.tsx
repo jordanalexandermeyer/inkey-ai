@@ -38,7 +38,7 @@ const Navigation = () => {
         <Navbar removeBackdropAndNavbar={removeBackdropAndNavbar} />
       </div>
       <div className="lg:hidden fixed bottom-0 border-t border-gray-200 left-0 w-screen bg-white shadow z-40">
-        <div className="flex text-gray-800 h-16">
+        <div className="flex text-gray-600 h-16">
           <button
             className="grow h-full flex items-center justify-center"
             onClick={() => {

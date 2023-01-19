@@ -12,6 +12,7 @@ export const config = {
 export default async function handler(request: NextRequest) {
   const body = await request.json()
   const userId = body.userId
+  const prompt = body.prompt
   const title = body.title
   const paragraphs: Paragraphs = body.paragraphs
   const args = paragraphs.map((paragraph) => paragraph.argument)
@@ -19,21 +20,21 @@ export default async function handler(request: NextRequest) {
   const prompts = [
     `${convertArgsToOutline(
       args,
-    )}\nThe contents of an essay titled, "${title}" are outlined above. Write an introduction paragraph for the essay. First, write a hook which leads the reader into your essay and gives a sense of the topic you’re writing about and why it’s interesting. Next, give your reader the context they need to understand your topic and argument. Depending on the subject of your essay, this might include historical, geographical, or social context, an outline of the debate you’re addressing, a summary of relevant theories or research about the topic, or definitions of key terms. Next, write a thesis statement. The thesis statement is a sentence that plainly and concisely explains the main topic of the essay. Next, provide the reader with a "road map" of the essay in a logical order. This helps the reader know what to expect in each body paragraph. Write in paragraph form.\n`,
+    )}\nThe contents of an essay are outlined above. The essay prompt is "${prompt}" and the essay title is, "${title}". Write an introduction paragraph for the essay. First, write a hook which leads the reader into your essay and gives a sense of the topic you’re writing about and why it’s interesting. Next, give your reader the context they need to understand your topic and argument. Depending on the subject of your essay, this might include historical, geographical, or social context, an outline of the debate you’re addressing, a summary of relevant theories or research about the topic, or definitions of key terms. Next, write a thesis statement. The thesis statement is a sentence that plainly and concisely explains the main topic of the essay. Next, provide the reader with a "road map" of the essay in a logical order. This helps the reader know what to expect in each body paragraph. Write in paragraph form.\n`,
   ]
 
   for (let i = 0; i < paragraphs.length; i++) {
     const paragraph = paragraphs[i]
     const paragraphPrompt = `${convertParagraphToOutline(
       paragraph,
-    )}\nConvert the above into a descriptive and extensive paragraph.\n`
+    )}\nConvert the above outline into a descriptive and extensive paragraph. Use specific examples to support arguments made. Start each sentence in a unique way and use a wide variety of vocabulary. Avoid repetition. Do not use the words "in conclusion".\n`
     prompts.push(paragraphPrompt)
   }
 
   prompts.push(
     `${convertArgsToOutline(
       args,
-    )}\nThe contents of an essay titled, "${title}" are outlined above. Write a conclusion paragraph for the essay. Begin by restating your thesis. Next, broaden back out to a general topic. End with a closing statement. Write in paragraph form.\n`,
+    )}\nThe contents of an essay are outlined above. The essay prompt is "${prompt}" and the essay title is, "${title}". Write a conclusion paragraph for the essay. Begin by restating your thesis. Next, broaden back out to a general topic. End with a closing statement. Write in paragraph form.\n`,
   )
 
   const responses = await Promise.all(

@@ -8,6 +8,7 @@ export default async function handler(request: NextRequest) {
   const url = new URL(request.url)
   const params = url.searchParams
   const userId = params.get('userId')
+  const prompt = params.get('prompt')
   const title = params.get('title')
 
   try {
@@ -15,7 +16,7 @@ export default async function handler(request: NextRequest) {
       method: 'POST',
       body: JSON.stringify({
         model: 'text-davinci-003',
-        prompt: `Write five talking points for an essay with the title, "${title}". Use the following format.\n\n1.\n2.\n3.\n4.\n5.\n`,
+        prompt: `Write 5 sequential talking points based on the title, "${title}" in response to the prompt "${prompt}". Use the following format.\n\n1.\n2.\n3.\n4.\n5.\n`,
         temperature: 0.7,
         top_p: 1,
         max_tokens: 1000,

@@ -16,7 +16,7 @@ export default async function handler(request: NextRequest) {
       body: JSON.stringify({
         model: 'text-davinci-003',
         prompt:
-          'Write a title for an essay with the following prompt.\n' + prompt,
+          prompt + '\nWrite a title for an essay with the above prompt.\n',
         temperature: 0.7,
         top_p: 1,
         max_tokens: 1000,

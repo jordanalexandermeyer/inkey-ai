@@ -81,7 +81,7 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
 
   const generateArguments = async () => {
     const response = await fetch(
-      `/api/arguments?userId=${user?.uid}&title=${title}`,
+      `/api/arguments?userId=${user?.uid}&title=${title}&prompt=${prompt}`,
     )
     const body = await response.json()
     const args: string[] = body.arguments
@@ -99,6 +99,7 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
       },
       body: JSON.stringify({
         userId: user?.uid,
+        prompt,
         title,
         arguments: argumentsState,
       }),
@@ -120,6 +121,7 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
       },
       body: JSON.stringify({
         userId: user?.uid,
+        prompt,
         title,
         paragraphs: paragraphsState,
       }),
