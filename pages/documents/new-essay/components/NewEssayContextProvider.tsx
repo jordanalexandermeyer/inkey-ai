@@ -14,6 +14,8 @@ type NewEssayContext = {
   setStep: Dispatch<SetStateAction<number>>
   prompt: string
   setPrompt: Dispatch<SetStateAction<string>>
+  thesis: string
+  setThesis: Dispatch<SetStateAction<string>>
   title: string
   setTitle: Dispatch<SetStateAction<string>>
   titleGenerated: boolean
@@ -31,7 +33,7 @@ type NewEssayContext = {
   setParagraphsGenerated: Dispatch<SetStateAction<boolean>>
   essay: string
   setEssay: Dispatch<SetStateAction<string>>
-  generateEssay: () => Promise<string>
+  generateEssay: () => Promise<{ essay: string; title: string }>
   essayGenerated: boolean
   setEssayGenerated: Dispatch<SetStateAction<boolean>>
 }
@@ -54,6 +56,7 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
   const { user } = useUser()
   const [step, setStep] = useState(1)
   const [prompt, setPrompt] = useState('')
+  const [thesis, setThesis] = useState('')
   const [title, setTitle] = useState('')
   const [argumentsState, setArgumentsState] = useState<string[]>([''])
   const [paragraphsState, setParagraphsState] = useState<Paragraphs>([
@@ -113,7 +116,7 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
     return paragraphs
   }
 
-  const generateEssay = async (): Promise<string> => {
+  const generateEssay = async (): Promise<{ essay: string; title: string }> => {
     const response = await fetch('/api/essay', {
       method: 'POST',
       headers: {
@@ -128,10 +131,11 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
     })
     const body = await response.json()
     const essay: string = body.essay
-    if (!essay) {
+    const generatedTitle: string = body.title
+    if (!essay || !generatedTitle) {
       throw {}
     }
-    return essay
+    return { essay, title: generatedTitle }
   }
 
   const value = {
@@ -140,6 +144,8 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
     setStep,
     prompt,
     setPrompt,
+    thesis,
+    setThesis,
     title,
     setTitle,
     generateTitle,

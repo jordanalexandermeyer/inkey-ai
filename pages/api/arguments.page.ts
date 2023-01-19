@@ -16,7 +16,7 @@ export default async function handler(request: NextRequest) {
       method: 'POST',
       body: JSON.stringify({
         model: 'text-davinci-003',
-        prompt: `Write 5 sequential talking points based on the title, "${title}" in response to the prompt "${prompt}". Use the following format.\n\n1.\n2.\n3.\n4.\n5.\n`,
+        prompt: `You are an essay writer who has been presented the prompt, "${prompt}". Your thesis is, "${title}". Write 5 unique and sequential talking points to support your thesis. Use the following format.\n1.\n2.\n3.\n4.\n5.\n`,
         temperature: 0.7,
         top_p: 1,
         max_tokens: 1000,
@@ -32,7 +32,7 @@ export default async function handler(request: NextRequest) {
     const text = body.choices[0].text.trim()
     const args = text.split('\n')
     const argsWithoutNumbers = args.map((arg: string) =>
-      arg.replace(/^[0-9]\.\s/gm, ''),
+      arg.replace(/^[0-9]\.\s?/gm, ''),
     )
 
     return NextResponse.json({ arguments: argsWithoutNumbers })

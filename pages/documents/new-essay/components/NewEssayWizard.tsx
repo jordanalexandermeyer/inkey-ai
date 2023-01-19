@@ -192,7 +192,7 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
       <div className="max-w-2xl flex flex-col items-center p-6 md:px-16 md:py-12 mt-10 mb-32 gap-8 bg-white rounded-lg border drop-shadow-xl">
         <div className="flex flex-col gap-6">
           <h2 className="text-2xl font-medium text-center">
-            What do you want the title to be?
+            What do you want the thesis to be?
           </h2>
           <p className="text-lg text-gray-500 text-center">
             We created one for you! If you don’t like it, feel free to change
@@ -202,7 +202,7 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
             value={title}
             onKeyDown={(e: any) => handleKeyDown(e)}
             onChange={(e: any) => setTitle(e.target.value)}
-            placeholder="Type your title here..."
+            placeholder="Type your thesis here..."
             focus={currentStep == componentStep}
           />
         </div>
@@ -440,6 +440,7 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
   const {
     step: currentStep,
     setStep,
+    setThesis,
     paragraphsState,
     setParagraphsState,
     generateParagraphs,
@@ -455,8 +456,9 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
     if (!essayGenerated) {
       try {
         setIsLoading(true)
-        const essay = await generateEssay()
+        const { essay, title } = await generateEssay()
         setEssayGenerated(true)
+        setThesis(title)
         setEssay(essay)
         setIsLoading(false)
       } catch (error) {
@@ -764,6 +766,8 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
     step: currentStep,
     setStep,
     title,
+    thesis,
+    setThesis,
     essay,
     setEssay,
     generateEssay,
@@ -779,7 +783,8 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
   const handleRegenerate = async () => {
     try {
       setIsRegenerating(true)
-      const essay = await generateEssay()
+      const { essay, title } = await generateEssay()
+      setThesis(title)
       setEssay(essay)
       setIsRegenerating(false)
     } catch (error) {
@@ -790,7 +795,7 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
   }
 
   const handleCopy = async () => {
-    navigator.clipboard.writeText(title + '\n\n' + essay)
+    navigator.clipboard.writeText(thesis + '\n\n' + essay)
     toast.success('Copied to clipboard!')
   }
 
@@ -881,7 +886,7 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
           </div>
         ) : (
           <div className="flex flex-col gap-12">
-            <h1 className="text-2xl font-medium text-center">{title}</h1>
+            <h1 className="text-2xl font-medium text-center">{thesis}</h1>
             <p className="text-lg text-left whitespace-pre-wrap leading-loose">
               {essay}
             </p>
