@@ -92,7 +92,7 @@ const PromptStep = ({ componentStep }: { componentStep: number }) => {
       }}
       className="flex flex-col items-center w-full px-4 fixed overflow-y-scroll scrollbar-hide transition-all ease-in-out duration-1000"
     >
-      <div className="max-w-2xl flex flex-col items-center p-6 md:px-16 md:py-12 my-10 gap-8 bg-white rounded-lg border drop-shadow-xl">
+      <div className="max-w-2xl flex flex-col items-center p-6 md:px-16 md:py-12 mt-10 mb-24 gap-8 bg-white rounded-lg border drop-shadow-xl">
         <div className="flex flex-col gap-6">
           <h2 className="text-2xl font-medium text-center">
             What's your essay prompt?
@@ -189,7 +189,7 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
       }}
       className="flex flex-col items-center w-full px-4 fixed overflow-y-scroll scrollbar-hide transition-all ease-in-out duration-1000"
     >
-      <div className="max-w-2xl flex flex-col items-center p-6 md:px-16 md:py-12 my-10 gap-8 bg-white rounded-lg border drop-shadow-xl">
+      <div className="max-w-2xl flex flex-col items-center p-6 md:px-16 md:py-12 mt-10 mb-24 gap-8 bg-white rounded-lg border drop-shadow-xl">
         <div className="flex flex-col gap-6">
           <h2 className="text-2xl font-medium text-center">
             What do you want the title to be?
@@ -303,7 +303,7 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
       }}
       className="flex flex-col items-center w-full px-4 fixed overflow-y-scroll scrollbar-hide transition-all ease-in-out duration-1000"
     >
-      <div className="w-full max-w-4xl flex flex-col items-center p-6 md:px-16 md:py-12 my-10 gap-8 bg-white rounded-lg border drop-shadow-xl">
+      <div className="w-full max-w-4xl flex flex-col items-center p-6 md:px-16 md:py-12 mt-10 mb-24 gap-8 bg-white rounded-lg border drop-shadow-xl">
         <div className="w-full flex flex-col gap-6">
           <h2 className="text-2xl font-medium text-center">
             Choose your paragraphs
@@ -497,7 +497,7 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
       }}
       className="flex flex-col items-center w-full px-4 fixed overflow-y-scroll scrollbar-hide transition-all ease-in-out duration-1000"
     >
-      <div className="w-full max-w-4xl flex flex-col items-center p-6 md:px-16 md:py-12 my-10 gap-8 bg-white rounded-lg border drop-shadow-xl">
+      <div className="w-full max-w-4xl flex flex-col items-center p-6 md:px-16 md:py-12 mt-10 mb-24 gap-8 bg-white rounded-lg border drop-shadow-xl">
         <div className="w-full flex flex-col gap-6">
           <h2 className="text-2xl font-medium text-center">
             Edit paragraph contents
@@ -803,7 +803,7 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
       }}
       className="flex flex-col items-center w-full px-4 fixed overflow-y-scroll scrollbar-hide transition-all ease-in-out duration-1000"
     >
-      <div className="max-w-5xl w-full flex flex-col md:flex-row gap-2 justify-between mt-10">
+      <div className="max-w-5xl w-full flex flex-col md:flex-row gap-2 justify-between mt-10 mb-24">
         <button
           disabled={isLoading || isRegenerating}
           onClick={() => setStep((step) => step - 1)}
@@ -860,7 +860,7 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
           <span className="text-lg">Copy essay</span>
         </button>
       </div>
-      <div className="max-w-5xl w-full px-6 py-12 md:px-28 md:py-32 my-10 bg-white rounded-lg border drop-shadow-xl">
+      <div className="max-w-5xl w-full px-6 py-12 md:px-28 md:py-32 mt-10 mb-24 bg-white rounded-lg border drop-shadow-xl">
         {isRegenerating ? (
           <div className="flex flex-col gap-16 animate-pulse">
             <div className="h-7 bg-gray-300 w-3/4 rounded-lg self-center"></div>
