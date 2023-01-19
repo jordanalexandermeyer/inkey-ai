@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import {
   Paragraph,
   Paragraphs,
-} from 'pages/documents/new-essay/components/NewEssayContextProvider'
+} from '../../pages/documents/new-essay/components/NewEssayContextProvider'
 import romans from 'romans'
 
 export const config = {
@@ -78,7 +78,9 @@ const convertParagraphToOutline = (paragraph: Paragraph) => {
     outline += `${convertIndexToParagraphComponentPrefix(i) + title}\n`
     for (let j = 0; j < sentences.length; j++) {
       const sentence = sentences[j]
-      outline += `${convertIndexToSentencePrefix(j) + sentence}\n`
+      if (sentence.trim() != '') {
+        outline += `${convertIndexToSentencePrefix(j) + sentence}\n`
+      }
     }
   }
   return outline
