@@ -35,7 +35,7 @@ export default async function handler(request: NextRequest) {
       .replace(/['"]+/g, '') // remove quotations
       .replace(/thesis\sstatement:\s?/i, '') // remove thesis statement
 
-    return NextResponse.json({ title: text })
+    return NextResponse.json({ thesis: text })
   } catch (error) {
     console.error(JSON.stringify(error))
     return NextResponse.json({

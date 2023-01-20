@@ -41,7 +41,7 @@ const NewEssayWizard = () => {
           componentStep={1}
           setShowUpgradeModal={setShowUpgradeModal}
         />
-        <TitleStep componentStep={2} />
+        <ThesisStep componentStep={2} />
         <ArgumentStep componentStep={3} />
         <ParagraphStep componentStep={4} />
         <EssayStep componentStep={5} />
@@ -65,10 +65,10 @@ const PromptStep = ({
     setStep,
     prompt,
     setPrompt,
-    titleGenerated,
-    setTitleGenerated,
-    setTitle,
-    generateTitle,
+    setThesis,
+    thesisGenerated,
+    setThesisGenerated,
+    generateThesis,
   } = useNewEssay()
   const { usageDetails } = useUser()
 
@@ -83,12 +83,12 @@ const PromptStep = ({
       return
     }
 
-    if (!titleGenerated) {
+    if (!thesisGenerated) {
       try {
         setIsLoading(true)
-        const title = await generateTitle()
-        setTitleGenerated(true)
-        setTitle(title)
+        const thesis = await generateThesis()
+        setThesisGenerated(true)
+        setThesis(thesis)
         setIsLoading(false)
       } catch (error) {
         toast.error('Something went wrong, please try again!')
@@ -148,13 +148,13 @@ const PromptStep = ({
   )
 }
 
-const TitleStep = ({ componentStep }: { componentStep: number }) => {
+const ThesisStep = ({ componentStep }: { componentStep: number }) => {
   const {
     step: currentStep,
     setStep,
-    title,
-    setTitle,
-    generateTitle,
+    thesis,
+    setThesis,
+    generateThesis,
     setArgumentsState,
     generateArguments,
     argumentsGenerated,
@@ -186,8 +186,8 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
   const handleRegenerate = async () => {
     try {
       setIsRegenerating(true)
-      const title = await generateTitle()
-      setTitle(title)
+      const thesis = await generateThesis()
+      setThesis(thesis)
       setIsRegenerating(false)
     } catch (error) {
       toast.error('Something went wrong, please try again!')
@@ -199,7 +199,7 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault()
-      if (!isLoading && title.trim() != '') handleNext()
+      if (!isLoading && thesis.trim() != '') handleNext()
     }
   }
 
@@ -226,9 +226,9 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
             another one or change it yourself.
           </p>
           <OneLineInput
-            value={title}
+            value={thesis}
             onKeyDown={(e: any) => handleKeyDown(e)}
-            onChange={(e: any) => setTitle(e.target.value)}
+            onChange={(e: any) => setThesis(e.target.value)}
             placeholder="Type your thesis here..."
             focus={currentStep == componentStep}
           />
@@ -244,7 +244,7 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
             onClick={() => handleRegenerate()}
           />
           <NextButton
-            disabled={isLoading || isRegenerating || title.trim() === ''}
+            disabled={isLoading || isRegenerating || thesis.trim() === ''}
             isLoading={isLoading}
             onClick={() => handleNext()}
           />
@@ -470,7 +470,7 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
   const {
     step: currentStep,
     setStep,
-    setThesis,
+    setTitle,
     paragraphsState,
     setParagraphsState,
     generateParagraphs,
@@ -488,7 +488,7 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
         setIsLoading(true)
         const { essay, title } = await generateEssay()
         setEssayGenerated(true)
-        setThesis(title)
+        setTitle(title)
         setEssay(essay)
         setIsLoading(false)
       } catch (error) {
@@ -796,8 +796,7 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
     step: currentStep,
     setStep,
     title,
-    thesis,
-    setThesis,
+    setTitle,
     essay,
     setEssay,
     generateEssay,
@@ -814,7 +813,7 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
     try {
       setIsRegenerating(true)
       const { essay, title } = await generateEssay()
-      setThesis(title)
+      setTitle(title)
       setEssay(essay)
       setIsRegenerating(false)
     } catch (error) {
@@ -825,7 +824,7 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
   }
 
   const handleCopy = async () => {
-    navigator.clipboard.writeText(thesis + '\n\n' + essay)
+    navigator.clipboard.writeText(title + '\n\n' + essay)
     toast.success('Copied to clipboard!')
   }
 
@@ -917,7 +916,7 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
         ) : (
           <div className="flex flex-col gap-12">
             <h1 className="text-xl md:text-2xl font-medium text-center">
-              {thesis}
+              {title}
             </h1>
             <p className="text-sm md:text-lg text-left whitespace-pre-wrap leading-loose md:leading-loose">
               {essay}

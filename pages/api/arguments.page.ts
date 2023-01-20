@@ -9,14 +9,14 @@ export default async function handler(request: NextRequest) {
   const params = url.searchParams
   const userId = params.get('userId')
   const prompt = params.get('prompt')
-  const title = params.get('title')
+  const thesis = params.get('thesis')
 
   try {
     const response = await fetch('https://api.openai.com/v1/completions', {
       method: 'POST',
       body: JSON.stringify({
         model: 'text-davinci-003',
-        prompt: `You are an essay writer who has been presented the prompt, "${prompt}". Your thesis is, "${title}". Write 5 unique and sequential talking points to support your thesis. Use the following format.\n1.\n2.\n3.\n4.\n5.\n`,
+        prompt: `You are an essay writer who has been presented the prompt, "${prompt}". Your thesis is, "${thesis}". Write 5 unique and sequential talking points to support your thesis. Use the following format.\n1.\n2.\n3.\n4.\n5.\n`,
         temperature: 0.7,
         top_p: 1,
         max_tokens: 1000,
