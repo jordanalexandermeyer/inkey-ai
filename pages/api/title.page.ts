@@ -30,7 +30,10 @@ export default async function handler(request: NextRequest) {
     })
 
     const body = await response.json()
-    const text = body.choices[0].text.trim().replace(/['"]+/g, '')
+    const text = body.choices[0].text
+      .trim()
+      .replace(/['"]+/g, '') // remove quotations
+      .replace(/thesis\sstatement:\s?/i, '') // remove thesis statement
 
     return NextResponse.json({ title: text })
   } catch (error) {

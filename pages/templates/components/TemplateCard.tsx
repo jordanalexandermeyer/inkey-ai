@@ -34,7 +34,7 @@ const TemplateCard = ({
               {icon && <span className="text-3xl">{icon}</span>}
               {svgIcon && svgIcon}
             </div>
-            <h3 className="mb-2 text-lg font-semibold text-gray-700">
+            <h3 className="mb-2 text-lg text-center font-semibold text-gray-700">
               {title}
             </h3>
             <p className="text-gray-500 text-center">{description}</p>

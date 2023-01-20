@@ -61,7 +61,9 @@ export default async function handler(request: NextRequest) {
 
   let essay = ''
 
-  const generatedTitle = responses[0].choices[0].text.trim()
+  const generatedTitle = responses[0].choices[0].text
+    .trim()
+    .replace(/['"]+/g, '')
   for (let i = 1; i < responses.length; i++) {
     const text = responses[i].choices[0].text.trim()
     essay += text + '\n\n'

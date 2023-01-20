@@ -1,3 +1,4 @@
+import { updateUserWordsGenerated } from '@/utils/db'
 import { useUser } from '@/utils/useUser'
 import {
   createContext,
@@ -135,6 +136,12 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
     if (!essay || !generatedTitle) {
       throw {}
     }
+
+    await updateUserWordsGenerated(
+      user!.uid,
+      Math.round(essay.split(' ').length),
+    )
+
     return { essay, title: generatedTitle }
   }
 

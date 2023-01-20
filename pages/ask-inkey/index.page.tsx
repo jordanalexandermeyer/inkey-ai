@@ -85,7 +85,7 @@ const Home: NextPage = () => {
     })
     await updateUserWordsGenerated(
       user!.uid,
-      Math.round(newOutput.length / 4.5),
+      Math.round(newOutput.split(' ').length),
     )
   }
 

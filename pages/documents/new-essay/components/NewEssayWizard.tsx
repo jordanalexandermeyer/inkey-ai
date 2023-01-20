@@ -1,7 +1,9 @@
+import { useUser } from '@/utils/useUser'
 import classNames from 'classnames'
 import Modal from 'components/Modal'
+import UpgradeModal from 'components/UpgradeModal'
 import Link from 'next/link'
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, SetStateAction, Dispatch } from 'react'
 import { toast } from 'react-hot-toast'
 import BorderedInput from './BorderedInput'
 import { BackButton, NextButton, RegenerateButton } from './Buttons'
@@ -26,11 +28,19 @@ const getTranslationFromCurrentStep = (
 }
 
 const NewEssayWizard = () => {
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+
   return (
     <div className="bg-gray-50 min-h-screen">
       <ProgressBar />
+      {showUpgradeModal && (
+        <UpgradeModal setShowUpgradeModal={setShowUpgradeModal} />
+      )}
       <div className="pt-20 flex flex-col items-center">
-        <PromptStep componentStep={1} />
+        <PromptStep
+          componentStep={1}
+          setShowUpgradeModal={setShowUpgradeModal}
+        />
         <TitleStep componentStep={2} />
         <ArgumentStep componentStep={3} />
         <ParagraphStep componentStep={4} />
@@ -42,7 +52,14 @@ const NewEssayWizard = () => {
 
 export default NewEssayWizard
 
-const PromptStep = ({ componentStep }: { componentStep: number }) => {
+const PromptStep = ({
+  componentStep,
+  setShowUpgradeModal,
+}: {
+  componentStep: number
+  setShowUpgradeModal: Dispatch<SetStateAction<boolean>>
+}) => {
+  const [isLoading, setIsLoading] = useState(false)
   const {
     step: currentStep,
     setStep,
@@ -53,9 +70,18 @@ const PromptStep = ({ componentStep }: { componentStep: number }) => {
     setTitle,
     generateTitle,
   } = useNewEssay()
-  const [isLoading, setIsLoading] = useState(false)
+  const { usageDetails } = useUser()
 
   const handleSubmit = async () => {
+    if (
+      usageDetails &&
+      usageDetails?.monthly_usage >=
+        usageDetails?.monthly_allowance + usageDetails.bonus_allowance
+    ) {
+      setShowUpgradeModal(true)
+      return
+    }
+
     if (!titleGenerated) {
       try {
         setIsLoading(true)
@@ -92,14 +118,14 @@ const PromptStep = ({ componentStep }: { componentStep: number }) => {
       }}
       className="flex flex-col items-center w-full px-4 fixed overflow-y-scroll scrollbar-hide transition-all ease-in-out duration-1000"
     >
-      <div className="max-w-2xl flex flex-col items-center p-6 md:px-16 md:py-12 mt-10 mb-32 gap-8 bg-white rounded-lg border drop-shadow-xl">
+      <div className="max-w-3xl flex flex-col items-center p-6 md:px-16 md:py-12 mt-10 mb-32 gap-8 bg-white rounded-lg border drop-shadow-xl">
         <div className="flex flex-col gap-6">
           <h2 className="text-2xl font-medium text-center">
             What's your essay prompt?
           </h2>
           <p className="text-lg text-gray-500 text-center">
-            This is your assignment. For example, "Discuss the differences
-            between Democrats and Republicans in the United States."
+            This is your assignment. For example, "Write an essay discussing the
+            differences between Democrats and Republicans in the United States."
           </p>
           <OneLineInput
             value={prompt}
@@ -189,14 +215,14 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
       }}
       className="flex flex-col items-center w-full px-4 fixed overflow-y-scroll scrollbar-hide transition-all ease-in-out duration-1000"
     >
-      <div className="max-w-2xl flex flex-col items-center p-6 md:px-16 md:py-12 mt-10 mb-32 gap-8 bg-white rounded-lg border drop-shadow-xl">
+      <div className="max-w-3xl flex flex-col items-center p-6 md:px-16 md:py-12 mt-10 mb-32 gap-8 bg-white rounded-lg border drop-shadow-xl">
         <div className="flex flex-col gap-6">
           <h2 className="text-2xl font-medium text-center">
             What do you want the thesis to be?
           </h2>
           <p className="text-lg text-gray-500 text-center">
-            We created one for you! If you don’t like it, feel free to change
-            it.
+            We created one for you! If you don’t like it, feel free to generate
+            another one or change it yourself.
           </p>
           <OneLineInput
             value={title}
@@ -318,12 +344,13 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
                 <ArgumentRow
                   key={index}
                   index={index}
-                  isLoading={isRegenerating}
+                  isLoading={isRegenerating || isLoading}
                   isDragging={false}
                 />
               ))}
             </div>
             <button
+              disabled={isLoading || isRegenerating}
               onClick={() => {
                 setArgumentsState((currentArgState) => {
                   const newArgState: string[] = JSON.parse(
@@ -512,7 +539,7 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
             <ParagraphRow
               key={index}
               paragraphIndex={index}
-              isLoading={isRegenerating}
+              isLoading={isRegenerating || isLoading}
             />
           ))}
         </div>

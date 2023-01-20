@@ -21,7 +21,7 @@ const Modal = ({
                 viewBox="0 0 24 24"
                 strokeWidth="2"
                 stroke="currentColor"
-                className="w-4 h-4 text-gray-600"
+                className="w-5 h-5 text-gray-600"
               >
                 <path d="M6 18L18 6M6 6l12 12"></path>
               </svg>
