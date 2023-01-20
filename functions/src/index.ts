@@ -596,6 +596,12 @@ const updateUsageDetails = async (uid: string, role: string) => {
         { merge: true }
       );
       break;
+    case 'unlimited':
+      await usageDetailsSnap.ref.set(
+        { monthly_allowance: -1 },
+        { merge: true }
+      );
+      break;
     case 'basic':
       await usageDetailsSnap.ref.set(
         { monthly_allowance: 5000 },

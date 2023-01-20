@@ -65,16 +65,16 @@ const Templates: NextPage = () => {
             }}
           >
             <div className="flex flex-col items-center max-w-lg px-8 pb-8 gap-3">
-              <div className="font-semibold tracking-tight text-2xl">
+              <div className="font-semibold text-center tracking-tight text-2xl">
                 What do you want us to build? 👷
               </div>
               <div className="px-3 py-1 text-sm font-medium text-green-600 border border-green-200 rounded-full bg-green-50">
                 Give feedback → Get 5000 words!
               </div>
-              <p className="mt-1 mb-4 md:text-lg">
-                We want to get better at serving you! Tell us what you want us
-                to build. If we build the feature you request, we'll credit you
-                5000 free words!
+              <p className="mt-1 mb-4 text-center">
+                We are always looking for ways to make Inkey better! Tell us
+                what you want us to build. If we build the feature you request,
+                we'll credit you 5000 free words!
               </p>
               <form
                 className="w-full flex flex-col gap-3"
@@ -92,7 +92,6 @@ const Templates: NextPage = () => {
                 }}
               >
                 <input
-                  autoFocus
                   className="border w-full py-2 pr-3 text-gray-700 placeholder-gray-400 bg-white border-gray-300 rounded-md text-sm"
                   placeholder="Can you build...?"
                   type="text"
@@ -120,7 +119,7 @@ const Templates: NextPage = () => {
                     <h2 className="flex-grow text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
                       Dashboard
                     </h2>
-                    <div className="flex items-center justify-center max-w-xs md:min-w-[320px]">
+                    <div className="flex items-center justify-center max-w-[12rem] sm:min-w-[320px]">
                       <div className="flex items-center">
                         <div className="flex items-center">
                           <button

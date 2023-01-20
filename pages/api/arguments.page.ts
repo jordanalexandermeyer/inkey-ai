@@ -34,8 +34,11 @@ export default async function handler(request: NextRequest) {
     const argsWithoutNumbers = args.map((arg: string) =>
       arg.replace(/^[0-9]\.\s?/gm, ''),
     )
+    const argsWithoutEmptyStrings = argsWithoutNumbers.filter((arg: string) => {
+      return arg.trim().length > 0
+    })
 
-    return NextResponse.json({ arguments: argsWithoutNumbers })
+    return NextResponse.json({ arguments: argsWithoutEmptyStrings })
   } catch (error) {
     console.error(JSON.stringify(error))
     return NextResponse.json({

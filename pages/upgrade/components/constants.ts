@@ -13,6 +13,10 @@ export const prices = {
       price: 239.4,
       stripePrice: process.env.NEXT_PUBLIC_STRIPE_PRICE_ULTIMATE_MONTHLY,
     },
+    [Role.UNLIMITED]: {
+      price: 359.4,
+      stripePrice: process.env.NEXT_PUBLIC_STRIPE_PRICE_UNLIMITED_MONTHLY,
+    },
   },
   [BillingPeriod.SEMI_ANNUALLY]: {
     [Role.BASIC]: {
@@ -26,6 +30,10 @@ export const prices = {
       price: 179.9,
       stripePrice: process.env.NEXT_PUBLIC_STRIPE_PRICE_ULTIMATE_SEMI_ANNUALLY,
     },
+    [Role.UNLIMITED]: {
+      price: 269.9,
+      stripePrice: process.env.NEXT_PUBLIC_STRIPE_PRICE_UNLIMITED_SEMI_ANNUALLY,
+    },
   },
   [BillingPeriod.ANNUALLY]: {
     [Role.BASIC]: {
@@ -38,6 +46,10 @@ export const prices = {
     [Role.ULTIMATE]: {
       price: 119.95,
       stripePrice: process.env.NEXT_PUBLIC_STRIPE_PRICE_ULTIMATE_ANNUALLY,
+    },
+    [Role.UNLIMITED]: {
+      price: 179.95,
+      stripePrice: process.env.NEXT_PUBLIC_STRIPE_PRICE_UNLIMITED_ANNUALLY,
     },
   },
 }
@@ -54,5 +66,10 @@ export const premiumFeatures: Feature[] = [
 
 export const ultimateFeatures: Feature[] = [
   { included: true, text: '100,000 words/month', color: 'green' },
+  { included: true, text: 'Longer template generations', color: 'green' },
+]
+
+export const unlimitedFeatures: Feature[] = [
+  { included: true, text: 'Unlimited words/month', color: 'green' },
   { included: true, text: 'Longer template generations', color: 'green' },
 ]

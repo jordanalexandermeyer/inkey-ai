@@ -103,7 +103,8 @@ const Home: NextPage = () => {
     if (
       usageDetails &&
       usageDetails?.monthly_usage >=
-        usageDetails?.monthly_allowance + usageDetails.bonus_allowance
+        usageDetails?.monthly_allowance + usageDetails.bonus_allowance &&
+      usageDetails?.monthly_allowance >= 0 // negative allowance means unlimited
     ) {
       setShowUpgradeModal(true)
       return
