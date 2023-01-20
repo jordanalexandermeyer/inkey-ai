@@ -349,32 +349,34 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
                 />
               ))}
             </div>
-            <button
-              disabled={isLoading || isRegenerating}
-              onClick={() => {
-                setArgumentsState((currentArgState) => {
-                  const newArgState: string[] = JSON.parse(
-                    JSON.stringify(currentArgState),
-                  )
-                  newArgState.push('')
-                  return newArgState
-                })
-              }}
-              className="flex items-center justify-center self-start text-lg font-medium text-blue-700"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 48 48"
-                stroke="currentColor"
-                className="h-5 w-5"
+            {argumentsState.length < 10 && (
+              <button
+                disabled={isLoading || isRegenerating}
+                onClick={() => {
+                  setArgumentsState((currentArgState) => {
+                    const newArgState: string[] = JSON.parse(
+                      JSON.stringify(currentArgState),
+                    )
+                    newArgState.push('')
+                    return newArgState
+                  })
+                }}
+                className="flex items-center justify-center self-start text-lg font-medium text-blue-700"
               >
-                <path
-                  fill="currentColor"
-                  d="M22.5 38V25.5H10v-3h12.5V10h3v12.5H38v3H25.5V38Z"
-                />
-              </svg>
-              Add paragraph
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 48 48"
+                  stroke="currentColor"
+                  className="h-5 w-5"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M22.5 38V25.5H10v-3h12.5V10h3v12.5H38v3H25.5V38Z"
+                  />
+                </svg>
+                Add paragraph
+              </button>
+            )}
           </div>
         </div>
         <div className="flex flex-col gap-3 md:flex-row w-full justify-between">
