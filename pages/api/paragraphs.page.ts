@@ -12,13 +12,13 @@ export default async function handler(request: NextRequest) {
   const args: string[] = body.arguments
   const prompts = args.map((arg, index) => {
     if (index == 0) {
-      return `I. Topic Sentence\nA. \n\nII. Evidence and Analysis\nA. \nB. \nC. \nD. \n\nIII. Thesis Link\nA. \nB. \n\nYou are writing an essay in response to the prompt, "${prompt}". Your thesis is, "${title}". Using the above format, write an outline for a paragraph discussing the topic, "${arg}" that supports your thesis. In the "Topic Sentence" section, write a topic sentence. In the "Evidence and Analysis" section, provide evidence that support your topic sentence. After each piece of evidence, explain how it supports the topic sentence. In the "Thesis Link" section, write sentences that tie back to the thesis statement.\n\n`
+      return `I. Topic Sentence\nA. \n\nII. Evidence and Analysis\nA. \nB. \nC. \nD. \n\nIII. Thesis Link\nA. \n\nYou are writing an essay in response to the prompt, "${prompt}". Your thesis is, "${title}". Using the above format, write an outline for a paragraph discussing the topic, "${arg}" that supports your thesis. In the "Topic Sentence" section, write a topic sentence. In the "Evidence and Analysis" section, write sentences that provide evidence supporting your topic sentence. Then, write sentences that explain how the evidence supports the topic sentence. In the "Thesis Link" section, write a sentence that ties back to the thesis statement. Use varied sentence structures and vocabulary. Refrain from using the same word or phrase more than once.\n\n`
     } else {
-      return `I. Transition Sentence\nA. \n\nII. Evidence and Analysis\nA. \nB. \nC. \nD. \n\nIII. Thesis Link\nA. \nB. \n\nYou are writing an essay in response to the prompt, "${prompt}". Your thesis is, "${title}". The previous paragraph discussed, "${
+      return `I. Transition Sentence\nA. \n\nII. Evidence and Analysis\nA. \nB. \nC. \nD. \n\nIII. Thesis Link\nA. \n\nYou are writing an essay in response to the prompt, "${prompt}". Your thesis is, "${title}". The previous paragraph discussed, "${
         args[index - 1]
       }". Using the above format, write an outline for a paragraph discussing the topic, "${arg}" that supports your thesis. In the "Transition Sentence" section, write a sentence transitioning the previous topic, "${
         args[index - 1]
-      }", to the current one, "${arg}". In the "Evidence and Analysis" section, provide evidence that supports your topic. After each piece of evidence, explain how it supports the topic sentence. In the "Thesis Link" section, write sentences that tie back to the thesis statement.\n\n`
+      }", to the current one, "${arg}". In the "Evidence and Analysis" section, write sentences that provide evidence supporting your topic sentence. Then, write sentences that explain how the evidence supports the topic sentence. In the "Thesis Link" section, write a sentence that ties back to the thesis statement. Use varied sentence structures and vocabulary. Refrain from using the same word or phrase more than once.\n\n`
     }
   })
 
