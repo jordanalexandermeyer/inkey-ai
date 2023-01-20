@@ -54,6 +54,7 @@ export enum Role {
   BASIC = 'basic',
   PREMIUM = 'premium',
   ULTIMATE = 'ultimate',
+  UNLIMITED = 'unlimited',
 }
 
 export interface UsageDetails {
