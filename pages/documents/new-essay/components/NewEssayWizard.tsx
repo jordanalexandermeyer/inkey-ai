@@ -76,7 +76,8 @@ const PromptStep = ({
     if (
       usageDetails &&
       usageDetails?.monthly_usage >=
-        usageDetails?.monthly_allowance + usageDetails.bonus_allowance
+        usageDetails?.monthly_allowance + usageDetails.bonus_allowance &&
+      usageDetails?.monthly_allowance >= 0 // negative allowance means unlimited
     ) {
       setShowUpgradeModal(true)
       return
@@ -120,10 +121,10 @@ const PromptStep = ({
     >
       <div className="max-w-3xl flex flex-col items-center p-6 md:px-16 md:py-12 mt-10 mb-32 gap-8 bg-white rounded-lg border drop-shadow-xl">
         <div className="flex flex-col gap-6">
-          <h2 className="text-2xl font-medium text-center">
+          <h2 className="text-xl md:text-2xl font-medium text-center">
             What's your essay prompt?
           </h2>
-          <p className="text-lg text-gray-500 text-center">
+          <p className="text:sm md:text-lg text-gray-500 text-center">
             This is your assignment. For example, "Write an essay discussing the
             differences between Democrats and Republicans in the United States."
           </p>
@@ -217,10 +218,10 @@ const TitleStep = ({ componentStep }: { componentStep: number }) => {
     >
       <div className="max-w-3xl flex flex-col items-center p-6 md:px-16 md:py-12 mt-10 mb-32 gap-8 bg-white rounded-lg border drop-shadow-xl">
         <div className="flex flex-col gap-6">
-          <h2 className="text-2xl font-medium text-center">
+          <h2 className="text-xl md:text-2xl font-medium text-center">
             What do you want the thesis to be?
           </h2>
-          <p className="text-lg text-gray-500 text-center">
+          <p className="text-sm md:text-lg text-gray-500 text-center">
             We created one for you! If you don’t like it, feel free to generate
             another one or change it yourself.
           </p>
@@ -331,10 +332,10 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
     >
       <div className="w-full max-w-4xl flex flex-col items-center p-6 md:px-16 md:py-12 mt-10 mb-32 gap-8 bg-white rounded-lg border drop-shadow-xl">
         <div className="w-full flex flex-col gap-6">
-          <h2 className="text-2xl font-medium text-center">
+          <h2 className="text-xl md:text-2xl font-medium text-center">
             Choose your paragraphs
           </h2>
-          <p className="text-lg text-gray-500 text-center">
+          <p className="text-sm md:text-lg text-gray-500 text-center">
             These points will become your paragraphs. Add more for a longer
             essay or remove some for a shorter essay. Feel free to change them.
           </p>
@@ -361,7 +362,7 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
                     return newArgState
                   })
                 }}
-                className="flex items-center justify-center self-start text-lg font-medium text-blue-700"
+                className="flex items-center justify-center self-start text-sm md:text-base font-medium text-blue-700"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -530,10 +531,10 @@ const ParagraphStep = ({ componentStep }: { componentStep: number }) => {
     >
       <div className="w-full max-w-4xl flex flex-col items-center p-6 md:px-16 md:py-12 mt-10 mb-32 gap-8 bg-white rounded-lg border drop-shadow-xl">
         <div className="w-full flex flex-col gap-6">
-          <h2 className="text-2xl font-medium text-center">
+          <h2 className="text-xl md:text-2xl font-medium text-center">
             Edit paragraph contents
           </h2>
-          <p className="text-lg text-gray-500 text-center">
+          <p className="text-sm md:text-lg text-gray-500 text-center">
             Each panel represents a paragraph. Expand panels to edit the
             paragraph contents.
           </p>
@@ -606,7 +607,7 @@ const ParagraphRow = ({
               },
             )}
           >
-            <h2 className="w-full text-lg font-medium">
+            <h2 className="w-full text-sm md:text-base font-medium">
               {paragraphsState[paragraphIndex].argument}
             </h2>
             <button
@@ -679,7 +680,7 @@ const ParagraphRow = ({
                                 return newParagraphsState
                               })
                             }}
-                            className="flex items-center justify-center self-start text-lg font-medium text-blue-700"
+                            className="flex items-center justify-center self-start text-sm md:text-base font-medium text-blue-700"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -915,8 +916,10 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
           </div>
         ) : (
           <div className="flex flex-col gap-12">
-            <h1 className="text-2xl font-medium text-center">{thesis}</h1>
-            <p className="text-lg text-left whitespace-pre-wrap leading-loose">
+            <h1 className="text-xl md:text-2xl font-medium text-center">
+              {thesis}
+            </h1>
+            <p className="text-sm md:text-lg text-left whitespace-pre-wrap leading-loose md:leading-loose">
               {essay}
             </p>
           </div>

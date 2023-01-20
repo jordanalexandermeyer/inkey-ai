@@ -7,12 +7,13 @@ import FeatureList from 'pages/upgrade/components/FeatureList'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { Role } from 'types'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import classNames from 'classnames'
 import {
   basicFeatures,
   premiumFeatures,
   ultimateFeatures,
+  unlimitedFeatures,
 } from 'pages/upgrade/components/constants'
 
 const Documents: NextPage = () => {
@@ -25,6 +26,7 @@ const Documents: NextPage = () => {
   const functions = getFunctions()
   const router = useRouter()
   const [isStripeLoading, setIsStripeLoading] = useState(false)
+  const [credits, setCredits] = useState('0')
 
   const handleBillingDetailsClick = async () => {
     setIsStripeLoading(true)
@@ -35,6 +37,12 @@ const Documents: NextPage = () => {
     setIsStripeLoading(false)
     router.push(data.url)
   }
+
+  useEffect(() => {
+    const credits = (usageDetails && usageDetails.monthly_allowance) || 0
+    if (credits < 0) setCredits('Unlimited')
+    else setCredits(String(credits))
+  }, [usageDetails])
 
   return (
     <ProtectedPage>
@@ -85,7 +93,7 @@ const Documents: NextPage = () => {
                       <h2 className="sm:mb-6 sm:text-lg font-semibold text-gray-900">
                         Credits
                       </h2>
-                      <p>{usageDetails?.monthly_allowance || 0} words</p>
+                      <p>{credits} words</p>
                     </div>
                     <div className="flex flex-row sm:flex-col justify-between items-center sm:items-start">
                       <h2 className="sm:mb-6 sm:text-lg font-semibold text-gray-900">
@@ -105,6 +113,7 @@ const Documents: NextPage = () => {
                         {!subscription && 'Basic'}
                         {subscription?.role == Role.PREMIUM && 'Premium'}
                         {subscription?.role == Role.ULTIMATE && 'Ultimate'}
+                        {subscription?.role == Role.UNLIMITED && 'Unlimited'}
                       </h5>
                       {!subscription && (
                         <FeatureList features={basicFeatures} />
@@ -114,6 +123,9 @@ const Documents: NextPage = () => {
                       )}
                       {subscription?.role == Role.ULTIMATE && (
                         <FeatureList features={ultimateFeatures} />
+                      )}
+                      {subscription?.role == Role.UNLIMITED && (
+                        <FeatureList features={unlimitedFeatures} />
                       )}
                       {!!subscription && (
                         <button

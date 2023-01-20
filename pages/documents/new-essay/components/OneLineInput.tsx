@@ -42,7 +42,7 @@ const OneLineInput = ({
           autoFocus={autoFocus}
           value={value}
           onChange={onChange}
-          className="h-9 p-1 w-full overflow-hidden text-xl border-0 resize-none focus:ring-0 focus-visible:ring-0 placeholder-gray-300"
+          className="h-9 p-1 w-full overflow-hidden text-sm md:text-lg border-0 resize-none focus:ring-0 focus-visible:ring-0 placeholder-gray-300"
           placeholder={placeholder}
           onKeyDown={onKeyDown}
         ></textarea>

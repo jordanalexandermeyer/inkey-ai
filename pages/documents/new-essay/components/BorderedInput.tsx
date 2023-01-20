@@ -38,7 +38,7 @@ const BorderedInput = ({
           ref={reference ? mergeRefs(textAreaRef, reference) : textAreaRef}
           value={value}
           onChange={onChange}
-          className="bg-transparent h-9 p-1 w-full overflow-hidden text-lg border-0 resize-none focus:ring-0 focus-visible:ring-0 placeholder-gray-300"
+          className="bg-transparent h-9 p-1 w-full overflow-hidden text-sm md:text-base border-0 resize-none focus:ring-0 focus-visible:ring-0 placeholder-gray-300"
           placeholder={placeholder}
           onKeyDown={onKeyDown}
         ></textarea>
