@@ -10,7 +10,7 @@ export interface Template {
   promptCharacterLimit?: number
   inputRows?: number
   promptName?: string
-  promptPlaceholder: string
+  promptPlaceholder?: string
   quotePlaceholder?: string
   supportExamplePrompt?: boolean
   supportTone?: boolean
@@ -28,18 +28,11 @@ export interface Template {
 
 export enum TemplateId {
   // Whole essays
+  MAGIC_ESSAY_ID = 'long-essay',
   GENERAL_ESSAY_ID = 'general-essay',
   COLLEGE_APP_ESSAY_ID = 'college-app-essay',
   PERSUASIVE_ESSAY_ID = 'persuasive-essay',
-  EXPOSITORY_ESSAY_ID = 'expository-essay',
-  COMPARE_CONTRAST_ESSAY_ID = 'compare-contrast-essay',
   ARGUMENTATIVE_ESSAY_ID = 'argumentative-essay',
-  CAUSE_EFFECT_ESSAY_ID = 'cause-effect-essay',
-  NARRATIVE_ESSAY_ID = 'narrative-essay',
-  DEFINITION_ESSAY_ID = 'definition-essay',
-  DESCRIPTIVE_ESSAY_ID = 'descriptive-essay',
-  LITERARY_ESSAY_ID = 'literary-essay',
-  SCIENTIFIC_ESSAY_ID = 'scientific-essay',
 
   // Essay parts
   THESIS_ID = 'thesis',
@@ -51,34 +44,20 @@ export enum TemplateId {
   POEM_ID = 'poem',
   SPEECH_ID = 'speech',
   STORY_ID = 'story',
+  BLOG_ID = 'blog',
 
   // Writing tools
-  TRANSLATOR_ID = 'translator',
   PARAPHRASER_ID = 'paraphraser',
   SUMMARIZER_ID = 'summarizer',
 
   // Class tools
   DISCUSSION_BOARD_RESPONSE_ID = 'discussion-board-response',
-
-  // Professional
-  BLOG_ID = 'blog',
-  // EMAIL_ID = '',
-  // EMAIL_RESPONSE_ID = '',
-  // BLOG_OUTLINE_ID = '',
-  // BLOG_IDEAS_ID = '',
+  CODING_QUESTION_SOLVER_ID = 'coding-question-solver',
 
   // Job
   LINKEDIN_BIO_ID = 'linkedin-bio',
   COVER_LETTER_ID = 'cover-letter',
   RESUME_BULLET_POINTS_ID = 'resume-bullet-points',
-
-  // Coding
-  CODING_QUESTION_SOLVER_ID = 'coding-question-solver',
-  FUNCTION_ID = 'function',
-  CLASS_ID = 'class',
-  SCRIPT_ID = 'script',
-  REGEX_ID = 'regex',
-  EXPLAIN_CODE_ID = 'explain-code',
 }
 
 export type TemplateMap = {
@@ -86,11 +65,22 @@ export type TemplateMap = {
 }
 
 export const templates: TemplateMap = {
+  [TemplateId.MAGIC_ESSAY_ID]: {
+    id: TemplateId.MAGIC_ESSAY_ID,
+    icon: '🪄',
+    title: 'Magic Essay Generator',
+    description:
+      'Works like magic. Generates multi-page essays 1000s of words long. Say goodbye to late nights and stress-filled days of essay writing.',
+    href: `/documents/new-essay`,
+    attribute: FilterType.WHOLE_ESSAYS,
+    new: true,
+  },
   [TemplateId.GENERAL_ESSAY_ID]: {
     id: TemplateId.GENERAL_ESSAY_ID,
     icon: '📝',
     title: 'General Essay',
-    description: 'Ask a prompt and receive a compelling essay.',
+    description:
+      'Ask a prompt and receive a compelling essay. Generates single-page essays that are around 250 to 500 words long.',
     promptPlaceholder:
       'What is the importance of investing money in space exploration?',
     quotePlaceholder:
@@ -115,27 +105,20 @@ export const templates: TemplateMap = {
     supportContent: true,
     href: `/templates/${TemplateId.RESUME_BULLET_POINTS_ID}`,
     attribute: FilterType.JOB_TOOLS,
-    new: true,
   },
-  [TemplateId.COVER_LETTER_ID]: {
-    id: TemplateId.COVER_LETTER_ID,
-    icon: '✉️',
-    title: 'Cover Letter',
+  [TemplateId.COLLEGE_APP_ESSAY_ID]: {
+    id: TemplateId.COLLEGE_APP_ESSAY_ID,
+    icon: '🎓',
+    title: 'College Application Essay',
     description:
-      'A document sent with a resume to provide additional information on your skills and experience.',
-    promptName: 'Resume',
-    promptCharacterLimit: 5000,
-    inputRows: 10,
-    supportExamplePrompt: false,
-    promptPlaceholder: 'Paste your resume here.',
-    supportRequestedLength: true,
-    supportTone: false,
-    supportPointOfView: false,
+      'Get into your dream school! Generates a personal statement for your college applications.',
+    promptPlaceholder:
+      'Some students have a background, identity, interest, or talent that is so meaningful they believe their application would be incomplete without it. If this sounds like you, then please share your story.',
+    quotePlaceholder: 'My father said, "You can\'t live here anymore."',
+    supportQuotes: true,
     supportContent: true,
-    contentCharacterLimit: 5000,
-    href: `/templates/${TemplateId.COVER_LETTER_ID}`,
-    attribute: FilterType.JOB_TOOLS,
-    new: true,
+    href: `/templates/${TemplateId.COLLEGE_APP_ESSAY_ID}`,
+    attribute: FilterType.WHOLE_ESSAYS,
   },
   [TemplateId.CODING_QUESTION_SOLVER_ID]: {
     id: TemplateId.CODING_QUESTION_SOLVER_ID,
@@ -155,54 +138,153 @@ export const templates: TemplateMap = {
     supportCodingLanguages: true,
     supportQuotes: false,
     href: `/templates/${TemplateId.CODING_QUESTION_SOLVER_ID}`,
-    attribute: FilterType.CODING_TOOLS,
-    new: true,
+    attribute: FilterType.CLASS_TOOLS,
   },
-  [TemplateId.EXPLAIN_CODE_ID]: {
-    id: TemplateId.EXPLAIN_CODE_ID,
-    icon: '#',
-    title: 'Explain Code',
+  [TemplateId.BODY_PARAGRAPH_ID]: {
+    id: TemplateId.BODY_PARAGRAPH_ID,
+    icon: '❡',
+    title: 'Body Paragraph',
     description:
-      'Enter a block of code to have it explained and have comments added.',
-    promptName: 'Code',
-    promptPlaceholder: `export const getTodoData = () => {
-      let msg=request.get(
-       'https://hello-cloudbase.service.base.com/todo-demo/v1.0/xxx',
-         {
-           "query": {
-             "account": { "$eq": "super" },
-           },
-         })
-       .then((response) => {
-         initialToContext = {
-           myTodo: response.data.map((item: any) => {
-             let { _id, title, completed }: ITodoItem = item;
-             let todoItme: ITodoItem = {
-               _id: _id,
-               title: title,
-               completed: completed
-             }
-             return todoItme
-           })
-         }
-         return  { msg: 'success', data: initialToContext.myTodo }
-       })
-       .catch((error) => {
-         return { msg: 'error', data: [] }
-       });
-     return msg
-   }`,
-    promptCharacterLimit: 8000,
-    inputRows: 10,
+      'A group of related sentences that develop a single idea or topic.',
+    promptName: 'Paragraph idea',
+    promptPlaceholder:
+      'Investing money in space exploration encourages technological advancements.',
     supportExamplePrompt: true,
+    supportRequestedLength: true,
+    supportTone: true,
+    supportPointOfView: true,
+    supportQuotes: true,
+    supportContent: true,
+    href: `/templates/${TemplateId.BODY_PARAGRAPH_ID}`,
+    attribute: FilterType.ESSAY_PARTS,
+  },
+  [TemplateId.INTRODUCTION_PARAGRAPH_ID]: {
+    id: TemplateId.INTRODUCTION_PARAGRAPH_ID,
+    icon: '↑❡',
+    title: 'Introduction Paragraph',
+    description:
+      'Provides an overview of the main points of the essay and introduce the reader to the topic.',
+    promptName: 'Thesis',
+    promptPlaceholder:
+      "The importance of investing money in space exploration is critical for advancing humanity's scientific understanding, stimulating economic growth, and protecting the planet from potential asteroid impacts.",
+    supportExamplePrompt: true,
+    supportRequestedLength: false,
+    supportTone: true,
+    supportPointOfView: true,
+    supportQuotes: true,
+    supportContent: true,
+    href: `/templates/${TemplateId.INTRODUCTION_PARAGRAPH_ID}`,
+    attribute: FilterType.ESSAY_PARTS,
+  },
+  [TemplateId.PERSUASIVE_ESSAY_ID]: {
+    id: TemplateId.PERSUASIVE_ESSAY_ID,
+    icon: '📣',
+    title: 'Persuasive Essay',
+    description:
+      "A persuasive essay is intended to convince the reader of the writer's opinion on a particular subject, using evidence and reasoning to support the writer's position.",
+    promptPlaceholder:
+      'Write an essay persuading readers that working in-person is superior to working remotely.',
+    quotePlaceholder:
+      'According to Elon Musk, "Remote work is no longer acceptable."',
+    supportQuotes: true,
+    supportContent: true,
+    href: `/templates/${TemplateId.PERSUASIVE_ESSAY_ID}`,
+    attribute: FilterType.WHOLE_ESSAYS,
+  },
+  [TemplateId.THESIS_ID]: {
+    id: TemplateId.THESIS_ID,
+    icon: '✏️',
+    title: 'Thesis',
+    description:
+      'A single sentence that expresses the main idea of an essay or other written piece.',
+    supportExamplePrompt: true,
+    promptPlaceholder:
+      'What is the importance of investing money in space exploration?',
     supportRequestedLength: false,
     supportTone: false,
     supportPointOfView: false,
-    supportCodingLanguages: false,
-    supportQuotes: false,
-    href: `/templates/${TemplateId.EXPLAIN_CODE_ID}`,
-    attribute: FilterType.CODING_TOOLS,
-    new: true,
+    href: `/templates/${TemplateId.THESIS_ID}`,
+    attribute: FilterType.ESSAY_PARTS,
+  },
+  [TemplateId.SPEECH_ID]: {
+    id: TemplateId.SPEECH_ID,
+    icon: '🗣',
+    title: 'Speech',
+    description:
+      'A speech is a formal address that is delivered to an audience for the purpose of communicating information, ideas, or feelings.',
+    promptName: 'Speech title',
+    promptPlaceholder:
+      'Students should spend more time building friendships and less time working.',
+    supportRequestedLength: true,
+    supportPointOfView: false,
+    supportQuotes: true,
+    supportContent: true,
+    href: `/templates/${TemplateId.SPEECH_ID}`,
+    attribute: FilterType.OTHER,
+  },
+  [TemplateId.ARGUMENTATIVE_ESSAY_ID]: {
+    id: TemplateId.ARGUMENTATIVE_ESSAY_ID,
+    icon: '🤼‍♂️',
+    title: 'Argumentative Essay',
+    description:
+      'Generates an essay that presents a point of view on a particular issue and provides evidence and arguments to support that point of view.',
+    promptPlaceholder:
+      'Do you think middle schoolers should have jobs like babysitting or mowing lawns?',
+    quotePlaceholder:
+      '"You have a lifetime to work, but children are only young once." - Polish proverb',
+    supportQuotes: true,
+    supportContent: true,
+    href: `/templates/${TemplateId.ARGUMENTATIVE_ESSAY_ID}`,
+    attribute: FilterType.WHOLE_ESSAYS,
+  },
+  [TemplateId.POEM_ID]: {
+    id: TemplateId.POEM_ID,
+    icon: '📜',
+    title: 'Poem',
+    description:
+      'A poem is a type of literature that uses artistic and imaginative language to express feelings and ideas in a compact and powerful way.',
+    promptName: 'Poem title',
+    promptPlaceholder: 'Trees',
+    supportExamplePrompt: true,
+    supportRequestedLength: false,
+    supportTone: false,
+    href: `/templates/${TemplateId.POEM_ID}`,
+    attribute: FilterType.OTHER,
+  },
+  [TemplateId.COVER_LETTER_ID]: {
+    id: TemplateId.COVER_LETTER_ID,
+    icon: '✉️',
+    title: 'Cover Letter',
+    description:
+      'Write a description of the job and paste your resume to get a personalized cover letter sure to help you land that job!',
+    promptName: 'Resume',
+    promptCharacterLimit: 5000,
+    inputRows: 10,
+    supportExamplePrompt: false,
+    promptPlaceholder: 'Paste your resume here.',
+    supportRequestedLength: true,
+    supportTone: false,
+    supportPointOfView: false,
+    supportContent: true,
+    href: `/templates/${TemplateId.COVER_LETTER_ID}`,
+    attribute: FilterType.JOB_TOOLS,
+  },
+  [TemplateId.STORY_ID]: {
+    id: TemplateId.STORY_ID,
+    icon: '📖',
+    title: 'Story',
+    description:
+      'A narrative that conveys a sequence of events to entertain or inform an audience.',
+    promptName: 'Story title',
+    promptPlaceholder: 'How Santa Saved the World',
+    supportExamplePrompt: true,
+    supportRequestedLength: false,
+    supportQuotes: true,
+    supportTone: true,
+    supportPointOfView: true,
+    supportContent: true,
+    href: `/templates/${TemplateId.STORY_ID}`,
+    attribute: FilterType.OTHER,
   },
   [TemplateId.LINKEDIN_BIO_ID]: {
     id: TemplateId.LINKEDIN_BIO_ID,
@@ -231,133 +313,8 @@ export const templates: TemplateMap = {
     supportTone: false,
     supportPointOfView: true,
     supportContent: true,
-    contentCharacterLimit: 5000,
     href: `/templates/${TemplateId.LINKEDIN_BIO_ID}`,
     attribute: FilterType.JOB_TOOLS,
-    new: true,
-  },
-  [TemplateId.POEM_ID]: {
-    id: TemplateId.POEM_ID,
-    icon: '📜',
-    title: 'Poem',
-    description:
-      'A poem is a type of literature that uses artistic and imaginative language to express feelings and ideas in a compact and powerful way.',
-    promptName: 'Poem title',
-    promptPlaceholder: 'Trees',
-    supportExamplePrompt: true,
-    supportRequestedLength: false,
-    supportTone: false,
-    href: `/templates/${TemplateId.POEM_ID}`,
-    attribute: FilterType.OTHER,
-  },
-  [TemplateId.SPEECH_ID]: {
-    id: TemplateId.SPEECH_ID,
-    icon: '🗣',
-    title: 'Speech',
-    description:
-      'A speech is a formal address that is delivered to an audience for the purpose of communicating information, ideas, or feelings.',
-    promptName: 'Speech title',
-    promptPlaceholder:
-      'Students should spend more time building friendships and less time working.',
-    supportRequestedLength: true,
-    supportPointOfView: false,
-    supportQuotes: true,
-    supportContent: true,
-    href: `/templates/${TemplateId.SPEECH_ID}`,
-    attribute: FilterType.OTHER,
-  },
-  [TemplateId.THESIS_ID]: {
-    id: TemplateId.THESIS_ID,
-    icon: '✏️',
-    title: 'Thesis',
-    description:
-      'A single sentence that expresses the main idea of an essay or other written piece.',
-    supportExamplePrompt: true,
-    promptPlaceholder:
-      'What is the importance of investing money in space exploration?',
-    supportRequestedLength: false,
-    supportTone: false,
-    supportPointOfView: false,
-    href: `/templates/${TemplateId.THESIS_ID}`,
-    attribute: FilterType.ESSAY_PARTS,
-  },
-  [TemplateId.INTRODUCTION_PARAGRAPH_ID]: {
-    id: TemplateId.INTRODUCTION_PARAGRAPH_ID,
-    icon: '↑❡',
-    title: 'Introduction Paragraph',
-    description:
-      'Provides an overview of the main points of the essay and introduce the reader to the topic.',
-    promptName: 'Thesis',
-    promptPlaceholder:
-      "The importance of investing money in space exploration is critical for advancing humanity's scientific understanding, stimulating economic growth, and protecting the planet from potential asteroid impacts.",
-    supportExamplePrompt: true,
-    supportRequestedLength: false,
-    supportTone: true,
-    supportPointOfView: true,
-    supportQuotes: true,
-    supportContent: true,
-    href: `/templates/${TemplateId.INTRODUCTION_PARAGRAPH_ID}`,
-    attribute: FilterType.ESSAY_PARTS,
-    new: true,
-  },
-  [TemplateId.BODY_PARAGRAPH_ID]: {
-    id: TemplateId.BODY_PARAGRAPH_ID,
-    icon: '❡',
-    title: 'Body Paragraph',
-    description:
-      'A group of related sentences that develop a single idea or topic.',
-    promptName: 'Paragraph idea',
-    promptPlaceholder:
-      'Investing money in space exploration encourages technological advancements.',
-    supportExamplePrompt: true,
-    supportRequestedLength: true,
-    supportTone: true,
-    supportPointOfView: true,
-    supportQuotes: true,
-    supportContent: true,
-    href: `/templates/${TemplateId.BODY_PARAGRAPH_ID}`,
-    attribute: FilterType.ESSAY_PARTS,
-    new: true,
-  },
-  [TemplateId.TRANSLATOR_ID]: {
-    id: TemplateId.TRANSLATOR_ID,
-    icon: '💱',
-    title: 'Translator',
-    description: 'A tool that converts text from one language to another.',
-    promptName: 'Text',
-    promptPlaceholder:
-      'Enter text in any language here and choose a language to translate to.',
-    supportExamplePrompt: false,
-    supportRequestedLength: false,
-    supportTone: false,
-    supportPointOfView: false,
-    supportLanguages: true,
-    promptCharacterLimit: 5000,
-    inputRows: 10,
-    href: `/templates/${TemplateId.TRANSLATOR_ID}`,
-    attribute: FilterType.WRITING_TOOLS,
-    new: true,
-  },
-  [TemplateId.CONCLUSION_PARAGRAPH_ID]: {
-    id: TemplateId.CONCLUSION_PARAGRAPH_ID,
-    icon: '↓❡',
-    title: 'Conclusion Paragraph',
-    description:
-      'Reviews the main points of the essay and wraps up the ideas previously introduced.',
-    promptName: 'Essay without conclusion',
-    promptPlaceholder: 'Paste an essay without a conclusion here.',
-    promptCharacterLimit: 7500,
-    inputRows: 10,
-    supportExamplePrompt: false,
-    supportRequestedLength: false,
-    supportTone: true,
-    supportPointOfView: true,
-    supportQuotes: true,
-    supportContent: true,
-    contentCharacterLimit: 2500,
-    href: `/templates/${TemplateId.CONCLUSION_PARAGRAPH_ID}`,
-    attribute: FilterType.ESSAY_PARTS,
-    new: true,
   },
   [TemplateId.DISCUSSION_BOARD_RESPONSE_ID]: {
     id: TemplateId.DISCUSSION_BOARD_RESPONSE_ID,
@@ -375,17 +332,49 @@ export const templates: TemplateMap = {
     supportPointOfView: true,
     supportQuotes: true,
     supportContent: true,
-    contentCharacterLimit: 2500,
     href: `/templates/${TemplateId.DISCUSSION_BOARD_RESPONSE_ID}`,
     attribute: FilterType.CLASS_TOOLS,
-    new: true,
+  },
+  [TemplateId.BLOG_ID]: {
+    id: TemplateId.BLOG_ID,
+    icon: '💻',
+    title: 'Blog Post',
+    description:
+      'A blog post is an online article or entry that shares opinions, information, stories, and other media.',
+    promptName: 'Blog title',
+    promptPlaceholder: '5 Ways to Make Your Workplace More Productive',
+    quotePlaceholder:
+      '"The most productive workplaces are those that foster collaboration, innovation, and a sense of purpose." - Bill Gates',
+    supportQuotes: true,
+    supportContent: true,
+    href: `/templates/${TemplateId.BLOG_ID}`,
+    attribute: FilterType.OTHER,
+  },
+  [TemplateId.CONCLUSION_PARAGRAPH_ID]: {
+    id: TemplateId.CONCLUSION_PARAGRAPH_ID,
+    icon: '↓❡',
+    title: 'Conclusion Paragraph',
+    description:
+      'Reviews the main points of the essay and wraps up the ideas previously introduced.',
+    promptName: 'Essay without conclusion',
+    promptPlaceholder: 'Paste an essay without a conclusion here.',
+    promptCharacterLimit: 7500,
+    inputRows: 10,
+    supportExamplePrompt: false,
+    supportRequestedLength: false,
+    supportTone: true,
+    supportPointOfView: true,
+    supportQuotes: true,
+    supportContent: true,
+    href: `/templates/${TemplateId.CONCLUSION_PARAGRAPH_ID}`,
+    attribute: FilterType.ESSAY_PARTS,
   },
   [TemplateId.PARAPHRASER_ID]: {
     id: TemplateId.PARAPHRASER_ID,
     icon: '♻️',
     title: 'Paraphraser',
-    description: 'This template takes in text and paraphrases it.',
-    promptCharacterLimit: 8000,
+    description: 'Paste text to have it rewritten using different words.',
+    promptCharacterLimit: 2000,
     inputRows: 10,
     promptName: 'Text',
     promptPlaceholder:
@@ -413,276 +402,5 @@ export const templates: TemplateMap = {
     supportPointOfView: false,
     href: `/${TemplateId.SUMMARIZER_ID}`,
     attribute: FilterType.WRITING_TOOLS,
-  },
-  [TemplateId.BLOG_ID]: {
-    id: TemplateId.BLOG_ID,
-    icon: '💻',
-    title: 'Blog Post',
-    description:
-      'A blog post is an online article or entry that shares opinions, information, stories, and other media.',
-    promptName: 'Blog title',
-    promptPlaceholder: '5 Ways to Make Your Workplace More Productive',
-    quotePlaceholder:
-      '"The most productive workplaces are those that foster collaboration, innovation, and a sense of purpose." - Bill Gates',
-    supportQuotes: true,
-    supportContent: true,
-    href: `/templates/${TemplateId.BLOG_ID}`,
-    attribute: FilterType.OTHER,
-  },
-  [TemplateId.STORY_ID]: {
-    id: TemplateId.STORY_ID,
-    icon: '📖',
-    title: 'Story',
-    description:
-      'A narrative that conveys a sequence of events to entertain or inform an audience.',
-    promptName: 'Story title',
-    promptPlaceholder: 'How Santa Saved the World',
-    supportExamplePrompt: true,
-    supportRequestedLength: false,
-    supportQuotes: true,
-    supportTone: true,
-    supportPointOfView: true,
-    supportContent: true,
-    href: `/templates/${TemplateId.STORY_ID}`,
-    attribute: FilterType.OTHER,
-    new: true,
-  },
-  [TemplateId.REGEX_ID]: {
-    id: TemplateId.REGEX_ID,
-    icon: '(.*)',
-    title: 'Regex',
-    description:
-      'Regular expressions (regex) are a way of describing patterns in text strings for searching, manipulating, and validating data.',
-    promptName: 'Regex explanation',
-    promptPlaceholder:
-      'Contains any character other than an i, asterisk, ampersand, 2, or at-sign',
-    supportExamplePrompt: true,
-    supportRequestedLength: false,
-    supportTone: false,
-    supportPointOfView: false,
-    supportLanguages: false,
-    supportCodingLanguages: false,
-    supportQuotes: false,
-    href: `/templates/${TemplateId.REGEX_ID}`,
-    attribute: FilterType.CODING_TOOLS,
-    new: true,
-  },
-  [TemplateId.SCRIPT_ID]: {
-    id: TemplateId.SCRIPT_ID,
-    icon: '<>',
-    title: 'Script',
-    description:
-      'A set of instructions that tells a computer how to perform a task.',
-    promptName: 'Script explanation',
-    promptPlaceholder:
-      'Iterate through a csv file and capitalize the second column',
-    supportExamplePrompt: true,
-    supportRequestedLength: false,
-    supportTone: false,
-    supportPointOfView: false,
-    supportLanguages: false,
-    supportCodingLanguages: true,
-    supportQuotes: false,
-    href: `/templates/${TemplateId.SCRIPT_ID}`,
-    attribute: FilterType.CODING_TOOLS,
-    new: true,
-  },
-  [TemplateId.CLASS_ID]: {
-    id: TemplateId.CLASS_ID,
-    icon: '{}',
-    title: 'Class',
-    description:
-      'A template that is used to create objects, define object data types, and methods.',
-    promptName: 'Class explanation',
-    promptPlaceholder:
-      'Ball with a diameter and color and getter/setter methods',
-    supportExamplePrompt: true,
-    supportRequestedLength: false,
-    supportTone: false,
-    supportPointOfView: false,
-    supportLanguages: false,
-    supportCodingLanguages: true,
-    supportQuotes: false,
-    href: `/templates/${TemplateId.CLASS_ID}`,
-    attribute: FilterType.CODING_TOOLS,
-    new: true,
-  },
-  [TemplateId.FUNCTION_ID]: {
-    id: TemplateId.FUNCTION_ID,
-    icon: '⚙️',
-    title: 'Function',
-    description: 'A block of code that performs a specific task.',
-    promptName: 'Function explanation',
-    promptPlaceholder: 'Iterate through a list and print each item.',
-    supportExamplePrompt: true,
-    supportRequestedLength: false,
-    supportTone: false,
-    supportPointOfView: false,
-    supportLanguages: false,
-    supportCodingLanguages: true,
-    supportQuotes: false,
-    href: `/templates/${TemplateId.FUNCTION_ID}`,
-    attribute: FilterType.CODING_TOOLS,
-    new: true,
-  },
-  [TemplateId.COLLEGE_APP_ESSAY_ID]: {
-    id: TemplateId.COLLEGE_APP_ESSAY_ID,
-    icon: '🎓',
-    title: 'College Application Essay',
-    description:
-      'A college application essay is a written statement that is submitted as part of a college application, in which the writer presents their goals, experiences, and qualifications in order to demonstrate their suitability for admission to the college.',
-    promptPlaceholder:
-      'Some students have a background, identity, interest, or talent that is so meaningful they believe their application would be incomplete without it. If this sounds like you, then please share your story.',
-    quotePlaceholder: 'My father said, "You can\'t live here anymore."',
-    supportQuotes: true,
-    supportContent: true,
-    href: `/templates/${TemplateId.COLLEGE_APP_ESSAY_ID}`,
-    attribute: FilterType.WHOLE_ESSAYS,
-  },
-  [TemplateId.PERSUASIVE_ESSAY_ID]: {
-    id: TemplateId.PERSUASIVE_ESSAY_ID,
-    icon: '📣',
-    title: 'Persuasive Essay',
-    description:
-      "A persuasive essay is intended to convince the reader of the writer's opinion on a particular subject, using evidence and reasoning to support the writer's position.",
-    promptPlaceholder:
-      'Write an essay persuading readers that working in-person is superior to working remotely.',
-    quotePlaceholder:
-      'According to Elon Musk, "Remote work is no longer acceptable."',
-    supportQuotes: true,
-    supportContent: true,
-    href: `/templates/${TemplateId.PERSUASIVE_ESSAY_ID}`,
-    attribute: FilterType.WHOLE_ESSAYS,
-  },
-  [TemplateId.EXPOSITORY_ESSAY_ID]: {
-    id: TemplateId.EXPOSITORY_ESSAY_ID,
-    icon: '🧑‍🎨',
-    title: 'Expository Essay',
-    description:
-      'An expository essay explains or informs the reader about a particular topic or idea. The purpose of this type of essay is to provide information and clarify ideas or concepts for the reader.',
-    promptPlaceholder:
-      'Describe how communication has changed in the last twenty years.',
-    quotePlaceholder:
-      '"iPhone is a revolutionary and magical product that is literally five years ahead of any other mobile phone," - Steve Jobs',
-    supportQuotes: true,
-    supportContent: true,
-    href: `/templates/${TemplateId.EXPOSITORY_ESSAY_ID}`,
-    attribute: FilterType.WHOLE_ESSAYS,
-  },
-  [TemplateId.COMPARE_CONTRAST_ESSAY_ID]: {
-    id: TemplateId.COMPARE_CONTRAST_ESSAY_ID,
-    icon: '💁',
-    title: 'Compare and Contrast Essay',
-    description:
-      'A compare and contrast essay compares and contrasts two or more subjects, and analyzes the similarities and differences between them.',
-    promptPlaceholder:
-      'Compare and contrast the book Lord of the Flies with the TV show Survivor.',
-    quotePlaceholder:
-      '"Ralph wept for the end of innocence, the darkness of man\'s heart, and the fall through the air of the true, wise friend called Piggy." - William Golding',
-    supportQuotes: true,
-    supportContent: true,
-    href: `/templates/${TemplateId.COMPARE_CONTRAST_ESSAY_ID}`,
-    attribute: FilterType.WHOLE_ESSAYS,
-  },
-  [TemplateId.ARGUMENTATIVE_ESSAY_ID]: {
-    id: TemplateId.ARGUMENTATIVE_ESSAY_ID,
-    icon: '🤼‍♂️',
-    title: 'Argumentative Essay',
-    description:
-      "An argumentative essay presents the writer's point of view on a particular issue and provides evidence and arguments to support that point of view.",
-    promptPlaceholder:
-      'Do you think middle schoolers should have jobs like babysitting or mowing lawns?',
-    quotePlaceholder:
-      '"You have a lifetime to work, but children are only young once." - Polish proverb',
-    supportQuotes: true,
-    supportContent: true,
-    href: `/templates/${TemplateId.ARGUMENTATIVE_ESSAY_ID}`,
-    attribute: FilterType.WHOLE_ESSAYS,
-  },
-  [TemplateId.CAUSE_EFFECT_ESSAY_ID]: {
-    id: TemplateId.CAUSE_EFFECT_ESSAY_ID,
-    icon: '↔️',
-    title: 'Cause and Effect Essay',
-    description:
-      'A cause and effect essay explains the cause of a particular phenomenon and its effects on something else.',
-    promptPlaceholder:
-      'Write an essay on the causes of famine and the effects it has on human population.',
-    quotePlaceholder:
-      '"This is the moment when we must come together to save this planet. Let us resolve that we will not leave our children a world where the oceans rise and famine spreads and terrible storms devastate our lands." - Barack Obama',
-    supportQuotes: true,
-    supportContent: true,
-    href: `/templates/${TemplateId.CAUSE_EFFECT_ESSAY_ID}`,
-    attribute: FilterType.WHOLE_ESSAYS,
-  },
-  [TemplateId.NARRATIVE_ESSAY_ID]: {
-    id: TemplateId.NARRATIVE_ESSAY_ID,
-    icon: '🙊',
-    title: 'Narrative Essay',
-    description:
-      'A narrative essay tells a story or relates a personal experience.',
-    promptPlaceholder:
-      'Most of us remember exactly where we were and what we were doing when we received shocking or important news. Tell the story of what you were doing when you heard about an important event and how that news affected you.',
-    quotePlaceholder: '"Your aunt is going to live." - Doctor Jerry',
-    supportQuotes: true,
-    supportContent: true,
-    href: `/templates/${TemplateId.NARRATIVE_ESSAY_ID}`,
-    attribute: FilterType.WHOLE_ESSAYS,
-  },
-  [TemplateId.DEFINITION_ESSAY_ID]: {
-    id: TemplateId.DEFINITION_ESSAY_ID,
-    icon: '📚',
-    title: 'Definition Essay',
-    description:
-      'A definition essay defines a particular term or concept, and provides detailed information and examples to help the reader understand the term or concept being defined.',
-    promptPlaceholder: 'How has the definition of "health" changed over time?',
-    quotePlaceholder:
-      '"Time and health are two precious assets that we don\'t recognize and appreciate until they have been depleted." - Denis Waitley',
-    supportQuotes: true,
-    supportContent: true,
-    href: `/templates/${TemplateId.DEFINITION_ESSAY_ID}`,
-    attribute: FilterType.WHOLE_ESSAYS,
-  },
-  [TemplateId.DESCRIPTIVE_ESSAY_ID]: {
-    id: TemplateId.DESCRIPTIVE_ESSAY_ID,
-    icon: '🎨',
-    title: 'Descriptive Essay',
-    description:
-      'A descriptive essay provides a detailed description of a person, place, object, experience, or emotion.',
-    promptPlaceholder: 'What is the role of pi in mathematics and physics?',
-    quotePlaceholder:
-      '"This mysterious 3.141592..., which comes in at every door and window, and down every chimney, calling itself the circumference to a unit of diameter." - Augustus De Morgan',
-    supportQuotes: true,
-    supportContent: true,
-    href: `/templates/${TemplateId.DESCRIPTIVE_ESSAY_ID}`,
-    attribute: FilterType.WHOLE_ESSAYS,
-  },
-  [TemplateId.LITERARY_ESSAY_ID]: {
-    id: TemplateId.LITERARY_ESSAY_ID,
-    icon: '📕',
-    title: 'Literary Essay',
-    description:
-      'A literary essay analyzes and evaluates a piece of literature, such as a novel, poem, or play.',
-    promptPlaceholder:
-      "Compare and contrast the fear of terrorism and the concern with safety issues in present day society with George Orwell's novel, 1984.",
-    quotePlaceholder:
-      '"War is peace. Freedom is slavery. Ignorance is strength." - George Orwell',
-    supportQuotes: true,
-    supportContent: true,
-    href: `/templates/${TemplateId.LITERARY_ESSAY_ID}`,
-    attribute: FilterType.WHOLE_ESSAYS,
-  },
-  [TemplateId.SCIENTIFIC_ESSAY_ID]: {
-    id: TemplateId.SCIENTIFIC_ESSAY_ID,
-    icon: '🔬',
-    title: 'Scientific Essay',
-    description:
-      'A scientific essay describes a scientific concept or idea in a clear and concise manner.',
-    promptPlaceholder: 'Vitamin D and health - The missing vitamin in humans',
-    quotePlaceholder:
-      'The American Academy of Dermatology declared ultraviolet radiation to be a known skin carcinogen.',
-    supportQuotes: true,
-    supportContent: true,
-    href: `/templates/${TemplateId.SCIENTIFIC_ESSAY_ID}`,
-    attribute: FilterType.WHOLE_ESSAYS,
   },
 }

@@ -43,16 +43,16 @@ export const prices = {
 }
 
 export const basicFeatures: Feature[] = [
-  { included: true, text: '1,000 words/month', color: 'gray-400' },
-  { included: true, text: 'Shorter template generations', color: 'gray-400' },
+  { included: true, text: '5,000 words/month', color: 'gray' },
+  { included: true, text: 'Shorter template generations', color: 'gray' },
 ]
 
 export const premiumFeatures: Feature[] = [
-  { included: true, text: '25,000 words/month', color: 'green-500' },
-  { included: true, text: 'Longer template generations', color: 'green-500' },
+  { included: true, text: '25,000 words/month', color: 'green' },
+  { included: true, text: 'Longer template generations', color: 'green' },
 ]
 
 export const ultimateFeatures: Feature[] = [
-  { included: true, text: '100,000 words/month', color: 'green-500' },
-  { included: true, text: 'Longer template generations', color: 'green-500' },
+  { included: true, text: '100,000 words/month', color: 'green' },
+  { included: true, text: 'Longer template generations', color: 'green' },
 ]

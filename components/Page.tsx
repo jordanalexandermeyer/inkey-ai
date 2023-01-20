@@ -8,9 +8,9 @@ import ReferralModal from './ReferralModal'
 
 const Page = ({ title, children }: { title: string; children: ReactNode }) => {
   const { showReferralModal, setShowReferralModal } = useReferral()
-  const [showBanner, setShowBanner] = useState(
-    window.localStorage.getItem('showErrorBanner') != '0',
-  )
+  // const [showBanner, setShowBanner] = useState(
+  //   window.localStorage.getItem('showErrorBanner') != '0',
+  // )
 
   return (
     <>
@@ -47,7 +47,7 @@ const Page = ({ title, children }: { title: string; children: ReactNode }) => {
       {showReferralModal && (
         <ReferralModal setShowReferralModal={setShowReferralModal} />
       )}
-      <div className="lg:ml-56">
+      <div className="lg:ml-56 relative">
         {/* {showBanner && <Banner setShowBanner={setShowBanner} />} */}
         {children}
       </div>

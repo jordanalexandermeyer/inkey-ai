@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 export const getURL = () => {
   let url =
     process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
@@ -22,4 +24,35 @@ export const capitalizeFirstLetter = (word: string) => {
 
 export const roundToTwoDecimals = (input: number) => {
   return Math.floor(input * 100) / 100
+}
+
+export const convertBytesToKilobytes = (bytes: number) => {
+  return bytes / 1000
+}
+
+export const strip = (html: string) => {
+  let doc = new DOMParser().parseFromString(html, 'text/html')
+  return doc.body.textContent || ''
+}
+
+export function useExtendedState<T>(initialState: T) {
+  const [state, setState] = useState<T>(initialState)
+  const getLatestState = () => {
+    let latestState = state
+    setState((s) => {
+      latestState = s
+      return s
+    })
+    return latestState
+  }
+
+  return [state, setState, getLatestState] as const
+}
+
+export const mergeRefs = (...refs: any[]) => {
+  return (node: any) => {
+    for (const ref of refs) {
+      ref.current = node
+    }
+  }
 }

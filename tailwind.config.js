@@ -9,7 +9,19 @@ module.exports = {
       transitionProperty: {
         width: 'width',
       },
+      lineClamp: {
+        9: '9',
+      },
     },
   },
-  plugins: [require('flowbite/plugin')],
+  plugins: [
+    require('flowbite/plugin'),
+    require('@tailwindcss/line-clamp'),
+    require('tailwind-scrollbar-hide'),
+  ],
+  variants: {
+    extend: {
+      display: ['group-hover'],
+    },
+  },
 }

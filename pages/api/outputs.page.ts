@@ -23,7 +23,6 @@ export default async function handler(request: Request, response: Response) {
     point_of_view: pointOfView,
     summary_method: summaryMethod,
     poem_type: poemType,
-    language,
     coding_language: codingLanguage,
     content,
   }: {
@@ -36,7 +35,6 @@ export default async function handler(request: Request, response: Response) {
     point_of_view: PointOfView
     summary_method: SummaryMethod
     poem_type: PoemType
-    language: string
     coding_language: CodingLanguages
     content: string
   } = await request.json()
@@ -63,40 +61,8 @@ export default async function handler(request: Request, response: Response) {
       openaiPrompt = `Write a persuasive essay that answers the following prompt.\n${prompt}\n`
       model = 'text-davinci-003'
       break
-    case TemplateId.EXPOSITORY_ESSAY_ID:
-      openaiPrompt = `Write an expository essay that answers the following prompt.\n${prompt}\n`
-      model = 'text-davinci-003'
-      break
-    case TemplateId.COMPARE_CONTRAST_ESSAY_ID:
-      openaiPrompt = `Write a compare and contrast essay that answers the following prompt.\n${prompt}\n`
-      model = 'text-davinci-003'
-      break
     case TemplateId.ARGUMENTATIVE_ESSAY_ID:
       openaiPrompt = `Write an argumentative essay that answers the following prompt.\n${prompt}\n`
-      model = 'text-davinci-003'
-      break
-    case TemplateId.CAUSE_EFFECT_ESSAY_ID:
-      openaiPrompt = `Write a cause and effect essay that answers the following prompt.\n${prompt}\n`
-      model = 'text-davinci-003'
-      break
-    case TemplateId.NARRATIVE_ESSAY_ID:
-      openaiPrompt = `Write a narrative essay that answers the following prompt.\n${prompt}\n`
-      model = 'text-davinci-003'
-      break
-    case TemplateId.DEFINITION_ESSAY_ID:
-      openaiPrompt = `Write a definition essay that answers the following prompt.\n${prompt}\n`
-      model = 'text-davinci-003'
-      break
-    case TemplateId.DESCRIPTIVE_ESSAY_ID:
-      openaiPrompt = `Write a descriptive essay that answers the following prompt.\n${prompt}\n`
-      model = 'text-davinci-003'
-      break
-    case TemplateId.LITERARY_ESSAY_ID:
-      openaiPrompt = `Write a literary essay that answers the following prompt.\n${prompt}\n`
-      model = 'text-davinci-003'
-      break
-    case TemplateId.SCIENTIFIC_ESSAY_ID:
-      openaiPrompt = `Write a scientific essay that answers the following prompt. Use long scientific words.\n${prompt}\n`
       model = 'text-davinci-003'
       break
     case TemplateId.BLOG_ID:
@@ -104,7 +70,7 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case TemplateId.PARAPHRASER_ID:
-      openaiPrompt = `Rewrite the following using different words.\n${prompt}\n`
+      openaiPrompt = `${prompt}\n\nRewrite the above text using different words.\n`
       model = 'text-davinci-003'
       tokens = 2000
       break
@@ -112,13 +78,13 @@ export default async function handler(request: Request, response: Response) {
       switch (summaryMethod) {
         // couldn't use SummaryMethod here because of edge runtime doesn't support the eval() function
         case SummaryMethod.BULLET_POINTS:
-          openaiPrompt = `Summarize the following with bullet points.\n${prompt}\n`
+          openaiPrompt = `${prompt}\n\nSummarize the above with bullet points.\n`
           break
         case SummaryMethod.PARAGRAPH:
-          openaiPrompt = `Summarize the following.\n${prompt}\n`
+          openaiPrompt = `${prompt}\n\nSummarize the above.\n`
           break
         default:
-          openaiPrompt = `Summarize the following.\n${prompt}\n`
+          openaiPrompt = `${prompt}\n\nSummarize the above.\n`
           break
       }
       model = 'text-davinci-003'
@@ -136,11 +102,6 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       temperature = 0.25
       break
-    case TemplateId.TRANSLATOR_ID:
-      openaiPrompt = `Translate the following into ${language}.\n${prompt}\n`
-      model = 'text-davinci-003'
-      tokens = 2000
-      break
     case TemplateId.STORY_ID:
       openaiPrompt = `Write a story with the following title.\n${prompt}\n`
       model = 'text-davinci-003'
@@ -154,7 +115,7 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case TemplateId.CONCLUSION_PARAGRAPH_ID:
-      openaiPrompt = `Write a long conclusion paragraph for the following essay:\n${prompt}\n`
+      openaiPrompt = `${prompt}\n\nWrite a long conclusion paragraph for the above essay.\n`
       model = 'text-davinci-003'
       break
     case TemplateId.DISCUSSION_BOARD_RESPONSE_ID:
@@ -174,29 +135,8 @@ export default async function handler(request: Request, response: Response) {
       model = 'text-davinci-003'
       break
     case TemplateId.CODING_QUESTION_SOLVER_ID:
-      openaiPrompt = `Answer the following coding question. Show an unoptimized version first, then an optimized version. After writing solutions, give the big O notation for each solution. Explain why the optimized solution is more efficient.\n${prompt}\n`
+      openaiPrompt = `${prompt}\n\nAnswer the above coding question. Show an unoptimized version first, then an optimized version. After writing solutions, give the big O notation for each solution. Explain why the optimized solution is more efficient.\n`
       temperature = 0.25
-      tokens = 2000
-      model = 'text-davinci-003'
-      break
-    case TemplateId.FUNCTION_ID:
-      openaiPrompt = `Write a function that does the following.\n${prompt}\n`
-      model = 'text-davinci-003'
-      break
-    case TemplateId.CLASS_ID:
-      openaiPrompt = `Write a class that represents the following.\n${prompt}\n`
-      model = 'text-davinci-003'
-      break
-    case TemplateId.SCRIPT_ID:
-      openaiPrompt = `Write a script that does the following.\n${prompt}\n`
-      model = 'text-davinci-003'
-      break
-    case TemplateId.REGEX_ID:
-      openaiPrompt = `Write a regular expression that matches the following.\n${prompt}\n`
-      model = 'text-davinci-003'
-      break
-    case TemplateId.EXPLAIN_CODE_ID:
-      openaiPrompt = `Rewrite the following code with comments explaining each line.\n${prompt}\n`
       tokens = 2000
       model = 'text-davinci-003'
       break
@@ -231,10 +171,6 @@ export default async function handler(request: Request, response: Response) {
 
   if (pointOfView) {
     openaiPrompt += ` Use ${pointOfView} person point of view.`
-  }
-
-  if (language && id != TemplateId.TRANSLATOR_ID) {
-    openaiPrompt += ` Write in ${language}.`
   }
 
   if (codingLanguage) {

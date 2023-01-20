@@ -139,7 +139,6 @@ export enum FilterType {
   WRITING_TOOLS = 'writing-tools',
   JOB_TOOLS = 'job-tools',
   CLASS_TOOLS = 'class-tools',
-  CODING_TOOLS = 'coding-tools',
   OTHER = 'other',
 }
 
