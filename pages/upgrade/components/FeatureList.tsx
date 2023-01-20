@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import { Feature } from 'types'
 
 export const IncludedFeature = ({
@@ -7,10 +8,14 @@ export const IncludedFeature = ({
   text: string
   color: string
 }) => {
+  console.log(color)
   return (
     <li className="flex space-x-3">
       <svg
-        className={`flex-shrink-0 w-5 h-5 text-${color}`}
+        className={classNames('flex-shrink-0 w-5 h-5', {
+          'text-green-500': color == 'green',
+          'text-gray-400': color == 'gray',
+        })}
         fill="currentColor"
         viewBox="0 0 20 20"
         xmlns="http://www.w3.org/2000/svg"

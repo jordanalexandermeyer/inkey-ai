@@ -12,13 +12,13 @@ export default async function handler(request: NextRequest) {
   const args: string[] = body.arguments
   const prompts = args.map((arg, index) => {
     if (index == 0) {
-      return `I. Topic Sentences\nA. \nB. \n\nII. Evidence and Analysis\nA. \nB. \nC. \n\nIII. Summary Sentences\nA. \nB. \n\nYou are writing an essay in response to the prompt, "${prompt}". Your thesis is, "${title}". Using the above format, write an outline for a paragraph discussing the topic, "${arg}" that supports your thesis. Start by writing topic sentences. Next, write sentences that analyze the topic, "${arg}" and provide evidence to support your analysis. Then, summarize key points.\n\n`
+      return `I. Topic Sentences\nA. \nB. \n\nII. Evidence and Analysis\nA. \nB. \nC. \nD. \nE. \n\nYou are writing an essay in response to the prompt, "${prompt}". Your thesis is, "${title}". Using the above format, write an outline for a paragraph discussing the topic, "${arg}" that supports your thesis. Start by writing topic sentences. Next, provide evidence (such as researched quotes or statistics) to back up and explore your topic sentence. You must provide the appropriate references for any evidence you cite. The evidence provided must be analyzed to explain how this idea proves or backs up your thesis.\n\n`
     } else {
-      return `I. Transition Sentence\nA. \n\nII. Evidence and Analysis\nA. \nB. \nC. \n\nIII. Summary Sentences\nA. \nB. \n\nYou are writing an essay in response to the prompt, "${prompt}". Your thesis is, "${title}". The previous paragraph discussed, "${
+      return `I. Transition Sentence\nA. \n\nII. Evidence and Analysis\nA. \nB. \nC. \nD. \nE. \n\nYou are writing an essay in response to the prompt, "${prompt}". Your thesis is, "${title}". The previous paragraph discussed, "${
         args[index - 1]
       }". Using the above format, write an outline for a paragraph discussing the topic, "${arg}" that supports your thesis. Start with a sentence transitioning the previous topic, "${
         args[index - 1]
-      }", to the current one, "${arg}". Next, write sentences that analyze the topic, "${arg}" and provide evidence to support your analysis. Then, summarize key points.\n\n`
+      }", to the current one, "${arg}". Next, provide evidence (such as researched quotes or statistics) to back up and explore your topic sentence. You must provide the appropriate references for any evidence you cite. The evidence provided must be analyzed to explain how this idea proves or backs up your thesis.\n\n`
     }
   })
 
