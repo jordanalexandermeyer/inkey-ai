@@ -28,7 +28,7 @@ export default async function handler(request: NextRequest) {
     const paragraph = paragraphs[i]
     const paragraphPrompt = `${convertParagraphToOutline(
       paragraph,
-    )}\nConvert the above outline into a descriptive and extensive paragraph. Use specific examples to support arguments made. Use varied sentence structures and vocabulary. Refrain from using the same word more than once.\n`
+    )}\nConvert the above outline into a descriptive and extensive paragraph. Use specific examples to support arguments made. Use varied sentence structures and vocabulary. Refrain from using the same word or phrase more than once.\n`
     prompts.push(paragraphPrompt)
   }
 
