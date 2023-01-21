@@ -192,7 +192,7 @@ const Templates: NextPage = () => {
                       )
                     })}
                   </div>
-                  <div className="my-2 grid gap-5 mb-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  <div className="w-full my-2 grid gap-5 mb-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {filtered.map((template, index) => {
                       if (
                         activeFilters.length == 0 ||
