@@ -15,13 +15,13 @@ type NewEssayContext = {
   setStep: Dispatch<SetStateAction<number>>
   prompt: string
   setPrompt: Dispatch<SetStateAction<string>>
-  thesis: string
-  setThesis: Dispatch<SetStateAction<string>>
   title: string
   setTitle: Dispatch<SetStateAction<string>>
-  titleGenerated: boolean
-  setTitleGenerated: Dispatch<SetStateAction<boolean>>
-  generateTitle: () => Promise<any>
+  thesis: string
+  setThesis: Dispatch<SetStateAction<string>>
+  generateThesis: () => Promise<any>
+  thesisGenerated: boolean
+  setThesisGenerated: Dispatch<SetStateAction<boolean>>
   argumentsState: Array<string>
   setArgumentsState: Dispatch<SetStateAction<string[]>>
   generateArguments: () => Promise<string[]>
@@ -64,28 +64,28 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
     { argument: '', paragraph: [{ title: '', sentences: [] }] },
   ])
   const [essay, setEssay] = useState<string>('')
-  const [titleGenerated, setTitleGenerated] = useState(false)
+  const [thesisGenerated, setThesisGenerated] = useState(false)
   const [argumentsGenerated, setArgumentsGenerated] = useState(false)
   const [paragraphsGenerated, setParagraphsGenerated] = useState(false)
   const [essayGenerated, setEssayGenerated] = useState(false)
   const numberOfSteps = 5
 
-  const generateTitle = async () => {
+  const generateThesis = async () => {
     const response = await fetch(
-      `/api/title?userId=${user?.uid}&prompt=${prompt}`,
+      `/api/thesis?userId=${user?.uid}&prompt=${prompt}`,
     )
 
     const body = await response.json()
-    const title = body.title
-    if (!title) {
+    const thesis = body.thesis
+    if (!thesis) {
       throw {}
     }
-    return title
+    return thesis
   }
 
   const generateArguments = async () => {
     const response = await fetch(
-      `/api/arguments?userId=${user?.uid}&title=${title}&prompt=${prompt}`,
+      `/api/arguments?userId=${user?.uid}&thesis=${thesis}&prompt=${prompt}`,
     )
     const body = await response.json()
     const args: string[] = body.arguments
@@ -104,7 +104,7 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
       body: JSON.stringify({
         userId: user?.uid,
         prompt,
-        title,
+        thesis,
         arguments: argumentsState,
       }),
     })
@@ -126,7 +126,7 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
       body: JSON.stringify({
         userId: user?.uid,
         prompt,
-        title,
+        thesis,
         paragraphs: paragraphsState,
       }),
     })
@@ -151,13 +151,13 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
     setStep,
     prompt,
     setPrompt,
-    thesis,
-    setThesis,
     title,
     setTitle,
-    generateTitle,
-    titleGenerated,
-    setTitleGenerated,
+    thesis,
+    setThesis,
+    generateThesis,
+    thesisGenerated,
+    setThesisGenerated,
     argumentsState,
     setArgumentsState,
     generateArguments,

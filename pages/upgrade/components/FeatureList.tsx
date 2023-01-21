@@ -8,7 +8,6 @@ export const IncludedFeature = ({
   text: string
   color: string
 }) => {
-  console.log(color)
   return (
     <li className="flex space-x-3">
       <svg

@@ -271,8 +271,8 @@ const Home: NextPage = () => {
               }
             })}
             {outputs.length == 0 && (
-              <div className="w-full md:max-w-2xl lg:max-w-3xl md:h-full md:flex md:flex-col px-6 pt-6 md:pt-0">
-                <div className="md:mt-[20vh] flex flex-col items-center gap-2">
+              <div className="w-full md:max-w-2xl lg:max-w-3xl flex flex-col px-6 md:gap-4">
+                <div className="mt-[5vh] md:mt-[15vh] flex flex-col items-center gap-5">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 390 475"
@@ -310,41 +310,41 @@ const Home: NextPage = () => {
                       fill="#1A56DB"
                     />
                   </svg>
-                  <h1 className="text-2xl font-semibold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+                  <h1 className="text-2xl font-semibold leading-7 text-gray-900 md:text-3xl">
                     Ask Inkey
                   </h1>
+                  <p className="text-center max-w-sm md:text-lg">
+                    Inkey is an artificially intelligent assistant. You can ask
+                    Inkey to do just about anything! Click one of the examples
+                    below to try it out.
+                  </p>
                 </div>
-                <div className="flex items-start text-center gap-3.5 pt-6">
-                  <div className="flex flex-col gap-3.5 flex-1">
+                <div className="flex flex-col md:flex-row items-center md:items-start text-center gap-6 pt-6">
+                  <div className="flex flex-col gap-3.5 flex-1 w-full max-w-md md:max-w-none md:w-auto">
                     <div className="text-2xl">☀️</div>
                     <h2 className="text-lg">Examples</h2>
                     <ul className="flex flex-col gap-3.5">
                       <button
                         className="w-full bg-gray-100 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-900"
                         onClick={() => {
-                          setPrompt(
-                            'Write an essay about the importance of investing money.',
-                          )
-                          handleSubmit(
-                            'Write an essay about the importance of investing money.',
-                          )
+                          setPrompt('Write an essay about investing money.')
+                          handleSubmit('Write an essay about investing money.')
                         }}
                       >
-                        "Write an essay about the importance of investing
-                        money." →
+                        "Write an essay about investing money." →
                       </button>
                       <button
                         className="w-full bg-gray-100 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-900"
                         onClick={() => {
                           setPrompt(
-                            "Got any creative ideas for a college student's date?",
+                            "List 5 ideas for a college student's date?",
                           )
                           handleSubmit(
-                            "Got any creative ideas for a college student's date?",
+                            "List 5 ideas for a college student's date?",
                           )
                         }}
                       >
-                        "Got any creative ideas for a college student's date?" →
+                        "List 5 date ideas for a college student." →
                       </button>
                       <button
                         className="w-full bg-gray-100 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-900"
@@ -359,22 +359,7 @@ const Home: NextPage = () => {
                       </button>
                     </ul>
                   </div>
-                  <div className="flex flex-col gap-3.5 flex-1">
-                    <div className="text-2xl">⚡️</div>
-                    <h2 className="text-lg font-normal">Capabilities</h2>
-                    <ul className="flex flex-col gap-3.5">
-                      <li className="w-full bg-gray-100 p-3 rounded-md">
-                        Remembers what you said earlier in the conversation
-                      </li>
-                      <li className="w-full bg-gray-100 p-3 rounded-md">
-                        Language translation, summarization, and text generation
-                      </li>
-                      <li className="w-full bg-gray-100 p-3 rounded-md">
-                        Trained to decline inappropriate requests
-                      </li>
-                    </ul>
-                  </div>
-                  <div className="flex flex-col gap-3.5 flex-1">
+                  <div className="flex flex-col gap-3.5 flex-1 w-full max-w-md">
                     <div className="text-2xl">☢️</div>
                     <h2 className="text-lg font-normal">Limitations</h2>
                     <ul className="flex flex-col gap-3.5">

@@ -25,7 +25,6 @@ const Navbar = ({
       ),
       100,
     )
-    console.log(percentage)
 
     if (percentage < 0) setPercentage(0)
     else setPercentage(percentage)
