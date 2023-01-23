@@ -1,12 +1,16 @@
 import { useUser } from '@/utils/useUser'
 import classNames from 'classnames'
 import Modal from 'components/Modal'
+import Tooltip from 'components/Tooltip'
 import UpgradeModal from 'components/UpgradeModal'
 import Link from 'next/link'
 import { useRef, useEffect, useState, SetStateAction, Dispatch } from 'react'
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import { toast } from 'react-hot-toast'
 import BorderedInput from './BorderedInput'
 import { BackButton, NextButton, RegenerateButton } from './Buttons'
+import { useCitations } from './CitationsContextProvider'
+import CitationsModal from './CitationsModal'
 import { Paragraphs, useNewEssay } from './NewEssayContextProvider'
 import OneLineInput from './OneLineInput'
 
@@ -29,6 +33,7 @@ const getTranslationFromCurrentStep = (
 
 const NewEssayWizard = () => {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const { showCitationsModal } = useCitations()
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -36,6 +41,7 @@ const NewEssayWizard = () => {
       {showUpgradeModal && (
         <UpgradeModal setShowUpgradeModal={setShowUpgradeModal} />
       )}
+      {showCitationsModal && <CitationsModal />}
       <div className="pt-20 flex flex-col items-center">
         <PromptStep
           componentStep={1}
@@ -333,50 +339,141 @@ const ArgumentStep = ({ componentStep }: { componentStep: number }) => {
       <div className="w-full max-w-4xl flex flex-col items-center p-6 md:px-16 md:py-12 mt-10 mb-32 gap-8 bg-white rounded-lg border drop-shadow-xl">
         <div className="w-full flex flex-col gap-6">
           <h2 className="text-xl md:text-2xl font-medium text-center">
-            Choose your paragraphs
+            Choose your paragraph topics
           </h2>
           <p className="text-sm md:text-lg text-gray-500 text-center">
             These points will become your paragraphs. Add more for a longer
             essay or remove some for a shorter essay. Feel free to change them.
           </p>
           <div>
-            <div className="flex flex-col">
-              {argumentsState.map((arg, index) => (
-                <ArgumentRow
-                  key={index}
-                  index={index}
-                  isLoading={isRegenerating || isLoading}
-                  isDragging={false}
-                />
-              ))}
-            </div>
-            {argumentsState.length < 10 && (
-              <button
-                disabled={isLoading || isRegenerating}
-                onClick={() => {
-                  setArgumentsState((currentArgState) => {
-                    const newArgState: string[] = JSON.parse(
-                      JSON.stringify(currentArgState),
-                    )
-                    newArgState.push('')
-                    return newArgState
-                  })
-                }}
-                className="flex items-center justify-center self-start text-sm md:text-base font-medium text-blue-700"
+            <DragDropContext
+              onDragEnd={(result) => {
+                const { destination, source, draggableId } = result
+
+                if (!destination) {
+                  return
+                }
+
+                if (
+                  destination.droppableId === source.droppableId &&
+                  destination.index === source.index
+                ) {
+                  return
+                }
+
+                const newArgState = Array.from(argumentsState)
+                newArgState.splice(source.index, 1)
+                newArgState.splice(
+                  destination.index,
+                  0,
+                  argumentsState[Number(draggableId)],
+                )
+
+                setArgumentsState(newArgState)
+              }}
+            >
+              <Droppable
+                droppableId="arguments"
+                renderClone={(provided, snapshot, rubric) => (
+                  <div
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    ref={provided.innerRef}
+                    className="flex items-center gap-3 md:gap-4 w-full mb-6"
+                  >
+                    <button>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 48 48"
+                        stroke="currentColor"
+                        className="h-9 w-9 text-gray-400 hover:bg-gray-100 rounded-lg"
+                      >
+                        <path
+                          fill="currentColor"
+                          d="M17.5 40q-1.45 0-2.475-1.025Q14 37.95 14 36.5q0-1.45 1.025-2.475Q16.05 33 17.5 33q1.45 0 2.475 1.025Q21 35.05 21 36.5q0 1.45-1.025 2.475Q18.95 40 17.5 40Zm13 0q-1.45 0-2.475-1.025Q27 37.95 27 36.5q0-1.45 1.025-2.475Q29.05 33 30.5 33q1.45 0 2.475 1.025Q34 35.05 34 36.5q0 1.45-1.025 2.475Q31.95 40 30.5 40Zm-13-12.5q-1.45 0-2.475-1.025Q14 25.45 14 24q0-1.45 1.025-2.475Q16.05 20.5 17.5 20.5q1.45 0 2.475 1.025Q21 22.55 21 24q0 1.45-1.025 2.475Q18.95 27.5 17.5 27.5Zm13 0q-1.45 0-2.475-1.025Q27 25.45 27 24q0-1.45 1.025-2.475Q29.05 20.5 30.5 20.5q1.45 0 2.475 1.025Q34 22.55 34 24q0 1.45-1.025 2.475Q31.95 27.5 30.5 27.5ZM17.5 15q-1.45 0-2.475-1.025Q14 12.95 14 11.5q0-1.45 1.025-2.475Q16.05 8 17.5 8q1.45 0 2.475 1.025Q21 10.05 21 11.5q0 1.45-1.025 2.475Q18.95 15 17.5 15Zm13 0q-1.45 0-2.475-1.025Q27 12.95 27 11.5q0-1.45 1.025-2.475Q29.05 8 30.5 8q1.45 0 2.475 1.025Q34 10.05 34 11.5q0 1.45-1.025 2.475Q31.95 15 30.5 15Z"
+                        />
+                      </svg>
+                    </button>
+                    <BorderedInput
+                      value={argumentsState[rubric.source.index]}
+                      onChange={() => {}}
+                    />
+                  </div>
+                )}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 48 48"
-                  stroke="currentColor"
-                  className="h-5 w-5"
+                {(provided, snapshot) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    className="flex flex-col"
+                  >
+                    {argumentsState.map((arg, index) => (
+                      <ArgumentRow
+                        key={index}
+                        index={index}
+                        isLoading={isRegenerating || isLoading}
+                        isDragging={snapshot.isUsingPlaceholder}
+                      />
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+            {argumentsState.length < 10 && (
+              <div className="flex gap-2">
+                <button
+                  onClick={async () => {
+                    setArgumentsState((currentArgState) => {
+                      const newArgState: string[] = JSON.parse(
+                        JSON.stringify(currentArgState),
+                      )
+                      newArgState.push('new')
+                      return newArgState
+                    })
+                  }}
+                  className="py-1 px-2 gap-1 -mt-1 flex items-center justify-center self-start text-sm md:text-base font-medium text-blue-700 hover:bg-blue-50 rounded-md"
                 >
-                  <path
-                    fill="currentColor"
-                    d="M22.5 38V25.5H10v-3h12.5V10h3v12.5H38v3H25.5V38Z"
-                  />
-                </svg>
-                Add paragraph
-              </button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 48 48"
+                    stroke="currentColor"
+                    className="h-5 w-5"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M24 42v-3.55L34.55 27.9l3.55 3.55L27.55 42ZM6 31.5v-3h15v3Zm34.25-2.2-3.55-3.55 1.45-1.45q.4-.4 1.05-.4t1.05.4l1.45 1.45q.4.4.4 1.05t-.4 1.05ZM6 23.25v-3h23.5v3ZM6 15v-3h23.5v3Z"
+                    />
+                  </svg>
+                  Generate topic
+                </button>
+                <button
+                  disabled={isLoading || isRegenerating}
+                  onClick={async () => {
+                    setArgumentsState((currentArgState) => {
+                      const newArgState: string[] = JSON.parse(
+                        JSON.stringify(currentArgState),
+                      )
+                      newArgState.push('')
+                      return newArgState
+                    })
+                  }}
+                  className="py-1 px-2 gap-1 -mt-1 flex items-center justify-center self-start text-sm md:text-base font-medium text-blue-700 hover:bg-blue-50 rounded-md"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 48 48"
+                    stroke="currentColor"
+                    className="h-5 w-5"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M22.5 38V25.5H10v-3h12.5V10h3v12.5H38v3H25.5V38Z"
+                    />
+                  </svg>
+                  Add empty topic
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -410,59 +507,194 @@ const ArgumentRow = ({
   isDragging: boolean
   isLoading: boolean
 }) => {
-  const { argumentsState, setArgumentsState } = useNewEssay()
+  const {
+    argumentsState,
+    setArgumentsState,
+    generateOneArgument,
+  } = useNewEssay()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isArgLoading, setIsArgLoading] = useState(false)
+
+  useEffect(() => {
+    setIsArgLoading(isLoading)
+  }, [isLoading])
+
+  const handleGenerateNewArgument = async () => {
+    setIsArgLoading(true)
+    const argument = await generateOneArgument()
+    setArgumentsState((currentArgState) => {
+      const newArgState = JSON.parse(JSON.stringify(currentArgState))
+      newArgState.splice(index, 1)
+      newArgState.splice(index, 0, argument)
+      return newArgState
+    })
+    setIsArgLoading(false)
+  }
+
+  useEffect(() => {
+    // generate argument when "add paragraph clicked"
+    if (argumentsState[index] == 'new') handleGenerateNewArgument()
+  }, [])
 
   return (
     <>
-      {isLoading ? (
+      {isArgLoading ? (
         <div className="flex items-center gap-4 w-full mb-6">
           <BorderedInput
-            isLoading={isLoading}
+            isLoading={isArgLoading}
             value={argumentsState[index]}
             onChange={(e) => {}}
           />
         </div>
       ) : (
-        <div className="flex items-center gap-3 md:gap-4 w-full mb-6">
-          <BorderedInput
-            value={argumentsState[index]}
-            onChange={(e) => {
-              const arg = e.target.value
-              setArgumentsState((currentArgState) => {
-                const newArgState = JSON.parse(JSON.stringify(currentArgState))
-                newArgState[index] = arg
-                return newArgState
-              })
-            }}
-          />
-          <button
-            onClick={() => {
-              setArgumentsState((currentArgState) => {
-                const newArgState = JSON.parse(JSON.stringify(currentArgState))
-                newArgState.splice(index, 1)
-                return newArgState
-              })
-            }}
-            className={classNames('md:p-1 hover:bg-gray-100 rounded-lg', {
-              invisible: isDragging,
-            })}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 48 48"
-              stroke="currentColor"
-              className="h-5 w-5 text-gray-400"
-              fill="none"
+        <Draggable draggableId={String(index)} index={index}>
+          {(provided, snapshot) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.draggableProps}
+              className="flex items-center gap-3 md:gap-4 w-full mb-6"
             >
-              <path
-                fill="currentColor"
-                d="m12.45 37.65-2.1-2.1L21.9 24 10.35 12.45l2.1-2.1L24 21.9l11.55-11.55 2.1 2.1L26.1 24l11.55 11.55-2.1 2.1L24 26.1Z"
+              <div className="relative">
+                {isMenuOpen && (
+                  <Menu setShowMenu={setIsMenuOpen}>
+                    {/* <button className="flex items-center gap-2 p-2 hover:bg-gray-100 active:bg-gray-200 transition-colors">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 -3 48 48"
+                        className="h-5 w-5"
+                      >
+                        <path d="m31.3 34 4-8H26V12h14v14.4L36.2 34Zm-18 0 4-8H8V12h14v14.4L18.2 34Z" />
+                      </svg>
+                      Add citation
+                    </button> */}
+                    <button
+                      onClick={async () => {
+                        setIsMenuOpen(false)
+                        await handleGenerateNewArgument()
+                      }}
+                      className="flex items-center gap-2 p-2 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="-3 -4 48 48"
+                        stroke="currentColor"
+                        className="h-4 w-4"
+                      >
+                        <path
+                          fill="currentColor"
+                          d="M17.6 39q-5.95-2-9.8-7.15Q3.95 26.7 3.95 20q0-1.6.25-3.2t.8-3.15L1.8 15.5.3 12.95l8.65-5 5 8.6-2.6 1.5-2.9-4.95q-.7 1.65-1.075 3.4T7 20.05q0 5.8 3.425 10.25t8.725 6.05ZM32 13v-3h5.75q-2.4-3.3-6.025-5.15Q28.1 3 24 3q-3.45 0-6.425 1.25Q14.6 5.5 12.3 7.7L10.75 5q2.7-2.35 6.05-3.675Q20.15 0 23.95 0q4.4 0 8.3 1.775Q36.15 3.55 39 6.8V3h3v10Zm-2.25 31-8.65-5 5-8.6 2.55 1.5-2.9 5.05q6.5-.65 10.875-5.475Q41 26.65 41 20.05 41 19 40.875 18q-.125-1-.375-2h3.1q.2 1 .3 2 .1 1 .1 2 0 7.15-4.475 12.65T28.1 39.6l3.15 1.85Z"
+                        />
+                      </svg>
+                      Regenerate
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsMenuOpen(false)
+                        setArgumentsState((currentArgState) => {
+                          const newArgState = JSON.parse(
+                            JSON.stringify(currentArgState),
+                          )
+                          newArgState.splice(index, 1)
+                          return newArgState
+                        })
+                      }}
+                      className="flex items-center gap-2 p-2 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="-3 0 48 48"
+                        stroke="currentColor"
+                        className="h-4 w-4"
+                      >
+                        <path d="M13.05 42q-1.25 0-2.125-.875T10.05 39V10.5H8v-3h9.4V6h13.2v1.5H40v3h-2.05V39q0 1.2-.9 2.1-.9.9-2.1.9Zm21.9-31.5h-21.9V39h21.9Zm-16.6 24.2h3V14.75h-3Zm8.3 0h3V14.75h-3Zm-13.6-24.2V39Z" />
+                      </svg>
+                      Delete
+                    </button>
+                  </Menu>
+                )}
+                <Tooltip
+                  disabled={isMenuOpen}
+                  contents={
+                    <span className="text-gray-400 text-sm">
+                      <span className="text-white">Drag</span> to move
+                      <br />
+                      <span className="text-white">Click</span> to open menu
+                    </span>
+                  }
+                >
+                  <button
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    {...provided.dragHandleProps}
+                    className="text-gray-400 hover:bg-gray-100 rounded-lg active:bg-gray-200"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 48 48"
+                      stroke="currentColor"
+                      className="h-9 w-9"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M17.5 40q-1.45 0-2.475-1.025Q14 37.95 14 36.5q0-1.45 1.025-2.475Q16.05 33 17.5 33q1.45 0 2.475 1.025Q21 35.05 21 36.5q0 1.45-1.025 2.475Q18.95 40 17.5 40Zm13 0q-1.45 0-2.475-1.025Q27 37.95 27 36.5q0-1.45 1.025-2.475Q29.05 33 30.5 33q1.45 0 2.475 1.025Q34 35.05 34 36.5q0 1.45-1.025 2.475Q31.95 40 30.5 40Zm-13-12.5q-1.45 0-2.475-1.025Q14 25.45 14 24q0-1.45 1.025-2.475Q16.05 20.5 17.5 20.5q1.45 0 2.475 1.025Q21 22.55 21 24q0 1.45-1.025 2.475Q18.95 27.5 17.5 27.5Zm13 0q-1.45 0-2.475-1.025Q27 25.45 27 24q0-1.45 1.025-2.475Q29.05 20.5 30.5 20.5q1.45 0 2.475 1.025Q34 22.55 34 24q0 1.45-1.025 2.475Q31.95 27.5 30.5 27.5ZM17.5 15q-1.45 0-2.475-1.025Q14 12.95 14 11.5q0-1.45 1.025-2.475Q16.05 8 17.5 8q1.45 0 2.475 1.025Q21 10.05 21 11.5q0 1.45-1.025 2.475Q18.95 15 17.5 15Zm13 0q-1.45 0-2.475-1.025Q27 12.95 27 11.5q0-1.45 1.025-2.475Q29.05 8 30.5 8q1.45 0 2.475 1.025Q34 10.05 34 11.5q0 1.45-1.025 2.475Q31.95 15 30.5 15Z"
+                      />
+                    </svg>
+                  </button>
+                </Tooltip>
+              </div>
+              <BorderedInput
+                value={argumentsState[index]}
+                onChange={(e) => {
+                  const arg = e.target.value
+                  setArgumentsState((currentArgState) => {
+                    const newArgState = JSON.parse(
+                      JSON.stringify(currentArgState),
+                    )
+                    newArgState[index] = arg
+                    return newArgState
+                  })
+                }}
               />
-            </svg>
-          </button>
-        </div>
+            </div>
+          )}
+        </Draggable>
       )}
     </>
+  )
+}
+
+const Menu = ({
+  setShowMenu,
+  children,
+}: {
+  setShowMenu: Dispatch<SetStateAction<boolean>>
+  children: React.ReactNode
+}) => {
+  const menuRef = useRef<any>()
+
+  useEffect(() => {
+    /**
+     * Alert if clicked on outside of element
+     */
+    function handleClickOutside(event: any) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false)
+      }
+    }
+    // Bind the event listener
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      // Unbind the event listener on clean up
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [menuRef])
+
+  return (
+    <div
+      ref={menuRef}
+      className="z-10 overflow-hidden absolute left-[120%] translate-y-1/2 bottom-1/2 w-40 border border-gray-300 bg-white shadow-lg rounded-lg"
+    >
+      <div className="flex flex-col">{children}</div>
+    </div>
   )
 }
 
@@ -578,7 +810,7 @@ const ParagraphRow = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const { paragraphsState, setParagraphsState } = useNewEssay()
-  const [height, setHeight] = useState(0)
+  const [height, setHeight] = useState(0.01)
   const ref = useRef<any>()
 
   useEffect(() => {
@@ -587,7 +819,7 @@ const ParagraphRow = ({
 
   useEffect(() => {
     if (isExpanded) setHeight(ref.current.clientHeight)
-    if (!isExpanded) setHeight(0)
+    if (!isExpanded) setHeight(0.01)
   }, [isExpanded, paragraphsState])
 
   return (
@@ -647,54 +879,161 @@ const ParagraphRow = ({
                         {paragraphComponent.title}
                       </h2>
                       <div>
-                        <div className="flex flex-col">
-                          {paragraphComponent.sentences.map(
-                            (sentences, sentenceIndex) => {
-                              return (
-                                <SentenceRow
-                                  key={sentenceIndex}
-                                  paragraphIndex={paragraphIndex}
-                                  paragraphComponentIndex={
-                                    paragraphComponentIndex
-                                  }
-                                  sentenceIndex={sentenceIndex}
-                                  isDragging={false}
-                                />
+                        <DragDropContext
+                          onDragEnd={(result) => {
+                            const { destination, source, draggableId } = result
+
+                            if (!destination) {
+                              return
+                            }
+
+                            if (
+                              destination.droppableId === source.droppableId &&
+                              destination.index === source.index
+                            ) {
+                              return
+                            }
+
+                            setParagraphsState((currentParagraphsState) => {
+                              const newParagraphsState: Paragraphs = JSON.parse(
+                                JSON.stringify(currentParagraphsState),
                               )
-                            },
-                          )}
-                        </div>
+                              newParagraphsState[paragraphIndex].paragraph[
+                                paragraphComponentIndex
+                              ].sentences.splice(source.index, 1)
+                              newParagraphsState[paragraphIndex].paragraph[
+                                paragraphComponentIndex
+                              ].sentences.splice(
+                                destination.index,
+                                0,
+                                currentParagraphsState[paragraphIndex]
+                                  .paragraph[paragraphComponentIndex].sentences[
+                                  Number(draggableId)
+                                ],
+                              )
+                              return newParagraphsState
+                            })
+                          }}
+                        >
+                          <Droppable
+                            droppableId="sentences"
+                            renderClone={(provided, snapshot, rubric) => (
+                              <div
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                ref={provided.innerRef}
+                                className="flex items-center gap-3 md:gap-4 w-full mb-6"
+                              >
+                                <button className="text-gray-400 hover:bg-gray-100 rounded-lg active:bg-gray-200">
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 48 48"
+                                    stroke="currentColor"
+                                    className="h-9 w-9"
+                                  >
+                                    <path
+                                      fill="currentColor"
+                                      d="M17.5 40q-1.45 0-2.475-1.025Q14 37.95 14 36.5q0-1.45 1.025-2.475Q16.05 33 17.5 33q1.45 0 2.475 1.025Q21 35.05 21 36.5q0 1.45-1.025 2.475Q18.95 40 17.5 40Zm13 0q-1.45 0-2.475-1.025Q27 37.95 27 36.5q0-1.45 1.025-2.475Q29.05 33 30.5 33q1.45 0 2.475 1.025Q34 35.05 34 36.5q0 1.45-1.025 2.475Q31.95 40 30.5 40Zm-13-12.5q-1.45 0-2.475-1.025Q14 25.45 14 24q0-1.45 1.025-2.475Q16.05 20.5 17.5 20.5q1.45 0 2.475 1.025Q21 22.55 21 24q0 1.45-1.025 2.475Q18.95 27.5 17.5 27.5Zm13 0q-1.45 0-2.475-1.025Q27 25.45 27 24q0-1.45 1.025-2.475Q29.05 20.5 30.5 20.5q1.45 0 2.475 1.025Q34 22.55 34 24q0 1.45-1.025 2.475Q31.95 27.5 30.5 27.5ZM17.5 15q-1.45 0-2.475-1.025Q14 12.95 14 11.5q0-1.45 1.025-2.475Q16.05 8 17.5 8q1.45 0 2.475 1.025Q21 10.05 21 11.5q0 1.45-1.025 2.475Q18.95 15 17.5 15Zm13 0q-1.45 0-2.475-1.025Q27 12.95 27 11.5q0-1.45 1.025-2.475Q29.05 8 30.5 8q1.45 0 2.475 1.025Q34 10.05 34 11.5q0 1.45-1.025 2.475Q31.95 15 30.5 15Z"
+                                    />
+                                  </svg>
+                                </button>
+                                <BorderedInput
+                                  value={
+                                    paragraphsState[paragraphIndex].paragraph[
+                                      paragraphComponentIndex
+                                    ].sentences[rubric.source.index]
+                                  }
+                                  onChange={() => {}}
+                                />
+                              </div>
+                            )}
+                          >
+                            {(provided, snapshot) => (
+                              <div
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}
+                                className="flex flex-col"
+                              >
+                                {paragraphComponent.sentences.map(
+                                  (sentences, sentenceIndex) => {
+                                    return (
+                                      <SentenceRow
+                                        key={sentenceIndex}
+                                        paragraphIndex={paragraphIndex}
+                                        paragraphComponentIndex={
+                                          paragraphComponentIndex
+                                        }
+                                        sentenceIndex={sentenceIndex}
+                                      />
+                                    )
+                                  },
+                                )}
+                                {provided.placeholder}
+                              </div>
+                            )}
+                          </Droppable>
+                        </DragDropContext>
                         {paragraphsState[paragraphIndex].paragraph[
                           paragraphComponentIndex
-                        ].sentences.length < 5 && (
-                          <button
-                            onClick={() => {
-                              setParagraphsState((currentParagraphsState) => {
-                                const newParagraphsState: Paragraphs = JSON.parse(
-                                  JSON.stringify(currentParagraphsState),
-                                )
-                                newParagraphsState[paragraphIndex].paragraph[
-                                  paragraphComponentIndex
-                                ].sentences.push('')
+                        ].sentences.length < 6 && (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => {
+                                setParagraphsState((currentParagraphsState) => {
+                                  const newParagraphsState: Paragraphs = JSON.parse(
+                                    JSON.stringify(currentParagraphsState),
+                                  )
+                                  newParagraphsState[paragraphIndex].paragraph[
+                                    paragraphComponentIndex
+                                  ].sentences.push('new')
 
-                                return newParagraphsState
-                              })
-                            }}
-                            className="flex items-center justify-center self-start text-sm md:text-base font-medium text-blue-700"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 48 48"
-                              stroke="currentColor"
-                              className="h-5 w-5"
+                                  return newParagraphsState
+                                })
+                              }}
+                              className="py-1 px-2 gap-1 -mt-1 flex items-center justify-center self-start text-sm md:text-base font-medium text-blue-700 hover:bg-blue-50 rounded-md"
                             >
-                              <path
-                                fill="currentColor"
-                                d="M22.5 38V25.5H10v-3h12.5V10h3v12.5H38v3H25.5V38Z"
-                              />
-                            </svg>
-                            Add sentence
-                          </button>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 48 48"
+                                stroke="currentColor"
+                                className="h-5 w-5"
+                              >
+                                <path
+                                  fill="currentColor"
+                                  d="M24 42v-3.55L34.55 27.9l3.55 3.55L27.55 42ZM6 31.5v-3h15v3Zm34.25-2.2-3.55-3.55 1.45-1.45q.4-.4 1.05-.4t1.05.4l1.45 1.45q.4.4.4 1.05t-.4 1.05ZM6 23.25v-3h23.5v3ZM6 15v-3h23.5v3Z"
+                                />
+                              </svg>
+                              Generate sentence
+                            </button>
+                            <button
+                              onClick={() => {
+                                setParagraphsState((currentParagraphsState) => {
+                                  const newParagraphsState: Paragraphs = JSON.parse(
+                                    JSON.stringify(currentParagraphsState),
+                                  )
+                                  newParagraphsState[paragraphIndex].paragraph[
+                                    paragraphComponentIndex
+                                  ].sentences.push('')
+
+                                  return newParagraphsState
+                                })
+                              }}
+                              className="py-1 px-2 gap-1 -mt-1 flex items-center justify-center self-start text-sm md:text-base font-medium text-blue-700 hover:bg-blue-50 rounded-md"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 48 48"
+                                stroke="currentColor"
+                                className="h-5 w-5"
+                              >
+                                <path
+                                  fill="currentColor"
+                                  d="M22.5 38V25.5H10v-3h12.5V10h3v12.5H38v3H25.5V38Z"
+                                />
+                              </svg>
+                              Add empty sentence
+                            </button>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -730,64 +1069,197 @@ const SentenceRow = ({
   paragraphComponentIndex,
   sentenceIndex,
   isDragging,
+  isLoading,
 }: {
   paragraphIndex: number
   paragraphComponentIndex: number
   sentenceIndex: number
-  isDragging: boolean
+  isDragging?: boolean
+  isLoading?: boolean
 }) => {
-  const { paragraphsState, setParagraphsState } = useNewEssay()
+  const {
+    paragraphsState,
+    setParagraphsState,
+    generateOneSentence,
+  } = useNewEssay()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isSentenceLoading, setIsSentenceLoading] = useState(false)
+  const { setShowCitationsModal } = useCitations()
+
+  useEffect(() => {
+    if (typeof isLoading == 'boolean') setIsSentenceLoading(isLoading)
+  }, [isLoading])
+
+  const handleGenerateNewSentence = async () => {
+    setIsSentenceLoading(true)
+    const sentence = await generateOneSentence(
+      paragraphIndex,
+      paragraphComponentIndex,
+    )
+    setParagraphsState((currentParagraphsState) => {
+      const newParagraphState: Paragraphs = JSON.parse(
+        JSON.stringify(currentParagraphsState),
+      )
+      newParagraphState[paragraphIndex].paragraph[
+        paragraphComponentIndex
+      ].sentences.splice(sentenceIndex, 1)
+      newParagraphState[paragraphIndex].paragraph[
+        paragraphComponentIndex
+      ].sentences.splice(sentenceIndex, 0, sentence)
+      return newParagraphState
+    })
+    setIsSentenceLoading(false)
+  }
+
+  useEffect(() => {
+    // generate argument when "add paragraph clicked"
+    if (
+      paragraphsState[paragraphIndex].paragraph[paragraphComponentIndex]
+        .sentences[sentenceIndex] == 'new'
+    )
+      handleGenerateNewSentence()
+  }, [])
 
   return (
-    <div className="flex items-center gap-4 w-full mb-6">
-      <BorderedInput
-        value={
-          paragraphsState[paragraphIndex].paragraph[paragraphComponentIndex]
-            .sentences[sentenceIndex]
-        }
-        onChange={(e) => {
-          const sentence = e.target.value
-          setParagraphsState((currentParagraphsState) => {
-            const newParagraphState: Paragraphs = JSON.parse(
-              JSON.stringify(currentParagraphsState),
-            )
-            newParagraphState[paragraphIndex].paragraph[
-              paragraphComponentIndex
-            ].sentences[sentenceIndex] = sentence
-            return newParagraphState
-          })
-        }}
-      />
-      <button
-        onClick={() => {
-          setParagraphsState((currentParagraphsState) => {
-            const newParagraphState: Paragraphs = JSON.parse(
-              JSON.stringify(currentParagraphsState),
-            )
-            newParagraphState[paragraphIndex].paragraph[
-              paragraphComponentIndex
-            ].sentences.splice(sentenceIndex, 1)
-            return newParagraphState
-          })
-        }}
-        className={classNames('p-1 hover:bg-gray-100 rounded-lg', {
-          invisible: isDragging,
-        })}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 48 48"
-          stroke="currentColor"
-          className="h-5 w-5 text-gray-400"
-          fill="none"
-        >
-          <path
-            fill="currentColor"
-            d="m12.45 37.65-2.1-2.1L21.9 24 10.35 12.45l2.1-2.1L24 21.9l11.55-11.55 2.1 2.1L26.1 24l11.55 11.55-2.1 2.1L24 26.1Z"
+    <>
+      {isSentenceLoading ? (
+        <div className="flex items-center gap-3 md:gap-4 w-full mb-6">
+          <BorderedInput
+            isLoading={isSentenceLoading}
+            value={
+              paragraphsState[paragraphIndex].paragraph[paragraphComponentIndex]
+                .sentences[sentenceIndex]
+            }
+            onChange={(e) => {}}
           />
-        </svg>
-      </button>
-    </div>
+        </div>
+      ) : (
+        <Draggable draggableId={String(sentenceIndex)} index={sentenceIndex}>
+          {(provided, snapshot) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.draggableProps}
+              className="flex items-center gap-3 md:gap-4 w-full mb-6"
+            >
+              <div className="relative">
+                {isMenuOpen && (
+                  <Menu setShowMenu={setIsMenuOpen}>
+                    <button
+                      onClick={() => {
+                        setIsMenuOpen(false)
+                        setShowCitationsModal(true)
+                      }}
+                      className="flex items-center gap-2 p-2 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 -3 48 48"
+                        className="h-5 w-5"
+                      >
+                        <path d="m31.3 34 4-8H26V12h14v14.4L36.2 34Zm-18 0 4-8H8V12h14v14.4L18.2 34Z" />
+                      </svg>
+                      Add citation
+                    </button>
+                    <button
+                      onClick={async () => {
+                        setIsMenuOpen(false)
+                        await handleGenerateNewSentence()
+                      }}
+                      className="flex items-center gap-2 p-2 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="-3 -4 48 48"
+                        stroke="currentColor"
+                        className="h-4 w-4"
+                      >
+                        <path
+                          fill="currentColor"
+                          d="M17.6 39q-5.95-2-9.8-7.15Q3.95 26.7 3.95 20q0-1.6.25-3.2t.8-3.15L1.8 15.5.3 12.95l8.65-5 5 8.6-2.6 1.5-2.9-4.95q-.7 1.65-1.075 3.4T7 20.05q0 5.8 3.425 10.25t8.725 6.05ZM32 13v-3h5.75q-2.4-3.3-6.025-5.15Q28.1 3 24 3q-3.45 0-6.425 1.25Q14.6 5.5 12.3 7.7L10.75 5q2.7-2.35 6.05-3.675Q20.15 0 23.95 0q4.4 0 8.3 1.775Q36.15 3.55 39 6.8V3h3v10Zm-2.25 31-8.65-5 5-8.6 2.55 1.5-2.9 5.05q6.5-.65 10.875-5.475Q41 26.65 41 20.05 41 19 40.875 18q-.125-1-.375-2h3.1q.2 1 .3 2 .1 1 .1 2 0 7.15-4.475 12.65T28.1 39.6l3.15 1.85Z"
+                        />
+                      </svg>
+                      Regenerate
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsMenuOpen(false)
+                        setParagraphsState((currentParagraphsState) => {
+                          const newParagraphState: Paragraphs = JSON.parse(
+                            JSON.stringify(currentParagraphsState),
+                          )
+                          newParagraphState[paragraphIndex].paragraph[
+                            paragraphComponentIndex
+                          ].sentences.splice(sentenceIndex, 1)
+                          return newParagraphState
+                        })
+                      }}
+                      className="flex items-center gap-2 p-2 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="-3 0 48 48"
+                        stroke="currentColor"
+                        className="h-4 w-4"
+                      >
+                        <path d="M13.05 42q-1.25 0-2.125-.875T10.05 39V10.5H8v-3h9.4V6h13.2v1.5H40v3h-2.05V39q0 1.2-.9 2.1-.9.9-2.1.9Zm21.9-31.5h-21.9V39h21.9Zm-16.6 24.2h3V14.75h-3Zm8.3 0h3V14.75h-3Zm-13.6-24.2V39Z" />
+                      </svg>
+                      Delete
+                    </button>
+                  </Menu>
+                )}
+                <Tooltip
+                  disabled={isMenuOpen}
+                  contents={
+                    <span className="text-gray-400 text-sm">
+                      <span className="text-white">Drag</span> to move
+                      <br />
+                      <span className="text-white">Click</span> to open menu
+                    </span>
+                  }
+                >
+                  <button
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    {...provided.dragHandleProps}
+                    className="text-gray-400 hover:bg-gray-100 rounded-lg active:bg-gray-200"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 48 48"
+                      stroke="currentColor"
+                      className="h-9 w-9"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M17.5 40q-1.45 0-2.475-1.025Q14 37.95 14 36.5q0-1.45 1.025-2.475Q16.05 33 17.5 33q1.45 0 2.475 1.025Q21 35.05 21 36.5q0 1.45-1.025 2.475Q18.95 40 17.5 40Zm13 0q-1.45 0-2.475-1.025Q27 37.95 27 36.5q0-1.45 1.025-2.475Q29.05 33 30.5 33q1.45 0 2.475 1.025Q34 35.05 34 36.5q0 1.45-1.025 2.475Q31.95 40 30.5 40Zm-13-12.5q-1.45 0-2.475-1.025Q14 25.45 14 24q0-1.45 1.025-2.475Q16.05 20.5 17.5 20.5q1.45 0 2.475 1.025Q21 22.55 21 24q0 1.45-1.025 2.475Q18.95 27.5 17.5 27.5Zm13 0q-1.45 0-2.475-1.025Q27 25.45 27 24q0-1.45 1.025-2.475Q29.05 20.5 30.5 20.5q1.45 0 2.475 1.025Q34 22.55 34 24q0 1.45-1.025 2.475Q31.95 27.5 30.5 27.5ZM17.5 15q-1.45 0-2.475-1.025Q14 12.95 14 11.5q0-1.45 1.025-2.475Q16.05 8 17.5 8q1.45 0 2.475 1.025Q21 10.05 21 11.5q0 1.45-1.025 2.475Q18.95 15 17.5 15Zm13 0q-1.45 0-2.475-1.025Q27 12.95 27 11.5q0-1.45 1.025-2.475Q29.05 8 30.5 8q1.45 0 2.475 1.025Q34 10.05 34 11.5q0 1.45-1.025 2.475Q31.95 15 30.5 15Z"
+                      />
+                    </svg>
+                  </button>
+                </Tooltip>
+              </div>
+              <BorderedInput
+                value={
+                  paragraphsState[paragraphIndex].paragraph[
+                    paragraphComponentIndex
+                  ].sentences[sentenceIndex]
+                }
+                onChange={(e) => {
+                  const sentence = e.target.value
+                  setParagraphsState((currentParagraphsState) => {
+                    const newParagraphState: Paragraphs = JSON.parse(
+                      JSON.stringify(currentParagraphsState),
+                    )
+                    newParagraphState[paragraphIndex].paragraph[
+                      paragraphComponentIndex
+                    ].sentences[sentenceIndex] = sentence
+                    return newParagraphState
+                  })
+                }}
+              />
+            </div>
+          )}
+        </Draggable>
+      )}
+    </>
   )
 }
 

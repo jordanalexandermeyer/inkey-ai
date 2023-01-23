@@ -25,11 +25,16 @@ type NewEssayContext = {
   argumentsState: Array<string>
   setArgumentsState: Dispatch<SetStateAction<string[]>>
   generateArguments: () => Promise<string[]>
+  generateOneArgument: () => Promise<string>
   argumentsGenerated: boolean
   setArgumentsGenerated: Dispatch<SetStateAction<boolean>>
   paragraphsState: Paragraphs
   setParagraphsState: Dispatch<SetStateAction<Paragraphs>>
   generateParagraphs: () => Promise<Paragraphs>
+  generateOneSentence: (
+    paragraphIndex: number,
+    paragraphComponentIndex: number,
+  ) => Promise<string>
   paragraphsGenerated: boolean
   setParagraphsGenerated: Dispatch<SetStateAction<boolean>>
   essay: string
@@ -95,6 +100,27 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
     return args
   }
 
+  const generateOneArgument = async () => {
+    const response = await fetch('/api/argument', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: user?.uid,
+        prompt,
+        thesis,
+        arguments: argumentsState,
+      }),
+    })
+    const body = await response.json()
+    const arg: string = body.argument
+    if (!arg) {
+      throw {}
+    }
+    return arg
+  }
+
   const generateParagraphs = async (): Promise<Paragraphs> => {
     const response = await fetch('/api/paragraphs', {
       method: 'POST',
@@ -115,6 +141,33 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
       throw {}
     }
     return paragraphs
+  }
+
+  const generateOneSentence = async (
+    paragraphIndex: number,
+    paragraphComponentIndex: number,
+  ) => {
+    const response = await fetch('/api/sentence', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: user?.uid,
+        prompt,
+        thesis,
+        argument: paragraphsState[paragraphIndex].argument,
+        sentences:
+          paragraphsState[paragraphIndex].paragraph[paragraphComponentIndex]
+            .sentences,
+      }),
+    })
+    const body = await response.json()
+    const sentence: string = body.sentence
+    if (!sentence) {
+      throw {}
+    }
+    return sentence
   }
 
   const generateEssay = async (): Promise<{ essay: string; title: string }> => {
@@ -161,11 +214,13 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
     argumentsState,
     setArgumentsState,
     generateArguments,
+    generateOneArgument,
     argumentsGenerated,
     setArgumentsGenerated,
     paragraphsState,
     setParagraphsState,
     generateParagraphs,
+    generateOneSentence,
     paragraphsGenerated,
     setParagraphsGenerated,
     essay,

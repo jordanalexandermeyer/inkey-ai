@@ -2,6 +2,7 @@ import ProtectedPage from 'components/ProtectedPage'
 import { NextPage } from 'next'
 import Head from 'next/head'
 import { Toaster } from 'react-hot-toast'
+import { CitationsProvider } from './components/CitationsContextProvider'
 import { NewEssayProvider } from './components/NewEssayContextProvider'
 import NewEssayWizard from './components/NewEssayWizard'
 
@@ -14,7 +15,9 @@ const NewEssayPage: NextPage = () => {
       </Head>
       <Toaster />
       <NewEssayProvider>
-        <NewEssayWizard />
+        <CitationsProvider>
+          <NewEssayWizard />
+        </CitationsProvider>
       </NewEssayProvider>
     </ProtectedPage>
   )
