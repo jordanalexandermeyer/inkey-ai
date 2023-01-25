@@ -82,6 +82,9 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
 
     const body = await response.json()
     const thesis = body.thesis
+
+    await updateUserWordsGenerated(user!.uid, thesis.split(' ').length)
+
     if (!thesis) {
       throw {}
     }
@@ -115,6 +118,9 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
     })
     const body = await response.json()
     const arg: string = body.argument
+
+    await updateUserWordsGenerated(user!.uid, arg.split(' ').length)
+
     if (!arg) {
       throw {}
     }
@@ -164,6 +170,9 @@ function NewEssayProvider({ children }: { children: ReactNode }) {
     })
     const body = await response.json()
     const sentence: string = body.sentence
+
+    await updateUserWordsGenerated(user!.uid, sentence.split(' ').length)
+
     if (!sentence) {
       throw {}
     }

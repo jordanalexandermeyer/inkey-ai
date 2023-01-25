@@ -84,10 +84,7 @@ const Home: NextPage = () => {
     track(EventName.OUTPUT_GENERATED, {
       output: newOutput,
     })
-    await updateUserWordsGenerated(
-      user!.uid,
-      Math.round(newOutput.split(' ').length),
-    )
+    await updateUserWordsGenerated(user!.uid, newOutput.split(' ').length)
   }
 
   const getPrompt = (outputs: Output[]) => {

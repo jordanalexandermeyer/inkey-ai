@@ -1273,7 +1273,26 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
   }
 
   const handleCopy = async () => {
-    navigator.clipboard.writeText(title + '\n\n' + essay)
+    let copiedEssay = ''
+    copiedEssay += title + '\n\n' + essay
+
+    if (citations.length > 0) {
+      copiedEssay += '\n\n\n' + 'Works Cited' + '\n\n'
+      for (let i = 0; i < citations.length; i++) {
+        const apaFullTextCitation = getApaFullCitation(citations[i])
+        const mlaFullCitation = getMlaFullCitation(citations[i])
+        switch (citationStyle) {
+          case CitationStyle.APA:
+            copiedEssay += apaFullTextCitation + '\n\n'
+            break
+          case CitationStyle.MLA:
+            copiedEssay += mlaFullCitation + '\n\n'
+            break
+        }
+      }
+    }
+
+    navigator.clipboard.writeText(copiedEssay)
     toast.success('Copied to clipboard!')
   }
 
@@ -1371,7 +1390,7 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
               {essay}
             </p>
             {citations.length > 0 && (
-              <>
+              <div className="flex flex-col gap-6">
                 <h1 className="text-xl md:text-2xl font-medium text-center">
                   Works Cited
                 </h1>
@@ -1393,7 +1412,7 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
                       )
                   }
                 })}
-              </>
+              </div>
             )}
           </div>
         )}
