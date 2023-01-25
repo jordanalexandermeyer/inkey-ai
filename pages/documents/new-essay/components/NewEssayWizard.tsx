@@ -11,6 +11,7 @@ import { toast } from 'react-hot-toast'
 import BorderedInput from './BorderedInput'
 import { BackButton, NextButton, RegenerateButton } from './Buttons'
 import {
+  CitationsModalPanels,
   CitationStyle,
   getApaFullCitation,
   getMlaFullCitation,
@@ -1042,7 +1043,13 @@ const SentenceRow = ({
     setParagraphsState,
     generateOneSentence,
   } = useNewEssay()
-  const { submitSearch } = useCitations()
+  const {
+    submitSearch,
+    setPanelShowing,
+    setShowCitationsModal,
+    resources,
+    setSearchQuery,
+  } = useCitations()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSentenceLoading, setIsSentenceLoading] = useState(false)
 
@@ -1106,12 +1113,17 @@ const SentenceRow = ({
                   <RightMenu setShowMenu={setIsMenuOpen}>
                     <button
                       onClick={() => {
-                        setIsMenuOpen(false)
-                        submitSearch(
+                        const query =
                           paragraphsState[paragraphIndex].paragraph[
                             paragraphComponentIndex
-                          ].sentences[sentenceIndex],
-                        )
+                          ].sentences[sentenceIndex]
+                        setIsMenuOpen(false)
+                        setPanelShowing(CitationsModalPanels.RESEARCH)
+                        setSearchQuery(query)
+                        setShowCitationsModal(true)
+                        if (resources.length == 0) {
+                          submitSearch(query)
+                        }
                       }}
                       className="flex whitespace-nowrap items-center gap-2 px-3 py-2 hover:bg-gray-100 active:bg-gray-200 transition-colors"
                     >

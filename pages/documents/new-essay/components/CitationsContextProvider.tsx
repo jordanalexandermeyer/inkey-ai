@@ -126,13 +126,10 @@ function CitationsProvider({ children }: { children: ReactNode }) {
   )
 
   const submitSearch = async (query: string) => {
-    setPanelShowing(CitationsModalPanels.RESEARCH)
-    setShowCitationsModal(true)
     if (query.trim() == '') return
-    setSearchQuery(query)
     setIsSearchLoading(true)
-    const resources = await getResources(query)
-    setResources(resources)
+    const newResources = await getResources(query)
+    setResources(newResources)
     setIsSearchLoading(false)
   }
 
@@ -211,23 +208,27 @@ export const getApaInTextCitation = (citation: Citation) => {
   let inTextCitation = '('
   for (let i = 0; i < contributors.length; i++) {
     if (contributors[i].contributorType == ContributorType.AUTHOR) {
-      authors.push(contributors[i])
+      if (contributors[i].firstName && contributors[i].lastName) {
+        authors.push(contributors[i])
+      }
     }
   }
-  authors.sort((a, b) => {
-    return a.lastName > b.lastName ? 1 : -1
-  })
-  for (let i = 0; i < authors.length; i++) {
-    if (i > 0) {
-      inTextCitation += ` & ${authors[i].lastName}`
-    } else {
-      inTextCitation += authors[i].lastName
+  if (authors.length == 0) {
+    inTextCitation += publicationInfo.title
+  } else {
+    authors.sort((a, b) => {
+      return a.lastName > b.lastName ? 1 : -1
+    })
+    for (let i = 0; i < authors.length; i++) {
+      if (i > 0) {
+        inTextCitation += ` & ${authors[i].lastName}`
+      } else {
+        inTextCitation += authors[i].lastName
+      }
     }
   }
   if (publicationInfo.publishDate) {
-    if (authors.length > 0) {
-      inTextCitation += ', '
-    }
+    inTextCitation += ', '
     inTextCitation += new Date(publicationInfo.publishDate).getFullYear()
   }
   inTextCitation += ')'
@@ -241,17 +242,22 @@ export const getMlaInTextCitation = (citation: Citation) => {
   let inTextCitation = '('
   for (let i = 0; i < contributors.length; i++) {
     if (contributors[i].contributorType == ContributorType.AUTHOR) {
-      authors.push(contributors[i])
+      if (contributors[i].firstName && contributors[i].lastName) {
+        authors.push(contributors[i])
+      }
     }
   }
-  authors.sort((a, b) => {
-    return a.lastName > b.lastName ? 1 : -1
-  })
-  for (let i = 0; i < authors.length; i++) {
-    if (i > 0) {
-      inTextCitation += ` & ${authors[i].lastName}`
-    } else {
-      inTextCitation += authors[i].lastName
+  if (authors.length == 0) {
+  } else {
+    authors.sort((a, b) => {
+      return a.lastName > b.lastName ? 1 : -1
+    })
+    for (let i = 0; i < authors.length; i++) {
+      if (i > 0) {
+        inTextCitation += ` & ${authors[i].lastName}`
+      } else {
+        inTextCitation += authors[i].lastName
+      }
     }
   }
   if (publicationInfo.title) {
@@ -272,33 +278,38 @@ export const getApaFullCitation = (citation: Citation) => {
   let fullCitation = ''
   for (let i = 0; i < contributors.length; i++) {
     if (contributors[i].contributorType == ContributorType.AUTHOR) {
-      authors.push(contributors[i])
+      if (contributors[i].firstName && contributors[i].lastName) {
+        authors.push(contributors[i])
+      }
     }
   }
-  authors.sort((a, b) => {
-    return a.lastName > b.lastName ? 1 : -1
-  })
-  for (let i = 0; i < authors.length; i++) {
-    const firstName = authors[i].firstName
-    if (i > 0) {
-      fullCitation += `, `
-    }
-    if (i == authors.length - 1 && authors.length > 1) {
-      fullCitation += '& '
-    }
-    fullCitation += authors[i].lastName
-    if (firstName) {
+  if (authors.length == 0) {
+    fullCitation += `${publicationInfo.title}.`
+  } else {
+    authors.sort((a, b) => {
+      return a.lastName > b.lastName ? 1 : -1
+    })
+    for (let i = 0; i < authors.length; i++) {
+      const firstName = authors[i].firstName
+      if (i > 0) {
+        fullCitation += `, `
+      }
+      if (i == authors.length - 1 && authors.length > 1) {
+        fullCitation += '& '
+      }
+      fullCitation += authors[i].lastName
       fullCitation += `, ${firstName[0].toUpperCase()}.`
     }
   }
   if (publicationInfo.publishDate) {
-    if (authors.length > 0) {
-      fullCitation += ', '
-    }
-    fullCitation += `(${new Date(publicationInfo.publishDate).getFullYear()}).`
+    fullCitation += ` (${new Date(publicationInfo.publishDate).getFullYear()}).`
   }
-  const title = publicationInfo.title
-  fullCitation += ` ${title[0].toUpperCase() + title.substring(1)}.`
+  if (publicationInfo.containerTitle) {
+    fullCitation += ` ${
+      publicationInfo.containerTitle[0].toUpperCase() +
+      publicationInfo.containerTitle.substring(1)
+    }.`
+  }
   fullCitation += ` Retrieved ${accessDate.toLocaleString('default', {
     month: 'long',
     day: 'numeric',
@@ -312,34 +323,40 @@ export const getApaFullCitation = (citation: Citation) => {
 export const getMlaFullCitation = (citation: Citation) => {
   const contributors = citation.contributors
   const publicationInfo = citation.publicationInfo
-  const accessDate = new Date(publicationInfo.accessDate)
   const authors = []
   let fullCitation = ''
   for (let i = 0; i < contributors.length; i++) {
     if (contributors[i].contributorType == ContributorType.AUTHOR) {
-      authors.push(contributors[i])
+      if (contributors[i].firstName && contributors[i].lastName) {
+        authors.push(contributors[i])
+      }
     }
   }
-  authors.sort((a, b) => {
-    return a.lastName > b.lastName ? 1 : -1
-  })
-  for (let i = 0; i < authors.length; i++) {
-    const firstName = authors[i].firstName
-    if (i > 0) {
-      fullCitation += `, and `
-    }
-    if (i == authors.length - 1) {
-      fullCitation += `${authors[i].firstName} ${authors[i].lastName}.`
-    } else {
-      fullCitation += authors[i].lastName
-      if (firstName) {
-        fullCitation += `, ${firstName}`
+  if (authors.length == 0) {
+  } else {
+    authors.sort((a, b) => {
+      return a.lastName > b.lastName ? 1 : -1
+    })
+    for (let i = 0; i < authors.length; i++) {
+      const firstName = authors[i].firstName
+      if (i > 0) {
+        fullCitation += `, and `
+      }
+      if (i == authors.length - 1) {
+        fullCitation += `${authors[i].firstName} ${authors[i].lastName}. `
+      } else {
+        fullCitation += authors[i].lastName
+        if (firstName) {
+          fullCitation += `, ${firstName}`
+        }
       }
     }
   }
   const title = publicationInfo.title
-  fullCitation += ` "${title[0].toUpperCase() + title.substring(1)}."`
-  fullCitation += ` ${publicationInfo.containerTitle}`
+  fullCitation += `"${title[0].toUpperCase() + title.substring(1)}."`
+  if (publicationInfo.containerTitle) {
+    fullCitation += ` ${publicationInfo.containerTitle}`
+  }
   if (publicationInfo.publishDate) {
     fullCitation += `, ${new Date(publicationInfo.publishDate).getFullYear()}`
   }

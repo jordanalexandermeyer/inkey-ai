@@ -57,7 +57,7 @@ const ResearchPanel = () => {
             e.preventDefault()
             await handleSubmit()
           }}
-          className="flex items-center gap-3 px-4 border border-gray-300 rounded-full"
+          className="flex items-center gap-3 px-4 border border-gray-300 focus-within:border-blue-700 rounded-full"
         >
           <button type="submit" className="hover:text-blue-700">
             <svg
@@ -71,6 +71,7 @@ const ResearchPanel = () => {
             </svg>
           </button>
           <input
+            autoFocus
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="h-10 w-full outline-none"
@@ -475,7 +476,7 @@ const EditCitationPanel = () => {
                     JSON.stringify(currentEditingCitation),
                   )
                   newCitation.contributors[index].contributorType =
-                    e.target.value
+                    ContributorType.AUTHOR
                   return newCitation
                 })
               }}
@@ -483,12 +484,18 @@ const EditCitationPanel = () => {
               className="border border-gray-300 h-10 rounded-md"
             >
               <option value={ContributorType.AUTHOR}>Author</option>
-              <option value={ContributorType.EDITOR}>Editor</option>
-              <option value={ContributorType.TRANSLATOR}>Translator</option>
-              <option value={ContributorType.ILLUSTRATOR}>Illustrator</option>
+              <option value={ContributorType.EDITOR}>
+                Editor (Coming Soon)
+              </option>
+              <option value={ContributorType.TRANSLATOR}>
+                Translator (Coming Soon)
+              </option>
+              <option value={ContributorType.ILLUSTRATOR}>
+                Illustrator (Coming Soon)
+              </option>
             </select>
             <div className="flex gap-1">
-              <input
+              {/* <input
                 placeholder="Title"
                 onChange={(e: any) => {
                   setEditingCitation((currentEditingCitation) => {
@@ -515,7 +522,7 @@ const EditCitationPanel = () => {
                 }}
                 value={editingCitation.contributors[index].initials}
                 className="h-10 w-full p-2 border border-gray-300 rounded-md"
-              ></input>
+              ></input> */}
               <input
                 placeholder="First Name"
                 onChange={(e: any) => {
