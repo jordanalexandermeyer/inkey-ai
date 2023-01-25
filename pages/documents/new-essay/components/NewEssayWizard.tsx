@@ -3,13 +3,19 @@ import classNames from 'classnames'
 import Modal from 'components/Modal'
 import Tooltip from 'components/Tooltip'
 import UpgradeModal from 'components/UpgradeModal'
+import RightMenu from 'components/RightMenu'
 import Link from 'next/link'
 import { useRef, useEffect, useState, SetStateAction, Dispatch } from 'react'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import { toast } from 'react-hot-toast'
 import BorderedInput from './BorderedInput'
 import { BackButton, NextButton, RegenerateButton } from './Buttons'
-import { useCitations } from './CitationsContextProvider'
+import {
+  CitationStyle,
+  getApaFullCitation,
+  getMlaFullCitation,
+  useCitations,
+} from './CitationsContextProvider'
 import CitationsModal from './CitationsModal'
 import { Paragraphs, useNewEssay } from './NewEssayContextProvider'
 import OneLineInput from './OneLineInput'
@@ -556,23 +562,13 @@ const ArgumentRow = ({
             >
               <div className="relative">
                 {isMenuOpen && (
-                  <Menu setShowMenu={setIsMenuOpen}>
-                    {/* <button className="flex items-center gap-2 p-2 hover:bg-gray-100 active:bg-gray-200 transition-colors">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 -3 48 48"
-                        className="h-5 w-5"
-                      >
-                        <path d="m31.3 34 4-8H26V12h14v14.4L36.2 34Zm-18 0 4-8H8V12h14v14.4L18.2 34Z" />
-                      </svg>
-                      Add citation
-                    </button> */}
+                  <RightMenu setShowMenu={setIsMenuOpen}>
                     <button
                       onClick={async () => {
                         setIsMenuOpen(false)
                         await handleGenerateNewArgument()
                       }}
-                      className="flex items-center gap-2 p-2 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                      className="flex whitespace-nowrap items-center gap-2 px-3 py-2 hover:bg-gray-100 active:bg-gray-200 transition-colors"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -598,7 +594,7 @@ const ArgumentRow = ({
                           return newArgState
                         })
                       }}
-                      className="flex items-center gap-2 p-2 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                      className="flex whitespace-nowrap items-center gap-2 px-3 py-2 hover:bg-gray-100 active:bg-gray-200 transition-colors"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -610,7 +606,7 @@ const ArgumentRow = ({
                       </svg>
                       Delete
                     </button>
-                  </Menu>
+                  </RightMenu>
                 )}
                 <Tooltip
                   disabled={isMenuOpen}
@@ -659,42 +655,6 @@ const ArgumentRow = ({
         </Draggable>
       )}
     </>
-  )
-}
-
-const Menu = ({
-  setShowMenu,
-  children,
-}: {
-  setShowMenu: Dispatch<SetStateAction<boolean>>
-  children: React.ReactNode
-}) => {
-  const menuRef = useRef<any>()
-
-  useEffect(() => {
-    /**
-     * Alert if clicked on outside of element
-     */
-    function handleClickOutside(event: any) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setShowMenu(false)
-      }
-    }
-    // Bind the event listener
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      // Unbind the event listener on clean up
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [menuRef])
-
-  return (
-    <div
-      ref={menuRef}
-      className="z-10 overflow-hidden absolute left-[120%] translate-y-1/2 bottom-1/2 w-40 border border-gray-300 bg-white shadow-lg rounded-lg"
-    >
-      <div className="flex flex-col">{children}</div>
-    </div>
   )
 }
 
@@ -996,7 +956,7 @@ const ParagraphRow = ({
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 48 48"
                                 stroke="currentColor"
-                                className="h-5 w-5"
+                                className="h-5 w-5 min-w-[20px] min-h-[20px]"
                               >
                                 <path
                                   fill="currentColor"
@@ -1024,7 +984,7 @@ const ParagraphRow = ({
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 48 48"
                                 stroke="currentColor"
-                                className="h-5 w-5"
+                                className="h-5 w-5 min-w-[20px] min-h-[20px] whitespace-nowrap"
                               >
                                 <path
                                   fill="currentColor"
@@ -1082,9 +1042,9 @@ const SentenceRow = ({
     setParagraphsState,
     generateOneSentence,
   } = useNewEssay()
+  const { submitSearch } = useCitations()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSentenceLoading, setIsSentenceLoading] = useState(false)
-  const { setShowCitationsModal } = useCitations()
 
   useEffect(() => {
     if (typeof isLoading == 'boolean') setIsSentenceLoading(isLoading)
@@ -1143,13 +1103,17 @@ const SentenceRow = ({
             >
               <div className="relative">
                 {isMenuOpen && (
-                  <Menu setShowMenu={setIsMenuOpen}>
+                  <RightMenu setShowMenu={setIsMenuOpen}>
                     <button
                       onClick={() => {
                         setIsMenuOpen(false)
-                        setShowCitationsModal(true)
+                        submitSearch(
+                          paragraphsState[paragraphIndex].paragraph[
+                            paragraphComponentIndex
+                          ].sentences[sentenceIndex],
+                        )
                       }}
-                      className="flex items-center gap-2 p-2 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                      className="flex whitespace-nowrap items-center gap-2 px-3 py-2 hover:bg-gray-100 active:bg-gray-200 transition-colors"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -1165,7 +1129,7 @@ const SentenceRow = ({
                         setIsMenuOpen(false)
                         await handleGenerateNewSentence()
                       }}
-                      className="flex items-center gap-2 p-2 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                      className="flex whitespace-nowrap items-center gap-2 px-3 py-2 hover:bg-gray-100 active:bg-gray-200 transition-colors"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -1193,7 +1157,7 @@ const SentenceRow = ({
                           return newParagraphState
                         })
                       }}
-                      className="flex items-center gap-2 p-2 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                      className="flex whitespace-nowrap items-center gap-2 px-3 py-2 hover:bg-gray-100 active:bg-gray-200 transition-colors"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -1205,7 +1169,7 @@ const SentenceRow = ({
                       </svg>
                       Delete
                     </button>
-                  </Menu>
+                  </RightMenu>
                 )}
                 <Tooltip
                   disabled={isMenuOpen}
@@ -1273,6 +1237,7 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
     setEssay,
     generateEssay,
   } = useNewEssay()
+  const { citations, citationStyle } = useCitations()
   const [isLoading, setIsLoading] = useState(false)
   const [isRegenerating, setIsRegenerating] = useState(false)
   const copyButtonRef = useRef<any>()
@@ -1393,6 +1358,31 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
             <p className="text-sm md:text-lg text-left whitespace-pre-wrap leading-loose md:leading-loose">
               {essay}
             </p>
+            {citations.length > 0 && (
+              <>
+                <h1 className="text-xl md:text-2xl font-medium text-center">
+                  Works Cited
+                </h1>
+                {citations.map((citation, index) => {
+                  const apaFullTextCitation = getApaFullCitation(citation)
+                  const mlaFullCitation = getMlaFullCitation(citation)
+                  switch (citationStyle) {
+                    case CitationStyle.APA:
+                      return (
+                        <p className="text-sm md:text-lg" key={index}>
+                          {apaFullTextCitation}
+                        </p>
+                      )
+                    case CitationStyle.MLA:
+                      return (
+                        <p className="text-sm md:text-lg" key={index}>
+                          {mlaFullCitation}
+                        </p>
+                      )
+                  }
+                })}
+              </>
+            )}
           </div>
         )}
       </div>

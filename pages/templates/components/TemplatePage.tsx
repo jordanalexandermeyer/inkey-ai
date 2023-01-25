@@ -144,11 +144,9 @@ const TemplatePage = ({
       prompt,
     })
     logEvent(`generate-${id}`)
-    const toastId = toast.loading('✍️')
     setGenerateIsLoading(true)
     await getAndSetOutput(prompt, user!.uid)
     setGenerateIsLoading(false)
-    toast.dismiss(toastId)
   }
 
   const clearInputs = () => {

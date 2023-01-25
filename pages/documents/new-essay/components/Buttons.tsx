@@ -136,7 +136,7 @@ export const BackButton = ({
       ref={reference}
       disabled={disabled}
       onClick={onClick}
-      className="flex items-center justify-center bg-white text-gray-700 rounded-lg transition-colors border border-gray-300 active:bg-gray-100 disabled:hover:cursor-not-allowed"
+      className="flex items-center justify-center bg-white text-gray-700 disabled:text-gray-500 rounded-lg transition-colors border border-gray-300 active:bg-gray-100 disabled:hover:cursor-not-allowed"
     >
       <div className="flex items-center justify-center gap-1 py-3 px-4">
         <svg

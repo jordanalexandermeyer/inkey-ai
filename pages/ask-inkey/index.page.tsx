@@ -22,6 +22,7 @@ const Home: NextPage = () => {
   const [reader, setReader] = useState<ReadableStreamDefaultReader<
     Uint8Array
   > | null>(null)
+  const inputRef = useRef<any>()
 
   const scrollToBottom = () => {
     bottomElementRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -118,11 +119,10 @@ const Home: NextPage = () => {
       return [...outputs, { agent: Agent.USER, text: prompt }]
     })
     setPrompt('')
-    const toastId = toast.loading('✍️')
+    inputRef.current.style.height = '24px'
     setGenerateIsLoading(true)
     await getOutput(getPrompt(context), user!.uid)
     setGenerateIsLoading(false)
-    toast.dismiss(toastId)
   }
 
   const handleKeyDown = (event: KeyboardEvent) => {
@@ -132,8 +132,6 @@ const Home: NextPage = () => {
     if (event.keyCode === 13 && !event.shiftKey && !disabled()) {
       // User pressed Enter key
       event.preventDefault()
-      const target = event.target as HTMLTextAreaElement
-      target.style.height = '24px'
       formRef.current.dispatchEvent(
         new Event('submit', { bubbles: true, cancelable: true }),
       )
@@ -423,6 +421,7 @@ const Home: NextPage = () => {
                 )}
                 <div className="flex flex-col w-full py-2 pl-3 md:py-3 md:pl-4 relative border border-black/10 bg-white rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] md:max-w-2xl lg:max-w-2xl xl:max-w-3xl m-auto">
                   <textarea
+                    ref={inputRef}
                     autoFocus
                     tabIndex={0}
                     style={{

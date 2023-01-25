@@ -1,4 +1,5 @@
 import '../styles/globals.css'
+import './documents/new-essay/components/date-picker.css'
 import type { AppProps } from 'next/app'
 import initializeFirebaseApp from '../utils/initializeFirebase'
 import initializeAmplitude from '../utils/initializeAmplitude'
