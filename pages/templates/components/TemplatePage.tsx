@@ -124,10 +124,7 @@ const TemplatePage = ({
     track(EventName.OUTPUT_GENERATED, {
       output: newOutput,
     })
-    await updateUserWordsGenerated(
-      user!.uid,
-      Math.round(newOutput.split(' ').length),
-    )
+    await updateUserWordsGenerated(user!.uid, newOutput.split(' ').length)
   }
 
   const handleGenerateClick = async () => {
@@ -144,11 +141,9 @@ const TemplatePage = ({
       prompt,
     })
     logEvent(`generate-${id}`)
-    const toastId = toast.loading('✍️')
     setGenerateIsLoading(true)
     await getAndSetOutput(prompt, user!.uid)
     setGenerateIsLoading(false)
-    toast.dismiss(toastId)
   }
 
   const clearInputs = () => {

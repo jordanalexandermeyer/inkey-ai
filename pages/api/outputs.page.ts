@@ -178,7 +178,7 @@ export default async function handler(request: Request, response: Response) {
   }
 
   if (content) {
-    openaiPrompt += ` Incorporate the following content.\n${content}\n`
+    openaiPrompt += ` Incorporate the following content.\n"${content}"\n`
   }
 
   try {
@@ -246,7 +246,7 @@ export default async function handler(request: Request, response: Response) {
               }
               const parsedData = JSON.parse(fullChunk.slice(6))
               const text = parsedData.choices[0].text
-              if (text == '\n' && chunkNumber < 2) continue // beginning response usually has 2 new lines
+              if (text == '\n' && chunkNumber == 0) continue // beginning response usually has new line
               controller.enqueue(encoder.encode(text))
               chunkNumber++
             } catch (error) {

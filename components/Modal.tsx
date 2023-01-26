@@ -8,7 +8,10 @@ const Modal = ({
   return (
     <div className="fixed inset-0 z-40 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20">
-        <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-50 opacity-100"></div>
+        <div
+          onClick={() => setShowModal(false)}
+          className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-50 opacity-100"
+        ></div>
         <div className="relative opacity-100 translate-y-0 sm:scale-100">
           <div className="flex flex-col p-2 w-full overflow-hidden text-left align-top transition-all bg-white rounded-md shadow-xl">
             <button
