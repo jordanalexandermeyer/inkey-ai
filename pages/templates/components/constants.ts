@@ -2,6 +2,7 @@ import { FilterMap, FilterType } from 'types'
 
 export const tones = {
   casual: 'relaxed and unconcerned',
+  lively: 'active and energetic',
   professional: 'qualified in a particular profession',
   scholarly: 'concerned with academic learning and research',
 }
