@@ -23,6 +23,7 @@ type UserContextType = {
   usageDetails: UsageDetails | null
   isLoading: boolean
   subscription: Subscription | null
+  percentageUsage: number
 }
 
 export const UserContext = createContext<UserContextType | undefined>(undefined)
@@ -38,6 +39,7 @@ export const MyUserContextProvider = (props: Props) => {
   const [isLoadingData, setIsLoadingData] = useState(false)
   const [usageDetails, setUsageDetails] = useState<UsageDetails | null>(null)
   const [subscription, setSubscription] = useState<Subscription | null>(null)
+  const [percentageUsage, setPercentageUsage] = useState(0)
 
   const isNewUser = user?.metadata.creationTime == user?.metadata.lastSignInTime
 
@@ -125,12 +127,29 @@ export const MyUserContextProvider = (props: Props) => {
     fetchData()
   }, [user, isLoadingUser])
 
+  useEffect(() => {
+    const percentage = Math.min(
+      Math.round(
+        (100 * (usageDetails?.monthly_usage || 0)) /
+          (usageDetails?.monthly_allowance || 1),
+      ),
+      100,
+    )
+
+    if (percentage < 0) {
+      setPercentageUsage(0)
+    } else {
+      setPercentageUsage(percentage)
+    }
+  }, [usageDetails])
+
   const value = {
     user,
     isNewUser,
     usageDetails,
     isLoading: isLoadingUser || isLoadingData,
     subscription,
+    percentageUsage,
   }
 
   return <UserContext.Provider value={value} {...props} />

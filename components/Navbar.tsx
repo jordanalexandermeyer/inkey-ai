@@ -5,7 +5,6 @@ import { getAuth, signOut } from 'firebase/auth'
 import { useUser } from 'utils/useUser'
 import { Role } from 'types'
 import { EventName, track } from 'utils/segment'
-import { useEffect, useState } from 'react'
 
 const Navbar = ({
   removeBackdropAndNavbar,
@@ -14,21 +13,7 @@ const Navbar = ({
 }) => {
   const router = useRouter()
   const auth = getAuth()
-  const { subscription, usageDetails } = useUser()
-  const [percentage, setPercentage] = useState(0)
-
-  useEffect(() => {
-    const percentage = Math.min(
-      Math.round(
-        (100 * (usageDetails?.monthly_usage || 0)) /
-          (usageDetails?.monthly_allowance || 1),
-      ),
-      100,
-    )
-
-    if (percentage < 0) setPercentage(0)
-    else setPercentage(percentage)
-  }, [usageDetails])
+  const { subscription, percentageUsage } = useUser()
 
   return (
     <div className="flex flex-col flex-grow bg-white border-r border-gray-200 overflow-x-hidden w-56 pt-7">
@@ -366,12 +351,12 @@ const Navbar = ({
               <div
                 className="absolute rounded-full transition-all h-1 bg-gradient-to-r from-purple-400 to-blue-400"
                 style={{
-                  width: `${percentage}%`,
+                  width: `${percentageUsage}%`,
                 }}
               ></div>
             </div>
             <div className="text-[10px] text-gray-500 font-bold pt-1 whitespace-nowrap">
-              {percentage}% of plan credits used
+              {percentageUsage}% of plan credits used
             </div>
             <div className="mt-3 text-blue-600 underline text-sm whitespace-nowrap">
               <Link href="/settings">More details</Link>
