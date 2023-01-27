@@ -1400,13 +1400,19 @@ const EssayStep = ({ componentStep }: { componentStep: number }) => {
                   switch (citationStyle) {
                     case CitationStyle.APA:
                       return (
-                        <p className="text-sm md:text-lg" key={index}>
+                        <p
+                          className="text-sm md:text-lg break-words max-w-full"
+                          key={index}
+                        >
                           {apaFullTextCitation}
                         </p>
                       )
                     case CitationStyle.MLA:
                       return (
-                        <p className="text-sm md:text-lg" key={index}>
+                        <p
+                          className="text-sm md:text-lg break-words max-w-full"
+                          key={index}
+                        >
                           {mlaFullCitation}
                         </p>
                       )
