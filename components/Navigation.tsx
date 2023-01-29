@@ -139,7 +139,7 @@ const Navigation = () => {
       {showBackdrop && (
         <div
           className={classnames(
-            'lg:hidden fixed inset-0 bg-gray-700 transition-opacity duration-150 z-20',
+            'lg:hidden fixed inset-0 bg-gray-700 transition-opacity ease-in-out duration-150 z-20',
             {
               'opacity-0': opacity == 0,
               'opacity-50': opacity == 50,
@@ -150,8 +150,8 @@ const Navigation = () => {
       )}
       <div
         className={classnames(
-          'lg:hidden fixed inset-0 transition-width duration-150 flex z-20 pb-16',
-          { 'w-56': showNavbar, 'w-0': !showNavbar },
+          'lg:hidden fixed inset-0 transition-transform ease-in-out duration-150 flex z-20 pb-16 w-56',
+          { '-translate-x-0': showNavbar, '-translate-x-56': !showNavbar },
         )}
       >
         <Navbar removeBackdropAndNavbar={removeBackdropAndNavbar} />
