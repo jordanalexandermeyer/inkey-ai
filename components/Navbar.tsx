@@ -13,7 +13,7 @@ const Navbar = ({
 }) => {
   const router = useRouter()
   const auth = getAuth()
-  const { subscription, percentageUsage } = useUser()
+  const { percentageUsage, role, isLoadingRole } = useUser()
 
   return (
     <div className="flex flex-col flex-grow bg-white border-r border-gray-200 overflow-x-hidden w-56 pt-7">
@@ -252,79 +252,81 @@ const Navbar = ({
           </li>
         </ul>
         <ul className="border-t border-gray-200"></ul>
-        <ul className="">
-          <li>
-            <Link
-              href="/upgrade"
-              className="w-full text-blue-700 hover:bg-gray-100 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-md group flex items-center justify-between p-2 font-medium"
-              onClick={() => removeBackdropAndNavbar()}
-            >
-              {!subscription && (
-                <span className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 48 48"
-                    strokeWidth="2"
-                    stroke="currentColor"
-                    className="mr-2 flex-shrink-0 h-5 w-5"
-                  >
-                    <path
+        {!isLoadingRole && (
+          <ul className="">
+            <li>
+              <Link
+                href="/upgrade"
+                className="w-full text-blue-700 hover:bg-gray-100 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-md group flex items-center justify-between p-2 font-medium"
+                onClick={() => removeBackdropAndNavbar()}
+              >
+                {role == Role.BASIC && (
+                  <span className="flex items-center">
+                    <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      d="M13.05 23.05q-.45-.45-.45-1.05 0-.6.45-1.05l9.9-9.9q.25-.25.5-.35.25-.1.55-.1.3 0 .55.1.25.1.5.35l9.9 9.9q.45.45.45 1.05 0 .6-.45 1.05-.45.45-1.05.45-.6 0-1.05-.45L24 14.2l-8.85 8.85q-.45.45-1.05.45-.6 0-1.05-.45Zm0 12.65q-.45-.45-.45-1.05 0-.6.45-1.05l9.9-9.9q.25-.25.5-.35.25-.1.55-.1.3 0 .55.1.25.1.5.35l9.9 9.9q.45.45.45 1.05 0 .6-.45 1.05-.45.45-1.05.45-.6 0-1.05-.45L24 26.85l-8.85 8.85q-.45.45-1.05.45-.6 0-1.05-.45Z"
-                    />
-                  </svg>
-                  Upgrade
-                </span>
-              )}
-              {subscription?.role == Role.PREMIUM && (
-                <span className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 48 48"
-                    strokeWidth="2"
-                    stroke="currentColor"
-                    className="mr-2 flex-shrink-0 h-5 w-5 text-blue-700"
-                  >
-                    <path
+                      fill="currentColor"
+                      viewBox="0 0 48 48"
+                      strokeWidth="2"
+                      stroke="currentColor"
+                      className="mr-2 flex-shrink-0 h-5 w-5"
+                    >
+                      <path
+                        xmlns="http://www.w3.org/2000/svg"
+                        d="M13.05 23.05q-.45-.45-.45-1.05 0-.6.45-1.05l9.9-9.9q.25-.25.5-.35.25-.1.55-.1.3 0 .55.1.25.1.5.35l9.9 9.9q.45.45.45 1.05 0 .6-.45 1.05-.45.45-1.05.45-.6 0-1.05-.45L24 14.2l-8.85 8.85q-.45.45-1.05.45-.6 0-1.05-.45Zm0 12.65q-.45-.45-.45-1.05 0-.6.45-1.05l9.9-9.9q.25-.25.5-.35.25-.1.55-.1.3 0 .55.1.25.1.5.35l9.9 9.9q.45.45.45 1.05 0 .6-.45 1.05-.45.45-1.05.45-.6 0-1.05-.45L24 26.85l-8.85 8.85q-.45.45-1.05.45-.6 0-1.05-.45Z"
+                      />
+                    </svg>
+                    Upgrade
+                  </span>
+                )}
+                {role == Role.PREMIUM && (
+                  <span className="flex items-center">
+                    <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      d="M24 40.3q-.65 0-1.25-.25t-1.05-.8L5.25 19.5q-.55-.7-.65-1.575-.1-.875.3-1.675l4.25-8.6q.4-.75 1.125-1.2Q11 6 11.85 6h24.3q.85 0 1.575.45t1.125 1.2l4.25 8.6q.4.8.3 1.675-.1.875-.65 1.575L26.3 39.25q-.45.55-1.05.8-.6.25-1.25.25Zm-6.1-23.8h12.2L26.35 9h-4.7Zm4.6 19.05V19.5H9.15Zm3 0L38.85 19.5H25.5Zm7.95-19.05h6.3L35.95 9H29.7Zm-25.2 0h6.3L18.3 9h-6.25Z"
-                    />
-                  </svg>
-                  Premium
-                </span>
-              )}
-              {subscription?.role == Role.ULTIMATE && (
-                <span className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    className="mr-2 flex-shrink-0 h-5 w-5 text-blue-700"
-                  >
-                    <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5m14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1Z" />
-                  </svg>
-                  Ultimate
-                </span>
-              )}
-              {subscription?.role == Role.UNLIMITED && (
-                <span className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    stroke="currentColor"
-                    viewBox="0 0 48 48"
-                    className="mr-2 flex-shrink-0 h-5 w-5 text-blue-700"
-                  >
-                    <path d="m9.35 20.45 5.3 2.25q.9-1.8 1.925-3.55Q17.6 17.4 18.75 15.8L14.8 15Zm7.7 4.05 6.65 6.65q2.85-1.3 5.35-2.95 2.5-1.65 4.05-3.2 4.05-4.05 5.95-8.3 1.9-4.25 2.05-9.6-5.35.15-9.6 2.05t-8.3 5.95q-1.55 1.55-3.2 4.05-1.65 2.5-2.95 5.35Zm11.45-4.8q-1-1-1-2.475t1-2.475q1-1 2.475-1t2.475 1q1 1 1 2.475t-1 2.475q-1 1-2.475 1t-2.475-1Zm-.75 19.15 5.45-5.45-.8-3.95q-1.6 1.15-3.35 2.175T25.5 33.55Zm16.3-34.7q.45 6.8-1.7 12.4-2.15 5.6-7.1 10.55l-.1.1-.1.1 1.1 5.5q.15.75-.075 1.45-.225.7-.775 1.25l-8.55 8.6-4.25-9.9-8.5-8.5-9.9-4.25 8.6-8.55q.55-.55 1.25-.775.7-.225 1.45-.075l5.5 1.1q.05-.05.1-.075.05-.025.1-.075 4.95-4.95 10.55-7.125 5.6-2.175 12.4-1.725Zm-36.6 27.6Q9.2 30 11.725 29.975 14.25 29.95 16 31.7q1.75 1.75 1.725 4.275Q17.7 38.5 15.95 40.25q-1.3 1.3-4.025 2.15Q9.2 43.25 3.75 44q.75-5.45 1.575-8.2.825-2.75 2.125-4.05Zm2.1 2.15q-.7.75-1.25 2.35t-.95 4.1q2.5-.4 4.1-.95 1.6-.55 2.35-1.25.95-.85.975-2.125.025-1.275-.875-2.225-.95-.9-2.225-.875-1.275.025-2.125.975Z" />
-                  </svg>
-                  Unlimited
-                </span>
-              )}
-            </Link>
-          </li>
-        </ul>
+                      fill="currentColor"
+                      viewBox="0 0 48 48"
+                      strokeWidth="2"
+                      stroke="currentColor"
+                      className="mr-2 flex-shrink-0 h-5 w-5 text-blue-700"
+                    >
+                      <path
+                        xmlns="http://www.w3.org/2000/svg"
+                        d="M24 40.3q-.65 0-1.25-.25t-1.05-.8L5.25 19.5q-.55-.7-.65-1.575-.1-.875.3-1.675l4.25-8.6q.4-.75 1.125-1.2Q11 6 11.85 6h24.3q.85 0 1.575.45t1.125 1.2l4.25 8.6q.4.8.3 1.675-.1.875-.65 1.575L26.3 39.25q-.45.55-1.05.8-.6.25-1.25.25Zm-6.1-23.8h12.2L26.35 9h-4.7Zm4.6 19.05V19.5H9.15Zm3 0L38.85 19.5H25.5Zm7.95-19.05h6.3L35.95 9H29.7Zm-25.2 0h6.3L18.3 9h-6.25Z"
+                      />
+                    </svg>
+                    Premium
+                  </span>
+                )}
+                {role == Role.ULTIMATE && (
+                  <span className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                      className="mr-2 flex-shrink-0 h-5 w-5 text-blue-700"
+                    >
+                      <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5m14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1Z" />
+                    </svg>
+                    Ultimate
+                  </span>
+                )}
+                {role == Role.UNLIMITED && (
+                  <span className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      stroke="currentColor"
+                      viewBox="0 0 48 48"
+                      className="mr-2 flex-shrink-0 h-5 w-5 text-blue-700"
+                    >
+                      <path d="m9.35 20.45 5.3 2.25q.9-1.8 1.925-3.55Q17.6 17.4 18.75 15.8L14.8 15Zm7.7 4.05 6.65 6.65q2.85-1.3 5.35-2.95 2.5-1.65 4.05-3.2 4.05-4.05 5.95-8.3 1.9-4.25 2.05-9.6-5.35.15-9.6 2.05t-8.3 5.95q-1.55 1.55-3.2 4.05-1.65 2.5-2.95 5.35Zm11.45-4.8q-1-1-1-2.475t1-2.475q1-1 2.475-1t2.475 1q1 1 1 2.475t-1 2.475q-1 1-2.475 1t-2.475-1Zm-.75 19.15 5.45-5.45-.8-3.95q-1.6 1.15-3.35 2.175T25.5 33.55Zm16.3-34.7q.45 6.8-1.7 12.4-2.15 5.6-7.1 10.55l-.1.1-.1.1 1.1 5.5q.15.75-.075 1.45-.225.7-.775 1.25l-8.55 8.6-4.25-9.9-8.5-8.5-9.9-4.25 8.6-8.55q.55-.55 1.25-.775.7-.225 1.45-.075l5.5 1.1q.05-.05.1-.075.05-.025.1-.075 4.95-4.95 10.55-7.125 5.6-2.175 12.4-1.725Zm-36.6 27.6Q9.2 30 11.725 29.975 14.25 29.95 16 31.7q1.75 1.75 1.725 4.275Q17.7 38.5 15.95 40.25q-1.3 1.3-4.025 2.15Q9.2 43.25 3.75 44q.75-5.45 1.575-8.2.825-2.75 2.125-4.05Zm2.1 2.15q-.7.75-1.25 2.35t-.95 4.1q2.5-.4 4.1-.95 1.6-.55 2.35-1.25.95-.85.975-2.125.025-1.275-.875-2.225-.95-.9-2.225-.875-1.275.025-2.125.975Z" />
+                    </svg>
+                    Unlimited
+                  </span>
+                )}
+              </Link>
+            </li>
+          </ul>
+        )}
       </nav>
       <div className="p-4 mb-2">
         <div>

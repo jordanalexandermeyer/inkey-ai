@@ -2,7 +2,7 @@ import type { NextPage } from 'next'
 import Page from '../../components/Page'
 import ProtectedPage from '../../components/ProtectedPage'
 import { useUser } from 'utils/useUser'
-import { getURL } from 'utils/helpers'
+import { getURL, capitalizeFirstLetter } from 'utils/helpers'
 import FeatureList from 'pages/upgrade/components/FeatureList'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { Role } from 'types'
@@ -16,13 +16,8 @@ import {
   unlimitedFeatures,
 } from 'pages/upgrade/components/constants'
 
-const Documents: NextPage = () => {
-  const {
-    user,
-    subscription,
-    isLoading: isUserLoading,
-    usageDetails,
-  } = useUser()
+const Settings: NextPage = () => {
+  const { user, isLoadingRole, role, usageDetails, isLoading } = useUser()
   const functions = getFunctions()
   const router = useRouter()
   const [isStripeLoading, setIsStripeLoading] = useState(false)
@@ -107,27 +102,24 @@ const Documents: NextPage = () => {
                   <h1 className="text-xl font-semibold text-gray-900">
                     Subscription details
                   </h1>
-                  {!isUserLoading && (
+                  {!isLoadingRole && (
                     <div className="max-w-xl p-6 border border-gray-200 rounded-lg shadow-md">
                       <h5 className="mb-6 text-2xl font-semibold text-gray-900">
-                        {!subscription && 'Basic'}
-                        {subscription?.role == Role.PREMIUM && 'Premium'}
-                        {subscription?.role == Role.ULTIMATE && 'Ultimate'}
-                        {subscription?.role == Role.UNLIMITED && 'Unlimited'}
+                        {capitalizeFirstLetter(role)}
                       </h5>
-                      {!subscription && (
+                      {role == Role.BASIC && (
                         <FeatureList features={basicFeatures} />
                       )}
-                      {subscription?.role == Role.PREMIUM && (
+                      {role == Role.PREMIUM && (
                         <FeatureList features={premiumFeatures} />
                       )}
-                      {subscription?.role == Role.ULTIMATE && (
+                      {role == Role.ULTIMATE && (
                         <FeatureList features={ultimateFeatures} />
                       )}
-                      {subscription?.role == Role.UNLIMITED && (
+                      {role == Role.UNLIMITED && (
                         <FeatureList features={unlimitedFeatures} />
                       )}
-                      {!!subscription && (
+                      {role != Role.BASIC && (
                         <button
                           disabled={isStripeLoading}
                           className="px-6 py-2 mt-8 border bg-gray-100 rounded hover:bg-gray-50 text-sm flex justify-center items-center gap-2"
@@ -182,4 +174,4 @@ const Documents: NextPage = () => {
   )
 }
 
-export default Documents
+export default Settings
