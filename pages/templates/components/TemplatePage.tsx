@@ -16,6 +16,7 @@ import {
   PoemType,
   PointOfView,
   QuoteMap,
+  Role,
   SummaryMethod,
 } from 'types'
 import { tones } from './constants'
@@ -55,7 +56,7 @@ const TemplatePage = ({
   const [pointOfView, setPointOfView] = useState(PointOfView.THIRD)
   const [summaryMethod, setSummaryMethod] = useState(SummaryMethod.PARAGRAPH)
   const [poemType, setPoemType] = useState(PoemType.FREE_VERSE)
-  const { user, usageDetails, subscription } = useUser()
+  const { user, usageDetails, role } = useUser()
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [content, setContent] = useState('')
   const bottomElementRef = useRef<any>(null)
@@ -297,7 +298,7 @@ const TemplatePage = ({
                         track(EventName.LENGTH_SELECTED, {
                           value: event.target.value,
                         })
-                        if (!subscription?.role) {
+                        if (role == Role.BASIC) {
                           setRequestedLength(EssayLength.SHORT)
                         } else {
                           const length = event.target.value as EssayLength
@@ -309,7 +310,7 @@ const TemplatePage = ({
                         Short (~250 words)
                       </option>
                       <option value={EssayLength.LONG}>
-                        Long (~500 words){!subscription?.role && ' 💎 Premium'}
+                        Long (~500 words){role == Role.BASIC && ' 💎 Premium'}
                       </option>
                     </select>
                   </div>

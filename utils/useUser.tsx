@@ -12,9 +12,7 @@ import {
 } from 'firebase/firestore'
 import { useEffect, useState, createContext, useContext } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
-
-import { UsageDetails } from 'types'
-import { Subscription } from 'types'
+import { UsageDetails, Subscription, Role } from 'types'
 import { identify } from './segment'
 
 type UserContextType = {
@@ -22,6 +20,8 @@ type UserContextType = {
   isNewUser: boolean
   usageDetails: UsageDetails | null
   isLoading: boolean
+  isLoadingRole: boolean
+  role: Role
   subscription: Subscription | null
   percentageUsage: number
 }
@@ -37,8 +37,10 @@ export const MyUserContextProvider = (props: Props) => {
   const db = getFirestore()
   const [user, isLoadingUser] = useAuthState(auth)
   const [isLoadingData, setIsLoadingData] = useState(false)
+  const [isLoadingRole, setIsLoadingRole] = useState(true)
   const [usageDetails, setUsageDetails] = useState<UsageDetails | null>(null)
   const [subscription, setSubscription] = useState<Subscription | null>(null)
+  const [role, setRole] = useState<Role>(Role.BASIC)
   const [percentageUsage, setPercentageUsage] = useState(0)
 
   const isNewUser = user?.metadata.creationTime == user?.metadata.lastSignInTime
@@ -80,6 +82,21 @@ export const MyUserContextProvider = (props: Props) => {
       return newUsageDetails
     }
   }
+
+  useEffect(() => {
+    const retrieveRole = async () => {
+      if (user) {
+        await user.getIdToken(true)
+        const idToken = await user.getIdTokenResult()
+        const role = idToken?.claims?.stripeRole
+        if (role) {
+          setRole(role)
+        }
+        setIsLoadingRole(false)
+      }
+    }
+    retrieveRole()
+  }, [user, isLoadingUser])
 
   useEffect(() => {
     if (user) {
@@ -146,8 +163,10 @@ export const MyUserContextProvider = (props: Props) => {
   const value = {
     user,
     isNewUser,
+    role,
     usageDetails,
     isLoading: isLoadingUser || isLoadingData,
+    isLoadingRole,
     subscription,
     percentageUsage,
   }
