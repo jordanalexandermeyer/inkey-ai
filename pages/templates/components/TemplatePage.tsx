@@ -163,6 +163,7 @@ const TemplatePage = ({
 
   const clearOutputs = () => {
     setOutput('')
+    textElementRef.current = undefined
   }
 
   const disabled = () => {
@@ -699,8 +700,27 @@ const TemplatePage = ({
                   className="flex flex-grow py-1 space-x-3"
                   aria-label="Tabs"
                 >
-                  <button className="relative transition-all duration-150 before:transition-all before:duration-150 before:absolute before:inset-0 whitespace-nowrap py-2 px-3 text-xs font-medium before:bg-gray-100 before:rounded-lg before:scale-100 before:opacity-100 text-gray-600">
-                    <span className="relative">Output</span>
+                  <button
+                    onClick={(e) => {
+                      track(EventName.COPY_OUTPUT_BUTTON_CLICKED)
+                      navigator.clipboard.writeText(
+                        textElementRef.current.textContent,
+                      )
+                      toast.success('Copied to clipboard!')
+                    }}
+                    disabled={!textElementRef.current}
+                    className="relative transition-all duration-150 before:transition-all before:duration-150 before:absolute before:inset-0 px-3 py-2 text-xs font-medium leading-4 text-gray-400 hover:text-gray-600 before:bg-gray-100 before:rounded-lg before:scale-50 before:opacity-0 hover:before:scale-100 hover:before:opacity-100 flex gap-1 hover:cursor-pointer"
+                  >
+                    <span className="relative">Copy</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 48 48"
+                      stroke="currentColor"
+                      fill="currentColor"
+                      className="h-4 w-4 relative"
+                    >
+                      <path d="M39 40H13q-1.2 0-2.1-.9-.9-.9-.9-2.1V5q0-1.2.9-2.1.9-.9 2.1-.9h17.4L42 13.6V37q0 1.2-.9 2.1-.9.9-2.1.9ZM28.9 14.9V5H13v32h26V14.9ZM7 46q-1.2 0-2.1-.9Q4 44.2 4 43V12.05h3V43h24.9v3Zm6-41v9.9V5v32V5Z" />
+                    </svg>
                   </button>
                 </nav>
                 <div>
