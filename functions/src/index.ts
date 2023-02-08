@@ -988,3 +988,18 @@ exports.creditReferralBonus = functions.firestore
       );
     }
   });
+
+/*
+ * The `resetCreditsFunction` is triggered on the 15th of each month.
+ */
+exports.resetCredits = functions.pubsub
+  .schedule('0 0 15 * *')
+  .onRun(async () => {
+    const querySnapshot = await admin
+      .firestore()
+      .collection('usage_details')
+      .get();
+    querySnapshot.forEach((doc) => {
+      doc.ref.update({ monthly_usage: 0 });
+    });
+  });

@@ -2,7 +2,7 @@ import React, { memo } from 'react'
 
 export type TooltipProps = {
   children: React.ReactNode
-  disabled: boolean
+  disabled?: boolean
   contents: React.ReactNode
 }
 
