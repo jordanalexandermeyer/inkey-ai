@@ -71,7 +71,7 @@ export const MyUserContextProvider = (props: Props) => {
       return docSnap.data() as UsageDetails
     } else {
       const newUsageDetails = {
-        monthly_allowance: 5000,
+        monthly_allowance: 1000,
         monthly_usage: 0,
         total_usage: 0,
         bonus_allowance: 0,
