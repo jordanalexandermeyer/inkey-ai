@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import React, { memo } from "react"
 
 export type TooltipProps = {
   children: React.ReactNode
@@ -8,9 +8,9 @@ export type TooltipProps = {
 
 const Tooltip: React.FC<TooltipProps> = memo((props) => {
   return (
-    <div className="z-40 group relative flex">
+    <div className="group relative flex">
       {!props.disabled && (
-        <span className="pointer-events-none absolute top-[120%] left-0 whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-white opacity-0 transition group-hover:opacity-100">
+        <span className="z-40 pointer-events-none absolute top-[120%] left-0 whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-white opacity-0 transition group-hover:opacity-100">
           {props.contents}
         </span>
       )}
@@ -20,6 +20,6 @@ const Tooltip: React.FC<TooltipProps> = memo((props) => {
   )
 })
 
-Tooltip.displayName = 'Tooltip'
+Tooltip.displayName = "Tooltip"
 
 export default Tooltip
