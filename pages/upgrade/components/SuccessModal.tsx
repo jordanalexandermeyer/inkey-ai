@@ -16,16 +16,16 @@ const SuccessModal = () => {
                 </h3>
                 <p>
                   Thank you for upgrading! I hope you enjoy using Inkey and find
-                  it helpful. If you need anything at all, please email me at{' '}
-                  <b>jordan@inkey.ai</b>
+                  it helpful. If you need anything at all, please email us at{" "}
+                  <b>support@inkey.ai</b>
                 </p>
-                <p>Sincerely, Jordan</p>
+                <p>Sincerely, the Inkey Team</p>
               </div>
             </div>
             <button
               className="inline-flex items-center overflow-hidden ease-in-out outline-none focus:outline-none focus:ring-2 focus:ring-offset-2 justify-center transition-all duration-150 relative font-medium rounded-lg focusRing text-white bg-blue-700 shadow-sm hover:bg-blue-300 selectionRing active:bg-blue-800 px-6 py-4 text-base w-full"
               type="button"
-              onClick={() => window.location.assign('/')}
+              onClick={() => window.location.assign("/")}
             >
               Get Started
             </button>
